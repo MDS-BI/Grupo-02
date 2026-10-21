@@ -934,5 +934,6 @@ Las decisiones de implementación, el orden de desarrollo y las modificaciones t
 message.txt
 35 KB
 
-<img width="1868" height="5466" alt="mermaid-diagram" src="https://github.com/user-attachments/assets/ada2b41d-3adc-4ce8-8303-97ce91adff86" />
+<img width="2438" height="5506" alt="mermaid-diagram" src="https://github.com/user-attachments/assets/c817bf1b-4579-4de8-b421-bb4ad174d21a" />
+
 
