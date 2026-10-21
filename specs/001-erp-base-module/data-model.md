@@ -104,5 +104,5 @@ Objeto de configuración cargado al arrancar que adapta el módulo base en un m�
 - El campo `status` es intencionadamente de texto libre a nivel base para que cada módulo personalizado pueda imponer su propio ciclo de vida (p. ej., estados de pedidos, estados de aprobación).
 - La unicidad de folio por serie, las partidas de documento (líneas con producto, cantidad y precio) y la numeración automática son puntos de extensión naturales para módulos que los requieran.
 
-<img width="1084" height="2840" alt="mermaid-diagram" src="https://github.com/user-attachments/assets/1ef9daef-ea31-494c-b4db-88b2cefb22f0" />
+<img width="1868" height="5466" alt="mermaid-diagram" src="https://github.com/user-attachments/assets/ada2b41d-3adc-4ce8-8303-97ce91adff86" />
 
