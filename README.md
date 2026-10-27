@@ -31,6 +31,17 @@ Desarrollar un submódulo de soporte operacional y control de gestión que permi
 - **Documento (Transaccional):** Emisión de *Liquidaciones de Sueldo* con numeración correlativa, fechas y desglose de montos.
 - **Flujo de Estados:** Ciclo de vida transaccional (`Borrador` -> `Emitida` -> `Pagada`).
 
+## Persistencia y estados
+
+La aplicación guarda los registros en el `localStorage` del navegador, en estas claves:
+
+- `erp_base_module:entities`: lista de colaboradores (entidades).
+- `erp_base_module:documents`: lista de liquidaciones (documentos) vinculadas a colaboradores.
+
+Los datos permanecen disponibles al navegar por la aplicación o volver a abrirla en el mismo navegador. El almacenamiento es local a ese navegador y dispositivo: no hay sincronización entre usuarios, servidor ni copias de seguridad. Si se borran los datos del sitio o del navegador, se pueden perder los registros. Al eliminar un colaborador también se eliminan sus documentos vinculados.
+
+El estado de cada liquidación se conserva junto con el documento. El flujo definido para este módulo es `Borrador` -> `Emitida` -> `Pagada`; las transiciones permitidas se controlan mediante la configuración del ciclo de vida de documentos (`statusLifecycle`). `localStorage` no proporciona autenticación, control de acceso ni protección suficiente para datos salariales reales, por lo que el MVP debe utilizar información ficticia.
+
 ---
 
 ## 4. Configuración y Ejecución
@@ -39,4 +50,5 @@ Instalar dependencias y ejecutar el servidor local:
 ```bash
 npm install
 npm run dev
+```
 
