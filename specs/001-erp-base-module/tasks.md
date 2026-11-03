@@ -329,6 +329,30 @@
 
 ---
 
+## Fase 19: Historia de Usuario 14 - Registrar y consultar el historial de actividad
+
+**Objetivo**: Registrar eventos disponibles de inicio/cierre de sesión, consultas explícitas, búsquedas ejecutadas y los intentos de creación, modificación y eliminación de entidades/documentos; permitir que cualquier persona que pueda utilizar el ERP local consulte el historial cronológico, sin autenticación ni roles.
+
+**Prueba Independiente**: Una persona con acceso al ERP local realiza eventos cubiertos, abre Historial y comprueba acción, módulo, hora, resultado y actor disponible o «No identificado». Las actividades anteriores siguen disponibles después de recargar mientras el almacenamiento del navegador no se haya borrado o alterado.
+
+### Pruebas para la Historia de Usuario 14
+
+- [ ] T082 [P] [US14] Añadir pruebas unitarias para los siete valores de action, campos opcionales, carga ordenada de al menos 500 actividades, identidad ausente, resultados fallidos y append-only en tests/unit/storage.test.js
+- [ ] T083 [P] [US14] Añadir pruebas de integración para consultas explícitas, búsquedas ejecutadas y mutaciones exitosas/fallidas; verificar sesiones solo si ya existe un emisor, búsquedas sin coincidencias exitosas y exclusión de lecturas internas/pulsaciones en tests/integration/activity-log.test.js
+- [ ] T084 [P] [US14] Añadir pruebas de integración para acceso al historial sin roles, estado vacío, actor no identificado, persistencia tras recarga, ausencia de vencimiento/borrado en interfaz, privacidad de descripciones y fallo de escritura comunicado en tests/integration/activity-log.test.js
+
+### Implementación de la Historia de Usuario 14
+
+- [ ] T085 [US14] Añadir a src/storage.js la persistencia append-only de actividades en erp_base_module:activities y propagar los errores de lectura/escritura sin resultados vacíos engañosos
+- [ ] T086 [US14] Conectar consultas explícitas, búsquedas ejecutadas, intentos de crear/modificar/eliminar entidades y documentos y eventos de sesión solo si existe un emisor previo; registrar resultado, módulo y contexto de identidad existente (nulo si falta) en src/app.js sin registrar navegación ni lecturas internas
+- [ ] T087 [US14] Crear src/components/activity-log.js y la navegación a Historial con orden descendente, campos de auditoría y estado vacío
+- [ ] T088 [US14] Comunicar fallos de auditoría sin ocultarlos, sin revertir silenciosamente una operación de negocio ya persistida y sin guardar credenciales, secretos, valores sensibles completos ni términos de búsqueda en src/app.js
+- [ ] T089 Ejecutar pruebas enfocadas de HU14 y regresión; comprobar orden con al menos 500 eventos, cuota/lectura/escritura fallidas, y que no se alteran las claves ni los datos existentes de entidades y documentos
+
+**Punto de control**: Los eventos cubiertos aparecen con resultado e identidad disponible o «No identificado»; todos los usuarios locales pueden consultar el historial; los errores se comunican, las descripciones minimizan datos y los registros previos se conservan mientras el almacenamiento local siga disponible.
+
+---
+
 ## Dependencias y Orden de Ejecución
 
 ### Dependencias entre Fases
@@ -351,6 +375,7 @@
 - Historia de Usuario 13 (Fase 16): Depende de que las Fases 1-15 estén completas; reestructura la navegación entregada por HU3/HU4 dentro del marco
 - Historia de Usuario 3 revisada (Fase 17): Depende de la Fase 16 (el enrutamiento por barra lateral debe existir antes de que las acciones del panel lo usen)
 - Pulido Aspecto ERP (Fase 18): Depende de que las Fases 16 y 17 estén completas
+- Historia de Usuario 14 (Fase 19): Depende del almacenamiento base (Fase 2), de los flujos de entidades y documentos (Fases 3, 4 y 12) y de la navegación compartida (Fase 16)
 
 ### Oportunidades Paralelas
 
@@ -363,3 +388,4 @@
 - En la Fase 16, T064-T067 y T069 pueden ejecutarse en paralelo; T072 aterriza junto al cambio de enrutamiento T068
 - En la Fase 17, T073/T074/T077 pueden ejecutarse en paralelo con T075/T076
 - En la Fase 18, T078 y T079 pueden ejecutarse en paralelo antes de la verificación final T080-T081
+- En la Fase 19, T082-T084 pueden prepararse en paralelo; T085-T087 pueden desarrollarse en paralelo según sus dependencias locales; T088 integra el manejo de errores y privacidad; T089 depende de completar implementación y pruebas previas

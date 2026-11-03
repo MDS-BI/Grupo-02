@@ -209,6 +209,9 @@ Como desarrollador de módulos, quiero definir los estados permitidos de los doc
 3. **Dado** un ciclo de vida configurado, **cuando** el usuario ve listas o detalles de documentos, **entonces** el estado actual es identificable de un vistazo.
 4. **Dado** que no hay ciclo de vida configurado, **cuando** se editan documentos, **entonces** el estado permanece como texto libre igual que en el módulo base sin modificar.
 
+
+
+
 ---
 
 ### Historia de Usuario 13 - Marco de espacio de trabajo ERP con marca (Prioridad: P1)
@@ -227,6 +230,28 @@ Como usuario de negocio, quiero un espacio de trabajo estilo ERP consistente, co
 4. **Dado** que la ventana gráfica es estrecha, **cuando** se usa la aplicación en una pantalla pequeña, **entonces** la barra lateral se contrae a una columna de iconos manteniéndose utilizable y etiquetada de forma accesible.
 5. **Dada** una configuración que define un color de acento, **cuando** cualquier pantalla carga, **entonces** el marco lo usa consistentemente para resaltados y controles principales; sin valor configurado o con un valor inválido, se usan los valores predeterminados integrados sin errores.
 6. **Dado** que el usuario navega entre módulos mediante la barra lateral, **cuando** inspecciona sus datos después, **entonces** todas las entidades y documentos almacenados permanecen intactos.
+
+
+
+### Historial de usuario 14 - Registrar y consultar la actividad de usuario
+
+Como usuario del ERP, quiero consultar el historial de actividad local para supervisar los eventos realizados dentro de la aplicación e identificar la acción, el módulo, la fecha y hora y la identidad disponible de quien la realizó.
+
+**Prueba Independiente**: Cualquier persona que pueda utilizar el ERP en ese navegador puede abrir Historial y consultar, en orden cronológico, las actividades con acción, módulo, fecha y hora, resultado y actor disponible o «No identificado».
+
+**Escenarios de Aceptación**:
+
+1. **Dado** que se ejecuta una consulta explícita, una búsqueda o una operación de creación, modificación o eliminación de una entidad o documento, **cuando** el evento termina, **entonces** se registra una actividad con identificador único, acción, módulo, fecha y hora, descripción segura y resultado. Las lecturas internas de interfaz y cada pulsación de tecla no generan eventos.
+2. **Dada** una actividad registrada, **cuando** se consulta el historial, **entonces** se muestra en orden cronológico descendente con la identidad disponible del actor y el resultado de la operación.
+3. **Dado** que una mutación, consulta o búsqueda falla o es rechazada, **cuando** el intento llega al flujo correspondiente, **entonces** se registra con resultado fallido si el almacenamiento del historial está disponible, usando una descripción que no exponga datos sensibles.
+4. **Dado** que la aplicación no proporciona identidad para el usuario actual, **cuando** se registra una operación, **entonces** el actor se muestra explícitamente como no identificado y no se inventa una identidad ni se bloquea la operación por falta de un sistema de inicio de sesión.
+5. **Dado** que existen actividades anteriores, **cuando** se realizan nuevos eventos o se vuelve a abrir la aplicación en el mismo perfil del navegador, **entonces** las actividades anteriores se conservan mientras el almacenamiento local siga disponible; la interfaz no ofrece actualización ni eliminación y no aplica vencimiento automático.
+6. **Dado** que todavía no existen actividades, **cuando** el usuario abre el historial, **entonces** se muestra un estado vacío claro; al registrar una nueva operación, el historial refleja el nuevo registro al volver a consultarlo.
+7. **Dado** que falla la persistencia del historial, **cuando** la operación de negocio ya fue persistida, **entonces** se informa explícitamente que la actividad no pudo registrarse, sin indicar que el historial quedó actualizado ni deshacer silenciosamente el cambio de negocio.
+8. **Dado** que el usuario consulta información o realiza una búsqueda, **cuando** la consulta o búsqueda se ejecuta, **entonces** se registra como `read` o `search`; una búsqueda completada sin coincidencias se registra como exitosa. Los eventos `login` y `logout` solo se registran si ya existe un mecanismo que los emita.
+9. **Dado** que cualquier persona puede utilizar el ERP local, **cuando** abre la navegación, **entonces** puede consultar el historial; la aplicación no restringe el acceso mediante roles o autenticación.
+10. **Dado** que se registra una actividad, **cuando** se construye su descripción, **entonces** se excluyen contraseñas, tokens, secretos, valores sensibles completos y términos de búsqueda; solo se guarda el contexto mínimo necesario para identificar la actividad.
+
 
 ---
 
@@ -248,6 +273,12 @@ Como usuario de negocio, quiero un espacio de trabajo estilo ERP consistente, co
 - ¿Qué ocurre cuando el panel se abre con cero entidades o cero documentos (valores estadísticos)?
 - ¿Qué ocurre cuando el color de acento configurado no es un valor de color válido?
 - ¿Cómo mantiene la barra lateral contraída las etiquetas de módulo accesibles en ventanas gráficas estrechas?
+- ¿Qué ocurre cuando falla una operación de creación, actualización o eliminación antes de persistirse?
+- ¿Cómo se representa al actor cuando no existe una identidad de usuario disponible?
+- ¿Qué ocurre cuando falla el almacenamiento del historial o se alcanza el límite de almacenamiento del navegador?
+- ¿Se conservan las actividades anteriores después de cerrar y volver a abrir la aplicación en el mismo navegador?
+- ¿Qué ocurre si se agota la cuota o se borran/modifican los datos locales? El sistema informa fallos de escritura; el historial no puede garantizarse si el navegador elimina o altera su almacenamiento.
+- ¿Qué ocurre si una descripción intenta incluir una contraseña, token, secreto, valor sensible o término de búsqueda? Se debe excluir ese contenido.
 
 ## Requisitos *(obligatorio)*
 
@@ -292,6 +323,17 @@ Como usuario de negocio, quiero un espacio de trabajo estilo ERP consistente, co
 - **FR-037**: La barra lateral DEBE resaltar visualmente el módulo activo en cada pantalla.
 - **FR-038**: La configuración PUEDE definir un color de acento; el sistema DEBE aplicarlo consistentemente en todo el marco y retroceder de forma segura a los valores integrados cuando esté ausente o sea inválido.
 - **FR-039**: En ventanas gráficas estrechas, la barra lateral DEBE contraerse a una columna de iconos manteniéndose operable.
+- **FR-040**: El sistema DEBE registrar los eventos disponibles de inicio y cierre de sesión, consultas y búsquedas, además de los intentos de creación, modificación y eliminación de entidades y documentos; los intentos de mutación deben registrar tanto resultados exitosos como fallidos cuando alcancen el flujo de operación.
+- **FR-041**: Cada actividad DEBE identificar la acción, el módulo, la fecha y hora, una descripción y el resultado; DEBE incluir la identidad del actor cuando esté disponible.
+- **FR-042**: El sistema DEBE ofrecer una pantalla de historial accesible desde la navegación del espacio de trabajo y mostrar las actividades de la más reciente a la más antigua, con un estado vacío cuando no existan registros.
+- **FR-043**: Si la aplicación no proporciona la identidad del actor, el sistema DEBE registrar y mostrar el actor como no identificado; NO DEBE inventar una identidad ni introducir autenticación como parte de esta funcionalidad.
+- **FR-044**: El historial DEBE conservar las actividades ya persistidas al registrar nuevas actividades y al reiniciar o volver a abrir la aplicación en el mismo navegador; las operaciones ordinarias del ERP NO DEBEN editar ni eliminar actividades anteriores.
+- **FR-045**: Si no se puede persistir una actividad, el sistema DEBE informar claramente del fallo de auditoría y no presentar la actividad como registrada.
+- **FR-046**: Las descripciones del historial NO DEBEN incluir contraseñas, secretos ni valores sensibles completos de los registros de negocio.
+- **FR-047**: El historial DEBE estar disponible para cualquier persona que pueda utilizar el ERP local; el MVP NO DEBE introducir autenticación, roles ni una restricción de acceso administrativa.
+- **FR-048**: Las consultas explícitas y búsquedas ejecutadas DEBEN registrar su resultado (`success` o `failure`); las lecturas internas de interfaz y cada pulsación de tecla NO DEBEN generar actividades. Una búsqueda completada sin coincidencias cuenta como exitosa.
+- **FR-049**: El sistema NO DEBE aplicar vencimiento automático ni ofrecer edición o eliminación de actividades desde la interfaz ordinaria. La conservación depende de que el almacenamiento del navegador permanezca disponible y sin modificaciones externas.
+- **FR-050**: Las descripciones DEBEN excluir contraseñas, tokens, secretos, términos de búsqueda y valores sensibles completos; solo deben guardar el contexto mínimo necesario para comprender la actividad.
 
 ### Requisitos de Extensibilidad *(obligaciones del módulo base)*
 
@@ -307,6 +349,7 @@ Los módulos personalizados construidos sobre esta base DEBEN poder:
 
 - **Entidad**: Un registro de datos maestros gestionado por el módulo, que incluye su nombre, código de negocio, detalles descriptivos, categoría de clasificación, una fecha objetivo opcional y un entity_id autogenerado. Los módulos personalizados definen qué representa una Entidad en el mundo real (p. ej., cliente, producto, activo).
 - **Documento**: Detalles transaccionales adjuntos a una entidad, vinculados a ella por el entity_id de la entidad. Los módulos personalizados definen qué representa un Documento (p. ej., pedido, factura, contrato).
+- **Actividad**: Registro append-only de un evento de sesión disponible, consulta, búsqueda u operación de negocio, con acción, módulo, fecha y hora, descripción, resultado e identidad del actor si está disponible. Consulte data-model.md y contracts/activity-log.md para su forma y operaciones.
 - **ModuleConfig**: El objeto de adaptación cargado al arrancar que define el nombre del módulo, las etiquetas de terminología, las definiciones de campos personalizados y el ciclo de vida de estados de documentos. Consulte data-model.md para su forma completa.
 
 ## Criterios de Éxito *(obligatorio)*
@@ -323,6 +366,11 @@ Los módulos personalizados construidos sobre esta base DEBEN poder:
 - **SC-008**: Un desarrollador puede producir un módulo adaptado usando solo el archivo de configuración, con cero modificaciones en archivos fuente centrales.
 - **SC-009**: Cada pantalla presenta el mismo marco con marca, y los usuarios pueden identificar en qué módulo están de un vistazo.
 - **SC-010**: Las estadísticas de registros mostradas en el panel siempre coinciden con el número de entidades y documentos almacenados.
+- **SC-011**: Cada evento de inicio/cierre de sesión disponible y cada consulta, búsqueda o intento de creación, modificación o eliminación que alcance el flujo de operación produce una actividad consultable que identifica correctamente la acción, el módulo, la hora y el resultado.
+- **SC-012**: El historial ordena correctamente al menos 500 actividades y conserva los registros anteriores tras nuevas operaciones y una recarga de la aplicación en el mismo navegador.
+- **SC-013**: Cuando no hay identidad disponible o falla la persistencia del historial, la interfaz lo comunica explícitamente y no atribuye la operación a una persona inventada ni presenta una actividad no guardada como exitosa.
+- **SC-014**: Cualquier persona que pueda utilizar el ERP local puede abrir Historial; no se aplican controles de acceso basados en roles.
+- **SC-015**: Las operaciones ordinarias no modifican ni eliminan actividades ni las vencen automáticamente; se informa que la persistencia local no garantiza conservación frente al borrado, modificación o agotamiento del almacenamiento.
 
 ## Suposiciones
 
@@ -338,6 +386,10 @@ Los módulos personalizados construidos sobre esta base DEBEN poder:
 - Solo se muestra una pantalla a la vez; no hay diseño lado a lado del contenido de gestión y búsqueda.
 - La navegación entre pantallas se maneja dentro de la aplicación (p. ej., cambio de vistas), y el botón atrás del navegador debe comportarse de forma predecible.
 - Los datos siguen persistiéndose en el localStorage del navegador y no se ven afectados por la navegación entre pantallas.
+- El historial se persiste en el mismo origen y perfil del navegador que los demás datos del ERP; cualquier persona que pueda utilizar el ERP local puede consultarlo. Esto no proporciona sincronización entre dispositivos, identificación fiable entre personas ni garantía de conservación ante borrado, modificación o agotamiento de almacenamiento.
+- La identidad del actor se toma únicamente de un contexto de usuario que ya exista y esté disponible para la aplicación. La funcionalidad no crea usuarios, sesiones, autenticación ni control de acceso.
+- «Periódicamente» significa registrar cada evento de sesión disponible y cada consulta, búsqueda o intento de operación dentro del ERP, no ejecutar una tarea programada ni capturar actividad fuera de la aplicación.
+- El alcance de auditoría incluye eventos disponibles de inicio/cierre de sesión, consultas explícitas, búsquedas ejecutadas y operaciones de creación, modificación y eliminación de entidades y documentos; excluye navegación y lecturas internas de interfaz. Los eventos de inicio/cierre dependen de un mecanismo de sesión ya existente. No se introduce autenticación, roles, vencimiento automático ni eliminación ordinaria.
+- El almacenamiento local ofrece persistencia solo mientras los datos del navegador permanezcan disponibles. No se promete retención indefinida, sincronización, respaldo ni resistencia a manipulación; exportación, respaldo central y retención garantizada quedan fuera del MVP.
 - La pantalla de búsqueda se centra en encontrar y ver entidades; la edición permanece en la pantalla de gestión.
 - El contenido del usuario introducido por el usuario (nombres, descripciones, notas de documentos) DEBE sanitizarse antes de renderizarse en el DOM para prevenir ataques de inyección de scripts (XSS). El módulo base DEBE escapar HTML y atributos de eventos al mostrar datos de localStorage.
-
