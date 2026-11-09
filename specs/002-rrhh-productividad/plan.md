@@ -1,6 +1,6 @@
 # Implementation Plan: Módulo de RR. HH. — Historial de Productividad Laboral
 
-**Branch**: `002-rrhh-productividad` | **Date**: 2026-10-20 | **Spec**: specs/002-rrhh-productividad/ (spec.md pendiente)
+**Branch**: `002-rrhh-productividad` | **Date**: 2026-10-20 | **Spec**: specs/002-rrhh-productividad/spec.md
 
 **Input**: Modelo de datos existente en `specs/001-erp-base-module/data-model.md` y especificación en `specs/001-erp-base-module/spec.md` | **Persona 4 — Planificación y tareas**
 
