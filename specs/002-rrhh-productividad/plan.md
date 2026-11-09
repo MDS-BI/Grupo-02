@@ -4,7 +4,7 @@
 
 **Input**: Modelo de datos existente en `specs/001-erp-base-module/data-model.md` y especificación en `specs/001-erp-base-module/spec.md` | **Persona 4 — Planificación y tareas**
 
-**Nota sobre el modelo de datos**: No existe un `data-model.md` específico de Recursos Humanos en el repositorio al momento de escribir este plan (el MER de la Persona 2 aún no se ha incorporado). Por lo tanto, este plan se apoya exclusivamente en el modelo de datos existente y aprobado del módulo base: **Entity**, **Document** y **ModuleConfig**. No se definieron entidades nuevas. Cuando la Persona 2 publique su `data-model.md`/`mer.png`, si introduce cambios, deberán reflejarse aquí como actualización, sin alterar retroactivamente las decisiones de alcance de este documento.
+**Nota sobre el modelo de datos**: El archivo `specs/001-erp-base-module/data-model.md` ya incluye una sección dedicada a Recursos Humanos y Productividad. Este plan utiliza dicho modelo como referencia, evitando duplicar su documentación. Cualquier dato adicional requerido para el historial de productividad deberá documentarse de forma coherente con el modelo base y con el alcance definido en `spec.md`.
 
 ## 1. Problema y solución propuesta
 
