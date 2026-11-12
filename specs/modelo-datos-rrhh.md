@@ -1,5 +1,7 @@
 # Modelo de Datos: Módulo de Recursos Humanos — Historial de Productividad
 
+> **Documento preliminar histórico:** la versión vigente del modelo para el incremento 002 es `002-rrhh-productividad/data-model.md`. Este borrador usa nombres anteriores (por ejemplo, Equipo y `hireDate`) y no debe tomarse como esquema de la implementación actual. El MER base de nueve entidades permanece en `001-erp-base-module/data-model.md`.
+
 ## Entidad: Trabajador
 
 Representa a una persona trabajadora registrada en el módulo de Recursos Humanos.

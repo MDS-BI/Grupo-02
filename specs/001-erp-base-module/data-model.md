@@ -884,9 +884,9 @@ Estas funcionalidades se consideran ampliaciones futuras y no compromisos del MV
 
 # 7. Diagrama Modelo Entidad-Relación (MER)
 
-En esta sección se incorporará la imagen del Modelo Entidad-Relación desarrollada por el grupo.
+Diagrama del Modelo Entidad-Relación del grupo:
 
-**Archivo previsto:** `mer.png`.
+![Modelo Entidad-Relación de las nueve entidades](mer.png)
 
 La imagen deberá coincidir con las nueve entidades documentadas:
 

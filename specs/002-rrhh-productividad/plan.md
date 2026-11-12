@@ -1,115 +1,149 @@
 # Implementation Plan: Módulo de RR. HH. — Historial de Productividad Laboral
 
-**Branch**: `002-rrhh-productividad` | **Date**: 2026-10-20 | **Spec**: specs/002-rrhh-productividad/ (spec.md pendiente)
+**Rama**: `correccion-specs-002` | **Fecha**: 2026-11-09 | **Especificación**: `specs/002-rrhh-productividad/spec.md` | **Estado**: Implementación y prueba técnica con 500 registros completadas; suite automatizada aprobada (14 archivos, 132 pruebas). Pendientes las mediciones manuales de SC-001 a SC-003, usuarios reales para SC-004 y decisiones del grupo
 
-**Input**: Modelo de datos existente en `specs/001-erp-base-module/data-model.md` y especificación en `specs/001-erp-base-module/spec.md` | **Persona 4 — Planificación y tareas**
+**Entrada**: Especificación 002 con sus 4 historias de usuario y decisiones aprobadas, y MER de 9 entidades documentado en `specs/001-erp-base-module/data-model.md` como referencia. **Rol de planificación y tareas**.
 
-**Nota sobre el modelo de datos**: No existe un `data-model.md` específico de Recursos Humanos en el repositorio al momento de escribir este plan (el MER de la Persona 2 aún no se ha incorporado). Por lo tanto, este plan se apoya exclusivamente en el modelo de datos existente y aprobado del módulo base: **Entity**, **Document** y **ModuleConfig**. No se definieron entidades nuevas. Cuando la Persona 2 publique su `data-model.md`/`mer.png`, si introduce cambios, deberán reflejarse aquí como actualización, sin alterar retroactivamente las decisiones de alcance de este documento.
+**Nota sobre el modelo de datos**: El MER de 9 entidades de 001 se conserva sin modificaciones y se utiliza como referencia. El incremento 002 se apoya en `Entity`/Trabajador, `Departamento`, `Historial_Departamento` y `Document`. `specs/002-rrhh-productividad/data-model.md` está completado y verificado contra el MER; sirvió de entrada para generar `tasks.md`. No se crean entidades nuevas.
 
 ## 1. Problema y solución propuesta
 
-**Problema**: Las organizaciones tienen dificultades para mantener un historial centralizado de la productividad de sus trabajadores y para comprender cómo evoluciona su desempeño cuando cambian de equipo, cargo o responsabilidades. Sin registros históricos organizados y no destructivos, no es posible identificar tendencias ni necesidades de capacitación.
+**Problema**: Las organizaciones tienen dificultades para mantener un historial centralizado de la productividad de sus trabajadores y para comprender cómo evoluciona su desempeño cuando cambian de departamento, de jefatura o de responsabilidades. Sin registros históricos organizados y no destructivos, no es posible identificar tendencias ni necesidades de capacitación.
 
-**Solución propuesta**: Un módulo de Recursos Humanos construido sobre el módulo base del ERP, que permita registrar trabajadores y equipos, registrar indicadores de productividad por período, consultar el historial completo de cada trabajador sin sobrescribir resultados anteriores, y visualizar la evolución mediante tablas o gráficos.
+**Solución propuesta**: Un módulo de Recursos Humanos construido sobre el módulo base del ERP, que permita registrar trabajadores, departamentos y asignaciones históricas; registrar indicadores de productividad por período; consultar el historial completo de cada trabajador sin sobrescribir resultados anteriores; y visualizar la evolución mediante tablas o paneles resumidos.
 
-**Encaje con el modelo existente**: El módulo base ya define los mecanismos de extensibilidad necesarios (XR-001 a XR-005):
+**Encaje con el modelo existente**:
 
-- **Entity** → representa a cada **trabajador**. El `name` y `code` obligatorios del modelo base cubren nombre y código/identificación del trabajador; los campos personalizados (`customFields` de ModuleConfig) aportan cargo, fecha de ingreso, equipo y departamento.
-- **Document** → representa cada **registro de productividad de un período**. Cada registro es un documento distinto vinculado al trabajador mediante `entity_id`, con `startDate`/`endDate` como período evaluado. Al ser documentos independientes por período, **la consulta del historial no sobrescribe resultados anteriores**: es una consecuencia directa del modelo, no una lógica especial nueva.
-- **ModuleConfig** → declara la identidad del módulo (labels `Trabajador`/`Registro de Productividad`), los campos personalizados del dominio (indicador, resultado, unidad, equipo del período) y el ciclo de vida opcional de estados del registro.
+- **Trabajador** → se representa con `Entity`. El `name` y `code` obligatorios del modelo base cubren nombre y código/identificación; los campos personalizados (`customFields` de `ModuleConfig`) aportan cargo, fecha de ingreso, estado laboral y departamento actual.
+- **Departamento** → se representa con la entidad existente `Departamento` (`id_departamento`, `nombre`, `descripcion`).
+- **Asignación histórica** → se representa con la entidad existente `Historial_Departamento` (`id_historial`, `entity_id`, `id_departamento`, `fecha_inicio`, `fecha_fin`).
+- **Registro de productividad** → se representa con `Document`, vinculado al trabajador mediante `entity_id`, con período `startDate`/`endDate`, indicador, resultado, unidad y `asignacionId`.
+- **ModuleConfig** → declara la identidad del módulo (labels `Trabajador` y `Registro de Productividad`), los campos personalizados del dominio y, opcionalmente, el ciclo de vida de estados del registro.
 
-No se crean tablas ni entidades nuevas; no se alteran los nombres ni la semántica de los campos base.
+No se crean tablas ni entidades nuevas; no se alteran los nombres ni la semántica de los campos base. En 002, `Document` se utiliza para productividad y las liquidaciones quedan fuera de alcance. Si posteriormente conviven documentos de productividad y liquidaciones, deberá definirse cómo distinguir ambos tipos.
 
 ## 2. Usuarios potenciales
 
-- **Usuario principal — Encargado de Recursos Humanos**: necesita registrar trabajadores y equipos, cargar resultados de productividad por período, consultar el historial de cualquier trabajador y ver su evolución. Tiene acceso completo.
-- **Usuario secundario — Jefatura de equipo**: necesita consultar la evolución de su equipo con acceso limitado a la información que le corresponde. En el MVP, este control de acceso es una restricción de diseño documentada, no una funcionalidad implementada (ver §8).
-- **Usuario potencial futuro — Dirección/gerencia**: consumo de tablas y gráficos agregados; sin alta de datos en el MVP.
+- **Encargado de Recursos Humanos**: necesita registrar trabajadores, gestionar departamentos y asignaciones históricas, ingresar mediciones periódicas de productividad y consultar el historial de cada trabajador.
+- **Jefatura de departamento**: necesita consultar la productividad de los integrantes de su departamento para dar seguimiento a su desempeño. En el MVP, esta distinción es una necesidad de diseño y no un control de acceso implementado.
+- **Dirección o gerencia (usuario potencial futuro)**: podría consultar información resumida para apoyar la toma de decisiones.
+
+**Limitación del MVP**: no se implementa autenticación, inicio de sesión, roles ni control de acceso. La distinción entre tipos de usuarios describe sus necesidades, pero no representa una restricción de seguridad implementada. Solo deben utilizarse datos ficticios.
 
 ## 3. Funciones del MVP (alcance obligatorio)
 
-Las cuatro funciones definidas en el documento del proyecto, con su equivalencia sobre el modelo existente:
+1. **Gestión de trabajadores y departamentos**: registrar y editar trabajadores con nombre, código, cargo, fecha de ingreso y estado laboral; registrar y editar departamentos; administrar asignaciones históricas por períodos. El departamento actual del trabajador se conserva para consulta operativa y las asignaciones históricas se conservan en `Historial_Departamento`. No se eliminan físicamente trabajadores con historial; se permite marcarlos como Inactivos. No se eliminan departamentos con relaciones históricas mientras no exista una política de conservación.
 
-1. **Registrar trabajadores y equipos**: alta, edición y listado de trabajadores (Entity) con su nombre, código, cargo y equipo/departamento. La pertenencia a equipo se guarda como campo personalizado del trabajador para la consulta operativa, y **la asignación vigente se conserva junto al registro de productividad correspondiente** (§7) para no perder el contexto histórico.
-2. **Registrar productividad por período**: alta de un registro (Document) que asocia trabajador (`entity_id`), período (`startDate`/`endDate`), indicador, resultado y unidad (campos personalizados). Cada período genera un documento nuevo; nunca se reescribe un registro ya guardado.
-3. **Consultar el historial sin sobrescribir resultados anteriores**: al seleccionar un trabajador se listan todos sus documentos de productividad ordenados por período, con búsqueda y filtro. La edición de un registro no afecta a los demás; la edición del trabajador no afecta a sus documentos (la integridad referencial `entity_id` los mantiene vinculados).
-4. **Visualizar la evolución mediante tablas o gráficos**: vista de tablas con los valores por período y una representación gráfica de la serie temporal individual. La comparación entre equipos queda como ampliación futura (§6).
+2. **Registro de productividad periódica**: alta de un registro (`Document`) que asocia trabajador (`entity_id`), período (`startDate`/`endDate` correspondientes al primer y último día del mes, mostrado como `AAAA-MM`), indicador, resultado numérico, unidad y `asignacionId`. La asignación debe existir, corresponder al trabajador y superponerse con el período. Si existen varias asignaciones durante un mismo mes, el usuario debe seleccionar la correspondiente. Los registros duplicados del mismo trabajador, período e indicador se permiten con advertencia. Un registro nuevo no modifica los registros de otros períodos; la corrección solo modifica el registro seleccionado y aplica las validaciones correspondientes.
 
-**Fuera del alcance del MVP** (justificación en §8): implementación completa de contratos y liquidaciones (LIQUIDACION/DETALLE_LIQUIDACION) y de tareas/metas (TAREA/META/REGISTRO_HORAS) como flujos de negocio completos. Su relación con el objetivo de productividad es indirecta: pueden aportar el dato de horas o el contexto contractual que explique un indicador, pero el MVP se sostiene con el registro directo del indicador por período. Integrarlos de forma completa obligaría a construir primero un módulo de nómina completo, lo que excede la meta de "historial de productividad". Si el MER de la Persona 2 los incluye, se conservan como entidades del modelo y se usan opcionalmente como fuente de contexto en ampliaciones.
+3. **Consulta del historial laboral**: al seleccionar un trabajador se listan sus registros de productividad ordenados cronológicamente. Cada registro muestra período, departamento correspondiente a su asignación histórica, indicador, resultado y unidad. La edición del trabajador no afecta a sus documentos. Si no existen mediciones, se informa la ausencia de datos. No se sobrescriben resultados anteriores.
+
+4. **Visualización de la evolución**: presentar los resultados históricos en tablas o paneles resumidos. Solo se comparan mediciones del mismo indicador y la misma unidad. No se comparan como equivalentes indicadores o unidades diferentes. Si no existen datos suficientes, se informa la situación. No se calcula una puntuación única automática ni se emiten juicios de desempeño. La comparación entre departamentos o trabajadores queda fuera del alcance.
+
+**Fuera del alcance de 002**: planilla, remuneraciones, contratos y liquidaciones de sueldo; comparación de productividad entre departamentos o trabajadores; catálogo avanzado de indicadores y fórmulas; cálculo automático de una puntuación única de productividad; autenticación, inicio de sesión, roles y control de acceso; auditoría de modificaciones; exportación, respaldo central y sincronización multiusuario; backend y base de datos remota; uso de información real de trabajadores.
+
+Las funcionalidades de planilla y liquidaciones permanecen documentadas en el modelo 001 y en el MER existente; no se elimina su documentación. Las entidades `Tarea`, `Meta` y `Registro_Horas` permanecen en el MER, pero no se utilizan como flujos de negocio en 002. Su integración completa queda fuera del alcance de este incremento.
 
 ## 4. Etapas de desarrollo y dependencias
 
 | Etapa | Contenido | Depende de | Estado |
 |---|---|---|---|
-| E0 — Especificación | Problema, usuarios, historias de usuario y criterios de aceptación (`spec.md`) | — | Persona 1 |
-| E1 — Modelo de datos | Entidades, atributos, claves, relaciones y MER (`data-model.md`, `mer.png`) | E0 | Persona 2 (pendiente de incorporar al repo) |
-| E2 — Planificación | Alcance, etapas, responsables y riesgos (`plan.md`, `tasks.md`) | E0, E1 | Este archivo |
-| E3 — Registro e historial | Formularios de trabajadores y de productividad por período; validaciones; vista de historial | E1 (modelo), E2 (tareas) | Persona 3 |
-| E4 — Panel y visualización | Panel principal, contadores, tablas y gráficos de evolución | E3 (necesita datos registrados) | Persona 5 |
-| E5 — Integración y pruebas | Integración de E3 y E4, pruebas manuales/automatizadas, documentación de ejecución | E3, E4 | Persona 5 coordina; todo el grupo revisa |
+| E0 - Recuperación/verificación del módulo base | Restaurado y verificado en el árbol de trabajo; `src/`, `index.html` y `tests/` están operativos. | - | Completada |
+| E1 - Especificación funcional | `spec.md` con problema, usuarios, alcance, 4 historias de usuario, criterios de aceptación, reglas de validación y criterios de éxito. | - | Completada |
+| E2 - Modelo de datos 002 | `data-model.md` alineado con el MER de 9 entidades de 001; sin entidades nuevas; verificación de campos y relaciones. | E1 | Completada |
+| E3 - Planificación y tareas | `plan.md` y `tasks.md` con alcance, etapas, dependencias, tareas, pruebas y riesgos. | E1, E2 | Completada |
+| E4 - Gestión de trabajadores, departamentos y asignaciones | Formularios de trabajadores y departamentos, asignaciones históricas, validaciones y vista del departamento actual con asignaciones anteriores. | E0, E2, E3 | Completada |
+| E5 - Registro e historial de productividad | Formulario de medición por período, selección de asignación, validaciones y consulta cronológica del historial. | E4 | Completada |
+| E6 - Visualización de la evolución | Tablas o paneles resumidos de resultados históricos comparables. | E5 | Completada |
+| E7 - Integración, pruebas y documentación de ejecución | Integración de E4, E5 y E6; suite automatizada aprobada e instrucciones de ejecución. La validación manual de cierre sigue pendiente. | E4, E5, E6 | Implementación y pruebas automatizadas completadas; validación manual pendiente |
 
-**Regla de dependencias crítica**: no se puede cerrar E3 sin el modelo aprobado de E1; E4 no se puede demostrar sin datos creados en E3; E2 (tareas concretas de implementación, `tasks.md`) se completa una vez cerrados el modelo y este plan.
+**Regla de dependencias cumplida**: E0, E2 y E3 habilitaron E4; E4 habilitó E5; E5 habilitó E6; E7 integró el incremento y aprobó la suite automatizada. La validación manual final permanece pendiente.
 
-**Criterios de finalización**: cada etapa se considera terminada cuando su archivo entregable existe en el repositorio, es revisado por otra persona del grupo y satisface las funciones del MVP sin regresiones sobre lo anterior.
+**Criterios de finalización**: las etapas de implementación quedaron terminadas cuando sus entregables existen, fueron revisados y satisfacen las funciones del MVP sin regresiones. La recuperación del código base quedó completada; las verificaciones manuales y aprobaciones de cierre pendientes se detallan en §10.
 
-## 5. Responsables (cinco personas)
+## 5. Roles de trabajo (sin asignación nominal)
 
-| Persona | Rol | Entregables |
+| Rol | Responsabilidad | Entregables |
 |---|---|---|
-| Persona 1 | Problema y especificaciones | `README.md`, `spec.md`: problema, usuarios, funciones del MVP, historias de usuario, criterios de aceptación, riesgos de evaluación |
-| Persona 2 | Modelo de datos y MER | `data-model.md`, `mer.png`: entidades, atributos, PK/FK, relaciones, cardinalidades, conservación histórica al cambiar de equipo |
-| Persona 3 | Registro e historial | Frontend de registro y consulta (p. ej. `historial.js` según propuesta del proyecto) y sus pruebas; validaciones |
-| Persona 4 | Planificación y tareas | `plan.md` (este archivo) y `tasks.md`: alcance, etapas, tareas, dependencias, riesgos |
-| Persona 5 | Panel e integración | Panel principal, tablas/gráficos (p. ej. `dashboard.js`), estilos, integración con Persona 3, pruebas de ejecución e instrucciones |
+| Rol 1 — Especificación y documentación funcional | Problema, usuarios, alcance, historias de usuario, criterios de aceptación y alineación de la documentación general. | `spec.md` y alineación de `README.md` |
+| Rol 2 — Modelo de datos | Verificación y documentación del modelo 002 contra el MER de 9 entidades de 001, sin modificarlo. | `specs/002-rrhh-productividad/data-model.md` |
+| Rol 3 — Registro e historial | Formularios de trabajadores, departamentos, asignaciones y productividad; validaciones; vista de historial. | Código de registro y consulta, y sus pruebas |
+| Rol 4 — Planificación y tareas | Alcance, etapas, dependencias, tareas, pruebas y riesgos. | `plan.md` y `tasks.md` |
+| Rol 5 — Visualización e integración | Tablas o paneles resumidos, integración con el registro, pruebas de ejecución e instrucciones. | Código de visualización, integración y documentación de ejecución |
 
-Los nombres de los archivos de código son propuestas del documento del proyecto y deben adaptarse a la estructura real de la plantilla.
+La asignación de estos roles a integrantes del grupo y la responsabilidad de cada historia de usuario quedan pendientes de confirmación, según `spec.md` §14.1. No se inventan nombres de responsables ni archivos existentes. Los nombres de archivos de código se confirmaron después de E0, según la estructura real del módulo base.
 
-## 6. Ampliaciones futuras (fuera del alcance inicial)
+## 6. Ampliaciones futuras (fuera del alcance de 002)
 
-- Comparación entre equipos y períodos (el MVP solo muestra evolución individual).
-- Análisis de la relación entre capacitación y productividad.
-- Filtros por cargo, área y período.
-- Indicadores más complejos, índices compuestos y gráficos comparativos.
-- Control detallado de permisos de acceso (rol jefatura vs. encargado de RR. HH.) y trazabilidad de modificaciones.
+- Comparación de productividad entre departamentos o trabajadores.
+- Catálogo avanzado de indicadores y fórmulas.
+- Cálculo automático de una puntuación única de productividad.
+- Autenticación, inicio de sesión, roles y control de acceso.
+- Auditoría de modificaciones.
+- Exportación, respaldo central y sincronización multiusuario.
+- Backend y base de datos remota.
+- Uso de información real de trabajadores.
 - Integración opcional de contratos, liquidaciones, tareas, metas y registro de horas como fuentes de contexto del indicador.
 
 ## 7. Riesgos de privacidad, información laboral sensible y sesgos
 
 **Privacidad y manejo de información sensible**:
 
-- Los datos del módulo (nombres, cargos, ingresos, resultados individuales) son información laboral sensible. El almacenamiento del módulo base es **local (localStorage del navegador)**: no hay servidor, cifrado en reposo ni copias de seguridad. Riesgo de pérdida de datos por limpieza del navegador y de exposición en equipo compartido. Mitigación MVP: documentar este límite en el `README`, usar el módulo en equipos controlados y evitar campos sensibles innecesarios (no registrar documentación, remuneraciones ni datos de salud).
-- Sin backend no hay control de acceso real: la distinción encargado de RR. HH. / jefatura es, en el MVP, una decisión de diseño sin enforcement técnico. No debe presentarse como una funcionalidad de seguridad.
-- Definir desde el inicio una política de retención y borrado de datos, y quién puede consultar qué.
+- Los datos del módulo (nombres, cargos, ingresos y resultados individuales) son información laboral sensible. El almacenamiento del módulo base es local (`localStorage` del navegador): no hay servidor, cifrado en reposo ni copias de seguridad. Existe riesgo de pérdida de datos por limpieza del navegador y de exposición en equipos compartidos. Mitigación del MVP: documentar este límite en el `README`, usar el módulo en equipos controlados y evitar campos sensibles innecesarios. No se registran documentos, remuneraciones ni datos de salud.
+- Sin backend no hay control de acceso real: la distinción entre encargado de RR. HH. y jefatura de departamento es, en el MVP, una decisión de diseño sin enforcement técnico. No debe presentarse como una funcionalidad de seguridad.
+- La política de retención y borrado de datos queda pendiente de definición. El sistema no garantiza respaldo ni recuperación de datos eliminados del navegador.
+- Si el almacenamiento local está lleno o no disponible, el sistema debe informar que no pudo guardar los datos y evitar mostrar una confirmación de guardado exitoso. Este comportamiento debe validarse con el grupo.
+- La aplicación debe mostrar una advertencia de uso exclusivo de datos ficticios. No se garantiza la detección automática de información real. Este comportamiento debe validarse con el grupo.
 
 **Sesgos en los indicadores de productividad**:
 
-- Un indicador puntual ("tareas completadas") no mide el desempeño completo de una persona y puede perjudicar cargos cuyo trabajo no se cuenta en esas unidades. El módulo debe conservar **indicador y unidad** con cada registro y no traducir un número a una evaluación automática.
-- Riesgo de comparar entre roles, equipos o períodos sin contexto (carga de trabajo, antigüedad, permisos, disponibilidad de herramientas).
+- Un indicador puntual no mide el desempeño completo de una persona y puede perjudicar cargos cuyo trabajo no se cuenta en esas unidades. El módulo debe conservar indicador y unidad con cada registro y no traducir un número a una evaluación automática.
+- Existe riesgo de comparar entre roles, departamentos o períodos sin contexto (carga de trabajo, antigüedad, permisos, disponibilidad de herramientas).
 - Los indicadores pueden incentivar el sobreajuste al número y penalizar tareas de apoyo o formación.
-- Los cambios de definición del indicador a lo largo del tiempo invalidan comparaciones: registrar la definición/versión del indicador cuando cambie.
-- Decisión metodológica: el historial es material de **análisis y conversación**, no de evaluación automática o decisión unipersonal.
+- Los cambios de definición del indicador a lo largo del tiempo invalidan comparaciones. En 002 se documenta esta limitación y no se agrega un campo de versión del indicador.
+- Decisión metodológica: el historial es material de análisis y conversación, no de evaluación automática ni de decisión unipersonal.
 
 ## 8. Decisiones metodológicas y de datos, y compatibilidad con el ERP base
 
-**Conservación del historial ante cambios de equipo/departamento**:
+**Conservación del historial ante cambios de departamento**:
 
-- El equipo o departamento del trabajador se almacena como campo del trabajador para consulta operativa; **el contexto del equipo correspondiente a cada período se guarda dentro del registro de productividad (Document)**, no solo en el trabajador. Así, si un trabajador cambia de equipo en marzo, sus registros de enero y febrero conservan el equipo con el que rindió y no se le atribuyen al nuevo equipo.
-- Editar o eliminar al trabajador no debe alterar los registros ya guardados (vinculados por `entity_id`). Excepción del modelo base: eliminar una entidad elimina sus documentos en cascada; **decisión del MVP: no ofrecer eliminación de trabajadores con historial** (o archivarlos) para no destruir evidencia histórica.
+- El departamento actual del trabajador se almacena como campo del trabajador para consulta operativa.
+- Las asignaciones históricas se almacenan en `Historial_Departamento`, con `entity_id`, `id_departamento`, `fecha_inicio` y `fecha_fin`.
+- Cada registro de productividad guarda `asignacionId`, que referencia la asignación histórica correspondiente.
+- El departamento mostrado en una medición se obtiene de su asignación histórica, no necesariamente del departamento actual del trabajador. Así, si un trabajador cambia de departamento en marzo, sus registros de enero y febrero conservan la asignación y el departamento con los que se registraron.
+- No se duplica el departamento como una copia independiente dentro del registro de productividad; se conserva la referencia a la asignación.
+- Editar un trabajador no debe alterar los registros ya guardados. No se ofrece eliminación física de trabajadores con historial; se permite marcarlos como Inactivos. No se elimina físicamente un departamento con relaciones históricas mientras no exista una política de conservación.
 
 **Compatibilidad con el ERP base**:
 
-- Se usa únicamente `Entity`, `Document` y `ModuleConfig` con sus nombres y semántica intactos; toda la especialización pasa por `labels`, `customFields` y, opcionalmente, `statusLifecycle`, tal como exigen XR-001 a XR-005.
-- Se respeta la validación base: trabajador con `name` y `code` no vacíos; registro con fechas válidas y `endDate >= startDate`; claves de campos personalizados sin choque con nombres base; retroalimentación clara ante datos faltantes.
-- El módulo se adapta por configuración sin modificar el código central del módulo base (SC-008).
+- Se usan únicamente `Entity`, `Document`, `ModuleConfig`, `Departamento` y `Historial_Departamento` con sus nombres y semántica intactos. Toda la especialización pasa por `labels`, `customFields` y, opcionalmente, `statusLifecycle`. 
+Se permiten extensiones aditivas de los archivos existentes del módulo ERP base, incluyendo almacenamiento, configuración, interfaz y componentes, siempre que se conserven los contratos, las funciones existentes y la compatibilidad con el módulo original. No se deben eliminar ni reemplazar funcionalidades base innecesariamente. Las estructuras de Departamento e Historial_Departamento se implementarán como extensiones del incremento 002, sin modificar el MER de nueve entidades.
+
+- Se respeta la validación base: trabajador con `name` y `code` no vacíos; fechas válidas y `endDate >= startDate`; claves de campos personalizados sin choque con nombres base; retroalimentación clara ante datos faltantes.
+- Validaciones específicas de 002: el trabajador y el departamento deben existir; la asignación debe corresponder al trabajador y superponerse con el período; la fecha de inicio es obligatoria y válida; la fecha de término es opcional y no puede ser anterior a la fecha de inicio; no se permiten asignaciones superpuestas para el mismo trabajador; solo puede existir una asignación vigente a la vez por trabajador; el período es obligatorio y válido en formato `AAAA-MM`; no se permiten períodos futuros ni anteriores a la fecha de ingreso; el indicador es obligatorio y debe tener entre 3 y 60 caracteres; el resultado debe ser numérico y mayor o igual a cero; la unidad es obligatoria y no vacía; los registros duplicados se permiten con advertencia; la corrección solo modifica el registro seleccionado; un trabajador sin asignación válida para el período no puede registrar productividad; si existen varias asignaciones que se superponen con el período, el usuario debe seleccionar la correspondiente.
+- En 002, `Document` representa un registro de productividad. Las liquidaciones quedan fuera de alcance. Si posteriormente conviven documentos de productividad y liquidaciones, deberá definirse cómo distinguir ambos tipos.
+- El contenido ingresado por el usuario debe mostrarse de forma segura, evitando la ejecución de scripts introducidos en campos de texto.
 
 **Limitaciones del almacenamiento local**:
 
-- localStorage: datos en el equipo del navegador, sin sincronización multiusuario ni respaldo. Si el grupo requiere datos compartidos entre encargados, deberá evaluarse en una ampliación un backend.
-- Escala acotada (el base garantiza agilidad hasta ~500 registros de entidad); con muchos trabajadores y períodos se debe verificar el rendimiento de listas y gráficos.
+- `localStorage`: datos en el equipo del navegador, sin sincronización multiusuario ni respaldo. Si el grupo requiere datos compartidos entre encargados, deberá evaluarse un backend en una ampliación futura.
+- Escala acotada: el módulo base garantiza agilidad hasta aproximadamente 500 registros de entidad. Con muchos trabajadores y períodos se debe verificar el rendimiento de listas y tablas.
 - Permisos: no hay autenticación real; la privacidad depende del control físico del equipo.
 
-**Distinción MVP vs. ampliaciones**: son obligatorias únicamente las cuatro funciones de §3 sobre el modelo existente; todo lo demás (§6) queda explícitamente fuera del alcance inicial.
+**Distinción MVP vs. ampliaciones**: son obligatorias únicamente las cuatro funciones de §3 sobre el modelo existente; todo lo demás queda explícitamente fuera del alcance inicial.
 
-## Pendiente para tasks.md
+## 9. Documentación de implementación
 
-Una vez revisado y aprobado este plan, generar `specs/002-rrhh-productividad/tasks.md` con tareas concretas de implementación y pruebas por etapa, mapeadas a las responsabilidades de §5.
+- `data-model.md` completado y alineado con el MER de 9 entidades, sin modificar el MER ni crear entidades nuevas.
+- Nombres de campos verificados contra las estructuras reales del módulo base.
+- `README.md` actualizado con el alcance de 002, datos ficticios, almacenamiento local y ausencia de autenticación.
+- Confirmar los responsables de las 4 historias de usuario y registrarlos en `spec.md` §14.1 y en `tasks.md` (pendiente de asignación por el grupo; T084).
+- Manejo de errores de almacenamiento implementado y probado automáticamente; aprobación del texto de advertencia sobre datos ficticios pendiente con el grupo (T072).
+- Coherencia entre `spec.md`, `plan.md`, `data-model.md` y `tasks.md` revisada (T085).
+- `tasks.md` generado y actualizado con el estado real de implementación.
+- Instrucciones de ejecución y prueba documentadas en `README.md` y `tasks.md`.
+- Mantener los cambios en la rama `correccion-specs-002` hasta su revisión.
+
+## 10. Estado de tasks.md
+
+`tasks.md` fue generado con tareas concretas de implementación y pruebas por etapa, mapeadas a los roles de §5. La implementación, las pruebas automatizadas y la prueba técnica T076 están completadas. Pendientes de cierre: T072 (aprobación de advertencia), T083 (mediciones manuales de SC-001 a SC-003 y evaluación de usuarios de SC-004) y T084 (asignación de responsables). T085 y T086 están completadas; la revisión final del grupo sigue pendiente.

@@ -1,5 +1,7 @@
 # Registro e historial de productividad
 
+> **Borrador histórico sustituido:** la especificación vigente es `002-rrhh-productividad/spec.md`. Las historias y responsables de este archivo no son las asignaciones actuales; el grupo debe confirmar responsables en la especificación vigente.
+
 Parte del módulo de RR. HH.: Historial de Productividad Laboral.
 Responsable: Persona 3.
 
