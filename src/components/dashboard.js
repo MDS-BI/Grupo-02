@@ -196,15 +196,26 @@ function createChartPanel(){
   titleWrap.append(icon('activity', 'panel-icon'));
 
   const titleContainer = element('div', 'chart-title-container');
-  const title = element('h2', 'panel-title chart-title', 'Seleccione departamento');
-  titleContainer.appendChild(title);
-  titleContainer.style.cursor = 'pointer';
-  titleContainer.title = 'Seleccione un departamento para visualizar sus metas y resultados';
+  const titleSelect = element('select', 'chart-title-select');
+  titleSelect.innerHTML = '<option value="">Seleccione departamento ⌄</option>';
+  titleContainer.appendChild(titleSelect);
   titleWrap.appendChild(titleContainer);
 
   const body = element('div', 'panel-body');
   body.id = 'dashboard-chart';
   section.append(head, body);
+
+  // Event listener del select (se agrega una sola vez)
+  titleSelect.addEventListener('change', (e) => {
+    selectedDepartmentId = e.target.value || null;
+    if(selectedDepartmentId){
+      localStorage.setItem('erp_dashboard_department', selectedDepartmentId);
+    } else {
+      localStorage.removeItem('erp_dashboard_department');
+    }
+    renderDashboard();
+  });
+
   return section;
 }
 
@@ -269,16 +280,32 @@ function ensureLayout(view){
 function renderLineChart(months, metaSeries, resultSeries, departmentName){
   const container = document.getElementById('dashboard-chart');
   if(!container) return;
-  container.replaceChildren();
 
-  const titleContainer = element('div', 'chart-title-container');
-  const title = element('h2', 'panel-title chart-title', departmentName || 'Seleccione departamento');
-  titleContainer.appendChild(title);
-  titleContainer.style.cursor = departmentName ? 'pointer' : 'default';
-  titleContainer.title = departmentName
-    ? 'Haga clic para cambiar de departamento'
-    : 'Seleccione un departamento para visualizar sus metas y resultados';
-  container.appendChild(titleContainer);
+  // Mantener el select de título, solo limpiar el contenido del gráfico (SVG + leyenda)
+  let titleSelect = container.querySelector('.chart-title-select');
+  if(!titleSelect){
+    titleSelect = element('select', 'chart-title-select');
+    titleSelect.innerHTML = '<option value="">Seleccione departamento ⌄</option>';
+    const departments = loadDepartments();
+    departments.forEach(d=>{
+      const opt = document.createElement('option');
+      opt.value = d.id_departamento;
+      opt.textContent = d.nombre;
+      if(selectedDepartmentId === d.id_departamento) opt.selected = true;
+      titleSelect.appendChild(opt);
+    });
+    titleSelect.addEventListener('change', (e) => {
+      selectedDepartmentId = e.target.value || null;
+      if(selectedDepartmentId){
+        localStorage.setItem('erp_dashboard_department', selectedDepartmentId);
+      } else {
+        localStorage.removeItem('erp_dashboard_department');
+      }
+      renderDashboard();
+    });
+    container.prepend(titleSelect);
+  }
+  container.querySelectorAll('svg, .chart-legend, .empty, p.empty').forEach(el => el.remove());
 
   const allValues = [...metaSeries, ...resultSeries].filter(v => v !== null && v !== undefined);
   const maxValue = allValues.length > 0 ? Math.max(...allValues) : 1;
@@ -394,6 +421,13 @@ function renderLineChart(months, metaSeries, resultSeries, departmentName){
   svg.appendChild(group);
   container.appendChild(svg);
 
+  // Configurar el valor seleccionado del departamento
+  if(selectedDepartmentId){
+    titleSelect.value = selectedDepartmentId;
+  } else {
+    titleSelect.value = '';
+  }
+
   // Leyenda
   const legend = element('div', 'chart-legend');
   const metaItem = element('div', 'legend-item');
@@ -409,52 +443,6 @@ function renderLineChart(months, metaSeries, resultSeries, departmentName){
     const emptyMsg = element('p', 'empty', 'Seleccione un departamento para visualizar sus metas y resultados.');
     container.appendChild(emptyMsg);
   }
-}
-
-function setupChartTitleInteractivity(){
-  const container = document.getElementById('dashboard-chart');
-  if(!container) return;
-  const titleContainer = container.querySelector('.chart-title-container');
-  if(!titleContainer) return;
-
-  titleContainer.addEventListener('click', ()=>{
-    const departments = loadDepartments();
-    if(departments.length === 0) return;
-
-    // Remover selector existente si lo hay
-    const existing = container.querySelector('.department-selector');
-    if(existing){
-      existing.remove();
-      return;
-    }
-
-    const selectorWrap = element('div', 'department-selector');
-    const label = element('label', '', 'Departamento:');
-    const select = element('select', 'department-select');
-    select.innerHTML = '<option value="">-- Seleccione un departamento --</option>';
-    departments.forEach(d=>{
-      const opt = document.createElement('option');
-      opt.value = d.id_departamento;
-      opt.textContent = d.nombre;
-      if(d.id_departamento === selectedDepartmentId) opt.selected = true;
-      select.appendChild(opt);
-    });
-
-    select.addEventListener('change', (e)=>{
-      selectedDepartmentId = e.target.value || null;
-      if(selectedDepartmentId){
-        localStorage.setItem('erp_dashboard_department', selectedDepartmentId);
-      } else {
-        localStorage.removeItem('erp_dashboard_department');
-      }
-      selectorWrap.remove();
-      renderDashboard();
-    });
-
-    selectorWrap.appendChild(label);
-    selectorWrap.appendChild(select);
-    container.appendChild(selectorWrap);
-  });
 }
 
 function renderRecentActivity(records){
@@ -556,6 +544,5 @@ export function renderDashboard(){
   }
 
   renderLineChart(months, metaSeries, resultSeries, departmentName);
-  setupChartTitleInteractivity();
   renderRecentActivity(recentRecords(loadDocuments(), loadEntities()));
 }
