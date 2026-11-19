@@ -146,6 +146,8 @@ function recentRecords(documents, entities, limit = 5){
         indicator: document_.indicador || '',
         result: document_.resultado,
         unit: document_.unidad || '',
+        turno: document_.turno || '',
+        meta: document_.meta !== undefined && document_.meta !== null ? document_.meta : null,
         period: recordPeriod(document_) || '',
         time: Number.isFinite(timestamp) ? timestamp : 0,
         startDate: String(document_.startDate || ''),
@@ -297,9 +299,11 @@ function renderRecentActivity(records){
     const resultText = record.unit
       ? `${formatResult(record.result)} ${record.unit}`
       : formatResult(record.result);
+    const turnoText = record.turno ? ` | Turno: ${record.turno}` : '';
+    const metaText = record.meta !== null ? ` | Meta: ${formatResult(record.meta)}` : '';
     meta.append(
       element('span', 'activity-indicator', record.indicator || 'Sin indicador'),
-      element('span', 'activity-result', resultText)
+      element('span', 'activity-result', resultText + turnoText + metaText)
     );
     body.append(top, meta);
     item.append(element('span', 'activity-avatar', initials(record.worker)), body);

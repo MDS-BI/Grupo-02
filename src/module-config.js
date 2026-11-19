@@ -37,13 +37,64 @@ export const RRHH_CONFIG = Object.freeze({
     { target: 'entity', key: 'estadoLaboral', label: 'Estado laboral', type: 'select', required: true, options: Object.freeze(['Activo', 'Inactivo']) },
     { target: 'entity', key: 'departamentoId', label: 'Departamento', type: 'text', required: false, optionsSource: 'departments' },
     { target: 'document', key: 'indicador', label: 'Indicador', type: 'text', required: true },
-    { target: 'document', key: 'resultado', label: 'Resultado', type: 'number', required: true },
+    { target: 'document', key: 'resultado', label: 'Resultado obtenido', type: 'number', required: true },
     { target: 'document', key: 'unidad', label: 'Unidad', type: 'text', required: true },
-    { target: 'document', key: 'asignacionId', label: 'Asignación de departamento', type: 'text', required: true, optionsSource: 'assignments' }
+    { target: 'document', key: 'asignacionId', label: 'Asignación de departamento', type: 'text', required: true, optionsSource: 'assignments' },
+    { target: 'document', key: 'turno', label: 'Turno', type: 'select', required: true, options: Object.freeze(['Mañana', 'Tarde']) },
+    { target: 'document', key: 'meta', label: 'Meta esperada', type: 'number', required: true },
+    { target: 'document', key: 'evaluacionCalidad', label: 'Calidad (1-5)', type: 'number', required: true },
+    { target: 'document', key: 'evaluacionResponsabilidad', label: 'Responsabilidad (1-5)', type: 'number', required: true },
+    { target: 'document', key: 'evaluacionCumplimiento', label: 'Cumplimiento de procedimientos (1-5)', type: 'number', required: true },
+    { target: 'document', key: 'evaluacionColaboracion', label: 'Colaboración (1-5)', type: 'number', required: true },
+    { target: 'document', key: 'observaciones', label: 'Observaciones', type: 'text', required: false },
+    { target: 'document', key: 'oportunidadesMejora', label: 'Oportunidades de mejora', type: 'text', required: false }
   ]),
   statusLifecycle: null,
   theme: Object.freeze({ accentColor: '#0f766e' })
 });
+
+// Indicadores de productividad sugeridos por cargo, para el contexto de cafetería.
+// Cuando se selecciona un trabajador, el sistema propone automáticamente los
+// indicadores que corresponden a su cargo, evitando que el usuario elija
+// indicadores no relevantes. Cada indicador incluye su unidad de medida.
+export const INDICADORES_POR_CARGO = Object.freeze({
+  Barista: Object.freeze([
+    { value: 'Calidad de café', label: 'Calidad de café', unidad: 'puntos' },
+    { value: 'Velocidad de preparación', label: 'Velocidad de preparación', unidad: 'segundos' },
+    { value: 'Limpieza de estación', label: 'Limpieza de estación', unidad: 'puntos' },
+    { value: 'Conocimiento de menú', label: 'Conocimiento de menú', unidad: 'puntos' }
+  ]),
+  Cajero: Object.freeze([
+    { value: 'Precisión de cobro', label: 'Precisión de cobro', unidad: 'puntos' },
+    { value: 'Atención al cliente', label: 'Atención al cliente', unidad: 'puntos' },
+    { value: 'Manejo de efectivo', label: 'Manejo de efectivo', unidad: 'puntos' },
+    { value: 'Cierre de caja', label: 'Cierre de caja', unidad: 'puntos' }
+  ]),
+  Mesero: Object.freeze([
+    { value: 'Atención a mesas', label: 'Atención a mesas', unidad: 'puntos' },
+    { value: 'Conocimiento de menú', label: 'Conocimiento de menú', unidad: 'puntos' },
+    { value: 'Tiempo de respuesta', label: 'Tiempo de respuesta', unidad: 'minutos' },
+    { value: 'Propinas promedio', label: 'Propinas promedio', unidad: 'moneda' }
+  ]),
+  Cocinero: Object.freeze([
+    { value: 'Preparación de platos', label: 'Preparación de platos', unidad: 'puntos' },
+    { value: 'Higiene en cocina', label: 'Higiene en cocina', unidad: 'puntos' },
+    { value: 'Tiempos de entrega', label: 'Tiempos de entrega', unidad: 'minutos' },
+    { value: 'Control de inventario', label: 'Control de inventario', unidad: 'puntos' }
+  ]),
+  Encargado: Object.freeze([
+    { value: 'Supervisión de turno', label: 'Supervisión de turno', unidad: 'puntos' },
+    { value: 'Gestión de inventario', label: 'Gestión de inventario', unidad: 'puntos' },
+    { value: 'Atención a clientes', label: 'Atención a clientes', unidad: 'puntos' },
+    { value: 'Cierre de operaciones', label: 'Cierre de operaciones', unidad: 'puntos' }
+  ])
+});
+
+// Devuelve los indicadores sugeridos para un cargo dado, o un arreglo vacío
+// si no hay configuración para ese cargo.
+export function indicadoresParaCargo(cargo){
+  return INDICADORES_POR_CARGO[cargo] || [];
+}
 
 // ---------------------------------------------------------------------------
 // Cargador central — no deberías necesitar modificar nada debajo de esta línea.

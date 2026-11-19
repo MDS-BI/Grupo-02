@@ -47,7 +47,8 @@ Los responsables deben asignarse cuando el grupo confirme qué integrante desarr
 | 5 | HU2: consulta del historial | T055–T062 | 8 |
 | 6 | HU4: visualización de evolución | T063–T070 | 8 |
 | 7 | Pruebas, documentación y cierre | T071–T086 | 16 |
-| **Total** | | **T001–T086** | **86** |
+| 8 | Adaptación registro de productividad — cafetería | T087–T095 | 9 |
+| **Total** | | **T001–T095** | **95** |
 
 ---
 
@@ -433,8 +434,25 @@ El incremento 002 se considera finalizado cuando:
 
 ---
 
-**Nota final:** La implementación técnica, la suite automatizada (14 archivos, 132 pruebas), T076 (500 registros en Edge aislado) y la compilación están completas. Permanecen pendientes T072 (aprobación del texto de advertencia), T083 (mediciones de usuario SC-001 a SC-003 y evaluación de SC-004), T084 (asignación de responsables) y la revisión final del grupo. T085 y T086 están completadas. No se realizaron commits ni push automáticos.
+**Nota final:** La implementación técnica, la suite automatizada (14 archivos, 136 pruebas), T076 (500 registros en Edge aislado) y la compilación están completas. Permanecen pendientes T072 (aprobación del texto de advertencia), T083 (mediciones de usuario SC-001 a SC-003 y evaluación de SC-004), T084 (asignación de responsables) y la revisión final del grupo. T085, T086 y T087–T095 están completadas. No se realizaron commits ni push automáticos.
 
+---
+
+## Fase 8: Adaptación de registro de productividad — cafetería
+
+**Propósito:** Adaptar el registro de actividad/productividad existente para el contexto de una cafetería, incorporando selección automática de indicadores por cargo, identificación de turnos, metas y resultados, evaluación cualitativa y observaciones/oportunidades de mejora, manteniendo la estética y arquitectura actuales.
+
+- [x] T087 Configurar `INDICADORES_POR_CARGO` y función `indicadoresParaCargo` en `module-config.js` para sugerir indicadores según el cargo del trabajador (Barista, Cajero, Mesero, Cocinero, Encargado).
+- [x] T088 Agregar campos personalizados de documento: `turno`, `meta`, `evaluacionCalidad`, `evaluacionResponsabilidad`, `evaluacionCumplimiento`, `evaluacionColaboracion`, `observaciones`, `oportunidadesMejora` en `module-config.js`.
+- [x] T089 Agregar elementos HTML para turno, meta, evaluaciones cualitativas, observaciones y oportunidades de mejora en `index.html` dentro de `#productivity-fields`.
+- [x] T090 Actualizar `document-form.js` para recolectar, mostrar y limpiar los nuevos campos, y mostrar errores de validación.
+- [x] T091 Implementar sugerencia automática de indicadores según cargo en `app.js` (`suggestIndicatorsForEntity`) al seleccionar un trabajador.
+- [x] T092 Actualizar `storage.js` con validaciones y normalización de los nuevos campos (turno, meta, evaluaciones 1-5, observaciones, oportunidades).
+- [x] T093 Actualizar `history-view.js`, `evolution-view.js`, `document-list.js` y `dashboard.js` para mostrar los nuevos campos en historial, evolución, lista y dashboard.
+- [x] T094 Agregar pruebas unitarias para los nuevos campos en `tests/unit/rrhh-storage.test.js`.
+- [x] T095 Actualizar documentación: `spec.md`, `data-model.md`, `tasks.md` y `plan.md` con los nuevos requisitos, campos y validaciones.
+
+---
 
 ## Aclaraciones posteriores al análisis de Spec Kit
 

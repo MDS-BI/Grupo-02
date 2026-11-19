@@ -59,7 +59,10 @@ export function renderStatusControl(currentStatus){
 function clearProductivityFields(){
   const period = qs('productivity-period');
   if(period) period.value = '';
-  ['cf-indicador', 'cf-resultado', 'cf-unidad', 'cf-asignacionId'].forEach(id => {
+  ['cf-indicador', 'cf-resultado', 'cf-asignacionId',
+    'cf-turno', 'cf-meta', 'cf-evaluacionCalidad', 'cf-evaluacionResponsabilidad',
+    'cf-evaluacionCumplimiento', 'cf-evaluacionColaboracion',
+    'cf-observaciones', 'cf-oportunidadesMejora'].forEach(id => {
     const input = qs(id);
     if(input) input.value = '';
   });
@@ -80,7 +83,8 @@ export function clearDocumentForm(){
   qs('totalAmount').value = '';
   qs('currency').value = '';
   qs('docPaymentTerms').value = '';
-  qs('notes').value = '';
+  const notesEl = qs('notes');
+  if(notesEl) notesEl.value = '';
   clearDocumentErrors();
   if(isRRHHMode()){
     clearProductivityFields();
@@ -106,7 +110,10 @@ export function clearDocumentErrors(){
     if(el) el.textContent = '';
   });
   clearCustomFieldErrors(qs('document-custom-fields'));
-  ['indicador', 'resultado', 'unidad', 'asignacionId'].forEach(f => {
+  ['indicador', 'resultado', 'asignacionId',
+    'turno', 'meta', 'evaluacionCalidad', 'evaluacionResponsabilidad',
+    'evaluacionCumplimiento', 'evaluacionColaboracion',
+    'observaciones', 'oportunidadesMejora'].forEach(f => {
     const el = qs(`error-cf-${f}`);
     if(el) el.textContent = '';
   });
@@ -116,14 +123,20 @@ export function startDocumentEdit(doc){
   qs('document-id').value = doc.id;
   qs('document-entity-id').value = doc.entity_id;
   qs('document-entity').value = doc.entity_id;
-  qs('notes').value = doc.notes || '';
 
   if(isRRHHMode()){
     qs('productivity-period').value = getDocumentPeriod(doc) || '';
     qs('cf-indicador').value = doc.indicador || '';
     qs('cf-resultado').value = doc.resultado === undefined ? '' : doc.resultado;
-    qs('cf-unidad').value = doc.unidad || '';
     qs('cf-asignacionId').value = doc.asignacionId || '';
+    qs('cf-turno').value = doc.turno || '';
+    qs('cf-meta').value = doc.meta === undefined ? '' : doc.meta;
+    qs('cf-evaluacionCalidad').value = doc.evaluacionCalidad === undefined ? '' : doc.evaluacionCalidad;
+    qs('cf-evaluacionResponsabilidad').value = doc.evaluacionResponsabilidad === undefined ? '' : doc.evaluacionResponsabilidad;
+    qs('cf-evaluacionCumplimiento').value = doc.evaluacionCumplimiento === undefined ? '' : doc.evaluacionCumplimiento;
+    qs('cf-evaluacionColaboracion').value = doc.evaluacionColaboracion === undefined ? '' : doc.evaluacionColaboracion;
+    qs('cf-observaciones').value = doc.observaciones || '';
+    qs('cf-oportunidadesMejora').value = doc.oportunidadesMejora || '';
     qs('document-custom-fields').innerHTML = '';
     qs('document-custom-fields').hidden = true;
     qs('document-status-control').innerHTML = '';
@@ -161,9 +174,15 @@ export function collectDocumentPayload(){
       period: qs('productivity-period').value,
       indicador: qs('cf-indicador').value,
       resultado: qs('cf-resultado').value,
-      unidad: qs('cf-unidad').value,
       asignacionId: qs('cf-asignacionId').value,
-      notes: qs('notes').value
+      turno: qs('cf-turno').value,
+      meta: qs('cf-meta').value,
+      evaluacionCalidad: qs('cf-evaluacionCalidad').value,
+      evaluacionResponsabilidad: qs('cf-evaluacionResponsabilidad').value,
+      evaluacionCumplimiento: qs('cf-evaluacionCumplimiento').value,
+      evaluacionColaboracion: qs('cf-evaluacionColaboracion').value,
+      observaciones: qs('cf-observaciones').value,
+      oportunidadesMejora: qs('cf-oportunidadesMejora').value
     };
   }
   return {
@@ -179,7 +198,7 @@ export function collectDocumentPayload(){
     totalAmount: qs('totalAmount').value,
     currency: qs('currency').value,
     paymentTerms: qs('docPaymentTerms').value,
-    notes: qs('notes').value,
+    notes: (qs('notes') || {}).value,
     status: qs('status') ? qs('status').value : '',
     ...collectCustomFields(qs('document-custom-fields'), 'document')
   };
@@ -191,7 +210,10 @@ export function showDocumentErrors(errors){
     const el = qs(elId);
     if(el) el.textContent = errors[f] || '';
   }
-  ['indicador', 'resultado', 'unidad', 'asignacionId'].forEach(f => {
+  ['indicador', 'resultado', 'asignacionId',
+    'turno', 'meta', 'evaluacionCalidad', 'evaluacionResponsabilidad',
+    'evaluacionCumplimiento', 'evaluacionColaboracion',
+    'observaciones', 'oportunidadesMejora'].forEach(f => {
     const el = qs(`error-cf-${f}`);
     if(el) el.textContent = errors[f] || '';
   });

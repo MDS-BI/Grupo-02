@@ -133,13 +133,14 @@ describe('departamentos y asignaciones', () => {
 });
 
 describe('productividad', () => {
-  it('valida período, indicador, resultado, unidad y asignación', () => {
+  it('valida período, indicador, resultado y asignación (unidad es opcional)', () => {
     seed();
     expect(validateDocument(productivity({ period: '2099-01' })).errors.period).toMatch(/futuro/);
     expect(validateDocument(productivity({ period: '2025-12' })).errors.period).toMatch(/ingreso/);
     expect(validateDocument(productivity({ indicador: 'ab' })).errors.indicador).toMatch(/3 y 60/);
     expect(validateDocument(productivity({ resultado: -1 })).errors.resultado).toMatch(/cero/);
-    expect(validateDocument(productivity({ unidad: '' })).errors.unidad).toMatch(/obligatoria/);
+    // Unidad ya no es obligatoria: campo vacío no genera error
+    expect(validateDocument(productivity({ unidad: '' })).errors.unidad).toBeUndefined();
     expect(validateDocument(productivity({ asignacionId: 'no-existe' })).errors.asignacionId).toMatch(/no existe/);
   });
 
@@ -199,5 +200,102 @@ describe('productividad', () => {
     saveDocuments([{ id: 'legacy', entity_id: loadEntities()[0].entity_id, startDate: '2026-01-01', endDate: '2026-01-31' }]);
     expect(inspectDocumentsForRRHH().compatible).toBe(false);
     expect(() => addDocument(productivity())).toThrow(/incompatible/);
+  });
+
+  it('valida turno, meta y evaluaciones cualitativas', () => {
+    seed();
+    const base = productivity();
+    expect(validateDocument({ ...base, turno: 'Noche' }).errors.turno).toMatch(/Mañana o Tarde/);
+    expect(validateDocument({ ...base, meta: -5 }).errors.meta).toMatch(/cero/);
+    expect(validateDocument({ ...base, evaluacionCalidad: 0 }).errors.evaluacionCalidad).toMatch(/1 y 5/);
+    expect(validateDocument({ ...base, evaluacionCalidad: 6 }).errors.evaluacionCalidad).toMatch(/1 y 5/);
+    expect(validateDocument({ ...base, evaluacionResponsabilidad: 3.5 }).errors.evaluacionResponsabilidad).toMatch(/entero/);
+    expect(validateDocument({ ...base, evaluacionCumplimiento: 'abc' }).errors.evaluacionCumplimiento).toMatch(/1 y 5/);
+    expect(validateDocument({ ...base, evaluacionColaboracion: 5 }).valid).toBe(true);
+  });
+
+  it('guarda y lee todos los nuevos campos de productividad', () => {
+    seed();
+    const doc = addDocument({
+      ...productivity(),
+      turno: 'Mañana',
+      meta: 100,
+      evaluacionCalidad: 4,
+      evaluacionResponsabilidad: 5,
+      evaluacionCumplimiento: 3,
+      evaluacionColaboracion: 4,
+      observaciones: 'Buen desempeño en la atención.',
+      oportunidadesMejora: 'Acelerar tiempos de preparación.'
+    });
+    expect(doc.turno).toBe('Mañana');
+    expect(doc.meta).toBe(100);
+    expect(doc.evaluacionCalidad).toBe(4);
+    expect(doc.evaluacionResponsabilidad).toBe(5);
+    expect(doc.evaluacionCumplimiento).toBe(3);
+    expect(doc.evaluacionColaboracion).toBe(4);
+    expect(doc.observaciones).toBe('Buen desempeño en la atención.');
+    expect(doc.oportunidadesMejora).toBe('Acelerar tiempos de preparación.');
+
+    const history = getProductivityHistory(loadEntities()[0].entity_id);
+    const saved = history.find(h => h.id === doc.id);
+    expect(saved.turno).toBe('Mañana');
+    expect(saved.meta).toBe(100);
+    expect(saved.evaluacionCalidad).toBe(4);
+    expect(saved.observaciones).toBe('Buen desempeño en la atención.');
+    expect(saved.oportunidadesMejora).toBe('Acelerar tiempos de preparación.');
+  });
+
+  it('mantiene compatibilidad con documentos antiguos sin los nuevos campos', () => {
+    seed();
+    const oldDoc = addDocument(productivity());
+    expect(oldDoc.turno).toBeUndefined();
+    expect(oldDoc.meta).toBeUndefined();
+    expect(oldDoc.evaluacionCalidad).toBeUndefined();
+
+    const history = getProductivityHistory(loadEntities()[0].entity_id);
+    const saved = history.find(h => h.id === oldDoc.id);
+    expect(saved.turno).toBeUndefined();
+    expect(saved.meta).toBeUndefined();
+    expect(saved.resultado).toBe(42);
+    expect(saved.indicador).toBe('Pedidos procesados');
+  });
+
+  it('actualiza solo los campos proporcionados al corregir un registro', () => {
+    seed();
+    const doc = addDocument({
+      ...productivity(),
+      turno: 'Tarde',
+      meta: 50,
+      evaluacionCalidad: 3,
+      evaluacionResponsabilidad: 3,
+      evaluacionCumplimiento: 3,
+      evaluacionColaboracion: 3
+    });
+    const updated = updateDocument(doc.id, { resultado: 90, turno: 'Mañana' });
+    expect(updated.resultado).toBe(90);
+    expect(updated.turno).toBe('Mañana');
+    expect(updated.meta).toBe(50);
+    expect(updated.evaluacionCalidad).toBe(3);
+  });
+
+  it('crea y guarda un registro sin unidad ni notes (campos eliminados del formulario)', () => {
+    seed();
+    const doc = addDocument({
+      ...productivity(),
+      unidad: undefined,
+      notes: undefined,
+      turno: 'Mañana',
+      meta: 100,
+      observaciones: 'Sin unidad ni notas.'
+    });
+    expect(doc.unidad).toBeUndefined();
+    expect(doc.notes).toBeUndefined();
+    expect(doc.observaciones).toBe('Sin unidad ni notas.');
+
+    const history = getProductivityHistory(loadEntities()[0].entity_id);
+    const saved = history.find(h => h.id === doc.id);
+    expect(saved.unidad).toBeUndefined();
+    expect(saved.notes).toBeUndefined();
+    expect(saved.observaciones).toBe('Sin unidad ni notas.');
   });
 });

@@ -1,4 +1,4 @@
-import { loadModuleConfig, normalizeConfig, setActiveConfig, labelFor, isRRHHMode } from './module-config.js';
+import { loadModuleConfig, normalizeConfig, setActiveConfig, labelFor, isRRHHMode, indicadoresParaCargo } from './module-config.js';
 import {
   loadEntities, addEntity, updateEntity, deleteEntity, validateEntity, searchEntities, canDeleteEntity,
   loadDocuments, addDocument, updateDocument, deleteDocument, validateDocument, findDuplicateProductivity,
@@ -419,6 +419,26 @@ function populateProductivityAssignments(preferredAssignmentId){
   }
 }
 
+function suggestIndicatorsForEntity(){
+  if(!isRRHHMode()) return;
+  const entityId = qs('document-entity')?.value;
+  if(!entityId) return;
+  const entity = loadEntities().find(e => e.entity_id === entityId);
+  if(!entity) return;
+  const cargo = entity.cargo;
+  const indicadores = indicadoresParaCargo(cargo);
+  if(indicadores.length === 0) return;
+  const indicadorInput = qs('cf-indicador');
+  const unidadInput = qs('cf-unidad');
+  // Sugerir automáticamente el primer indicador del cargo si el campo está vacío
+  if(indicadorInput && !indicadorInput.value){
+    indicadorInput.value = indicadores[0].value;
+  }
+  if(unidadInput && !unidadInput.value){
+    unidadInput.value = indicadores[0].unidad;
+  }
+}
+
 function handleDepartmentSubmit(ev){
   ev.preventDefault();
   const id = qs('department-id').value;
@@ -720,7 +740,10 @@ function wireEvents(){
   qs('assignment-entity-filter').addEventListener('change', () => refreshAssignments());
 
   qs('document-entity').addEventListener('change', () => {
-    if(isRRHHMode()) populateProductivityAssignments();
+    if(isRRHHMode()){
+      populateProductivityAssignments();
+      suggestIndicatorsForEntity();
+    }
   });
   qs('productivity-period').addEventListener('change', () => {
     if(isRRHHMode()) populateProductivityAssignments();

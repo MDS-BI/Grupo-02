@@ -7,7 +7,9 @@ export function createEvolutionRow(measurement){
     `<td>${escapeHtml(measurement.indicador || '')}</td>` +
     `<td>${escapeHtml(String(measurement.resultado ?? ''))}</td>` +
     `<td>${escapeHtml(measurement.unidad || '')}</td>` +
-    `<td>${escapeHtml(measurement.departamento || '')}</td>`;
+    `<td>${escapeHtml(measurement.departamento || '')}</td>` +
+    `<td>${escapeHtml(measurement.turno || '')}</td>` +
+    `<td>${escapeHtml(measurement.meta !== undefined && measurement.meta !== null ? String(measurement.meta) : '')}</td>`;
   return tr;
 }
 

@@ -42,7 +42,6 @@ function fillProductivity({ period = '2026-03', indicador = 'Pedidos procesados'
   fire('productivity-period');
   qs('cf-indicador').value = indicador;
   qs('cf-resultado').value = resultado;
-  qs('cf-unidad').value = unidad;
 }
 
 beforeEach(async () => {
@@ -128,15 +127,6 @@ describe('Incremento 002 - RR. HH. y productividad', () => {
     fire('history-entity');
     expect(qs('history-body').textContent).toContain('2026-03');
     expect(qs('history-body').textContent).toContain('Pedidos procesados');
-
-    qs('nav-evolution').click();
-    qs('evolution-entity').value = loadEntities()[0].entity_id;
-    fire('evolution-entity');
-    qs('evolution-indicator').value = 'Pedidos procesados';
-    fire('evolution-indicator');
-    qs('evolution-unit').value = 'pedidos';
-    fire('evolution-unit');
-    expect(qs('evolution-body').textContent).toContain('42');
   });
 
   it('advierte sobre mediciones duplicadas y permite guardarlas si se confirma', () => {

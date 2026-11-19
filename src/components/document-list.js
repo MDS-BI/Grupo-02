@@ -13,9 +13,12 @@ export function createDocumentItem(doc, entityName){
   const info = document.createElement('span');
   if(isRRHHMode()){
     const department = getDepartmentForDocument(doc);
+    const metaTexto = doc.meta !== undefined && doc.meta !== null ? ` | Meta: ${doc.meta}` : '';
+    const turnoTexto = doc.turno ? ` | Turno: ${doc.turno}` : '';
     info.innerHTML = `<strong>${escapeHtml(getDocumentPeriod(doc) || '')}</strong> &middot; ${escapeHtml(doc.indicador || '')}` +
       ` &middot; ${escapeHtml(String(doc.resultado ?? ''))} ${escapeHtml(doc.unidad || '')}` +
       `${department ? ` &middot; ${escapeHtml(department.nombre)}` : ''}` +
+      `${turnoTexto}${metaTexto}` +
       `${entityName ? `<div class="muted">${escapeHtml(entityName)}</div>` : ''}`;
   } else {
     const amount = (doc.totalAmount !== undefined) ? ` &middot; ${escapeHtml(String(doc.currency || ''))}${escapeHtml(String(doc.totalAmount))}` : '';

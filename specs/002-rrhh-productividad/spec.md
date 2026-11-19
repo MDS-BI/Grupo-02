@@ -116,7 +116,7 @@ No se modifica el MER ni se agregan nuevas entidades al modelo de referencia.
 - `endDate`
 - `indicador`
 - `resultado`
-- `unidad`
+- `unidad` *(opcional; eliminado del formulario en 002 cafetería, mantenido para compatibilidad)*
 - `asignacionId`
 
 Los nombres de campos se verificaron durante la planificación técnica contra las estructuras reales del módulo base. Los campos adicionales se implementaron mediante los mecanismos de extensión previstos en dicho módulo.
@@ -167,13 +167,25 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 6. **Dado** un resultado negativo o no numérico, **cuando** se intenta guardar, **entonces** el sistema informa que el resultado no es válido.
 
-7. **Dado** un registro sin unidad, **cuando** se intenta guardar, **entonces** el sistema solicita completar ese campo.
+7. **Dado** un registro sin unidad, **cuando** se intenta guardar, **entonces** el sistema acepta el registro (unidad ya no es obligatoria en el formulario de cafetería).
 
 8. **Dado** un registro existente con el mismo trabajador, período e indicador, **cuando** se intenta guardar otro, **entonces** el sistema muestra una advertencia y permite continuar.
 
 9. **Dado** un registro nuevo, **cuando** se guarda, **entonces** no se modifican los registros de otros períodos.
 
 10. **Dado** un registro existente, **cuando** se corrige, **entonces** solo se modifica el registro seleccionado y se aplican las validaciones correspondientes.
+
+11. **Dado** un trabajador con cargo definido, **cuando** se selecciona en el formulario de productividad, **entonces** el sistema sugiere automáticamente los indicadores correspondientes a ese cargo.
+
+12. **Dado** un formulario de productividad, **cuando** se registra una medición, **entonces** se puede identificar el turno (Mañana o Tarde) en que se realizó la actividad.
+
+13. **Dado** un formulario de productividad, **cuando** se registra una medición, **entonces** se puede registrar la meta esperada y el resultado obtenido por separado.
+
+14. **Dado** un formulario de productividad, **cuando** se registra una medición, **entonces** se puede registrar una evaluación cualitativa del desempeño en escala de 1 a 5 para calidad, responsabilidad, cumplimiento de procedimientos y colaboración.
+
+15. **Dado** un formulario de productividad, **cuando** se registra una medición, **entonces** se pueden registrar observaciones y oportunidades de mejora asociadas al registro.
+
+16. **Dado** un registro guardado con metas, resultados, evaluaciones, turno, observaciones u oportunidades de mejora, **cuando** se consulta su historial o evolución, **entonces** se muestran esos datos asociados al registro.
 
 ---
 
@@ -286,7 +298,7 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 | Período anterior al ingreso | No permitido |
 | Indicador | Obligatorio, entre 3 y 60 caracteres |
 | Resultado | Numérico y mayor o igual a cero |
-| Unidad | Obligatoria y no vacía |
+| Unidad | Opcional (eliminada del formulario; se conserva para registros anteriores) |
 | Registro duplicado | Permitido con advertencia |
 | Corrección de registro | Solo modifica el registro seleccionado |
 | Eliminación de trabajador con historial | No permitida; se utiliza estado Inactivo |
@@ -314,14 +326,13 @@ Los errores de validación deben comunicarse mediante mensajes claros para el us
 
 ### Registro de productividad
 
-- **FR-012:** El sistema DEBE permitir registrar mediciones con trabajador, período, indicador, resultado y unidad.
+- **FR-012:** El sistema DEBE permitir registrar mediciones con trabajador, período, indicador y resultado.
 - **FR-013:** El sistema DEBE asociar cada medición a una asignación histórica válida.
 - **FR-014:** Si existen varias asignaciones durante un mismo mes, el sistema DEBE permitir seleccionar la correspondiente.
 - **FR-015:** El sistema DEBE rechazar períodos futuros.
 - **FR-016:** El sistema DEBE rechazar períodos anteriores al ingreso del trabajador.
 - **FR-017:** El sistema DEBE rechazar indicadores de menos de 3 o más de 60 caracteres.
 - **FR-018:** El sistema DEBE rechazar resultados negativos o no numéricos.
-- **FR-019:** El sistema DEBE rechazar registros sin unidad.
 - **FR-020:** El sistema DEBE validar los campos obligatorios antes de guardar.
 - **FR-021:** El sistema DEBE advertir sobre registros duplicados y permitir guardarlos si el usuario confirma.
 - **FR-022:** El sistema NO DEBE modificar registros de otros períodos al guardar uno nuevo.
@@ -347,6 +358,13 @@ Los errores de validación deben comunicarse mediante mensajes claros para el us
 - **FR-033:** El MVP NO DEBE presentar autenticación o control de acceso como funcionalidades implementadas.
 - **FR-034:** El sistema DEBE utilizar datos ficticios para las demostraciones.
 - **FR-035:** El sistema DEBE mostrar de forma segura el contenido ingresado por el usuario, evitando la ejecución de scripts introducidos en campos de texto.
+- **FR-036:** El sistema DEBE sugerir automáticamente los indicadores correspondientes al cargo del trabajador seleccionado.
+- **FR-037:** El sistema DEBE permitir registrar el turno (Mañana o Tarde) en que se realizó la actividad.
+- **FR-038:** El sistema DEBE permitir registrar la meta esperada y el resultado obtenido como valores separados.
+- **FR-039:** El sistema DEBE permitir registrar una evaluación cualitativa del desempeño en escala de 1 a 5 para calidad, responsabilidad, cumplimiento de procedimientos y colaboración.
+- **FR-040:** El sistema DEBE permitir registrar observaciones y oportunidades de mejora asociadas al registro de productividad.
+- **FR-041:** El sistema DEBE mostrar los datos de turno, meta, evaluación cualitativa, observaciones y oportunidades de mejora al consultar el historial y la evolución.
+- **FR-042:** El sistema DEBE mantener compatibilidad con registros de productividad creados antes de incorporar estos campos.
 
 ---
 
@@ -378,7 +396,7 @@ Los errores de validación deben comunicarse mediante mensajes claros para el us
 
 13. **Resultado inválido:** se rechazan valores negativos o no numéricos.
 
-14. **Unidad vacía:** se rechaza el registro y se solicita una unidad.
+14. **Unidad vacía:** unidad ya no es obligatoria en el formulario de cafetería; el registro se acepta sin unidad.
 
 15. **Asignaciones superpuestas:** se rechaza una nueva asignación que se superponga con otra del mismo trabajador.
 
@@ -393,6 +411,14 @@ Los errores de validación deben comunicarse mediante mensajes claros para el us
 20. **Intento de registrar liquidaciones:** las funcionalidades de planilla no forman parte del incremento 002.
 
 21. **Ingreso accidental de datos reales:** el sistema debe mostrar una advertencia de uso exclusivo de datos ficticios. No se garantiza la detección automática de información real.
+
+22. **Turno inválido:** si se informa un turno que no sea Mañana o Tarde, se rechaza el registro.
+
+23. **Meta negativa:** si se informa una meta negativa, se rechaza el registro.
+
+24. **Evaluación fuera de rango:** si se informa una evaluación cualitativa fuera de 1 a 5, o no entera, se rechaza el registro.
+
+25. **Registro sin campos nuevos:** un registro creado antes de incorporar los campos de turno, meta, evaluación cualitativa, observaciones y oportunidades de mejora continúa siendo válido y consultable.
 
 Los comportamientos adicionales sobre errores de almacenamiento y advertencias de datos ficticios deberán validarse con el grupo antes de cerrar la especificación.
 
@@ -412,6 +438,9 @@ Los comportamientos adicionales sobre errores de almacenamiento y advertencias d
 - **SC-010:** El MVP no presenta autenticación ni control de acceso como funcionalidades disponibles.
 - **SC-011:** Los datos utilizados en la demostración son ficticios.
 - **SC-012:** Los registros se conservan al recargar la aplicación mientras el almacenamiento local siga disponible.
+- **SC-013:** Al seleccionar un trabajador con cargo definido, el sistema sugiere automáticamente los indicadores correspondientes.
+- **SC-014:** Un registro de productividad puede incluir turno, meta, evaluación cualitativa (1-5), observaciones y oportunidades de mejora, y esos datos se conservan al guardar.
+- **SC-015:** Los registros históricos creados antes de incorporar los nuevos campos siguen siendo válidos y consultables sin errores.
 
 Estos criterios deberán verificarse durante las pruebas de implementación.
 

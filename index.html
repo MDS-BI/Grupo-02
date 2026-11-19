@@ -202,11 +202,6 @@
                     <input id="cf-resultado" name="cf-resultado" type="number" min="0" step="any" />
                     <div class="error" id="error-cf-resultado" aria-live="polite"></div>
                   </div>
-                  <div>
-                    <label for="cf-unidad">Unidad *</label>
-                    <input id="cf-unidad" name="cf-unidad" />
-                    <div class="error" id="error-cf-unidad" aria-live="polite"></div>
-                  </div>
                 </div>
                 <div>
                   <label for="cf-asignacionId">Asignación de departamento *</label>
@@ -214,6 +209,60 @@
                   <div class="error" id="error-cf-asignacionId" aria-live="polite"></div>
                 </div>
                 <div id="productivity-duplicate-warning" class="warning" hidden></div>
+
+                <div>
+                  <label for="cf-turno">Turno *</label>
+                  <select id="cf-turno" name="cf-turno">
+                    <option value="">-- Selecciona un turno --</option>
+                    <option value="Mañana">Mañana</option>
+                    <option value="Tarde">Tarde</option>
+                  </select>
+                  <div class="error" id="error-cf-turno" aria-live="polite"></div>
+                </div>
+
+                <div>
+                  <label for="cf-meta">Meta esperada *</label>
+                  <input id="cf-meta" name="cf-meta" type="number" min="0" step="any" />
+                  <div class="error" id="error-cf-meta" aria-live="polite"></div>
+                </div>
+
+                <div class="field-row">
+                  <div>
+                    <label for="cf-evaluacionCalidad">Calidad (1-5) *</label>
+                    <input id="cf-evaluacionCalidad" name="cf-evaluacionCalidad" type="number" min="1" max="5" step="1" />
+                    <div class="error" id="error-cf-evaluacionCalidad" aria-live="polite"></div>
+                  </div>
+                  <div>
+                    <label for="cf-evaluacionResponsabilidad">Responsabilidad (1-5) *</label>
+                    <input id="cf-evaluacionResponsabilidad" name="cf-evaluacionResponsabilidad" type="number" min="1" max="5" step="1" />
+                    <div class="error" id="error-cf-evaluacionResponsabilidad" aria-live="polite"></div>
+                  </div>
+                </div>
+
+                <div class="field-row">
+                  <div>
+                    <label for="cf-evaluacionCumplimiento">Cumplimiento de procedimientos (1-5) *</label>
+                    <input id="cf-evaluacionCumplimiento" name="cf-evaluacionCumplimiento" type="number" min="1" max="5" step="1" />
+                    <div class="error" id="error-cf-evaluacionCumplimiento" aria-live="polite"></div>
+                  </div>
+                  <div>
+                    <label for="cf-evaluacionColaboracion">Colaboración (1-5) *</label>
+                    <input id="cf-evaluacionColaboracion" name="cf-evaluacionColaboracion" type="number" min="1" max="5" step="1" />
+                    <div class="error" id="error-cf-evaluacionColaboracion" aria-live="polite"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <label for="cf-observaciones">Observaciones</label>
+                  <textarea id="cf-observaciones" name="cf-observaciones" rows="2"></textarea>
+                  <div class="error" id="error-cf-observaciones" aria-live="polite"></div>
+                </div>
+
+                <div>
+                  <label for="cf-oportunidadesMejora">Oportunidades de mejora</label>
+                  <textarea id="cf-oportunidadesMejora" name="cf-oportunidadesMejora" rows="2"></textarea>
+                  <div class="error" id="error-cf-oportunidadesMejora" aria-live="polite"></div>
+                </div>
               </div>
               <div data-base-document>
                 <div class="field-row">
@@ -270,10 +319,6 @@
                   <label for="docPaymentTerms">Condiciones de pago</label>
                   <input id="docPaymentTerms" name="docPaymentTerms" placeholder="p. ej., contado, neto 30" />
                 </div>
-              </div>
-              <div>
-                <label for="notes">Notas</label>
-                <textarea id="notes" name="notes" rows="2"></textarea>
               </div>
               <div id="document-status-control"></div>
               <div id="document-custom-fields"></div>
@@ -416,7 +461,7 @@
             <div id="history-empty" class="empty" hidden>Este trabajador aún no tiene mediciones de productividad.</div>
             <div class="table-wrap">
               <table>
-                <thead><tr><th>Período</th><th>Departamento</th><th>Indicador</th><th>Resultado</th><th>Unidad</th></tr></thead>
+                <thead><tr><th>Período</th><th>Departamento</th><th>Indicador</th><th>Resultado</th><th>Unidad</th><th>Turno</th><th>Meta</th><th>Evaluación</th></tr></thead>
                 <tbody id="history-body"></tbody>
               </table>
             </div>
@@ -447,7 +492,7 @@
             <div id="evolution-message" class="empty" hidden>No hay datos suficientes para visualizar la evolución.</div>
             <div class="table-wrap">
               <table>
-                <thead><tr><th>Período</th><th>Indicador</th><th>Resultado</th><th>Unidad</th><th>Departamento</th></tr></thead>
+                <thead><tr><th>Período</th><th>Indicador</th><th>Resultado</th><th>Unidad</th><th>Departamento</th><th>Turno</th><th>Meta</th></tr></thead>
                 <tbody id="evolution-body"></tbody>
               </table>
             </div>

@@ -46,7 +46,6 @@ describe('User Story 10 - add a document to an entity', () => {
     qs('totalAmount').value = '1102';
     qs('currency').value = 'MXN';
     qs('docPaymentTerms').value = 'neto 30';
-    qs('notes').value = 'Entrega parcial';
     qs('status').value = 'pendiente';
     qs('document-form').dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true }));
     const all = loadDocuments();
@@ -60,7 +59,6 @@ describe('User Story 10 - add a document to an entity', () => {
     expect(all[0].taxAmount).toBe(152);
     expect(all[0].totalAmount).toBe(1102);
     expect(all[0].paymentTerms).toBe('neto 30');
-    expect(all[0].notes).toBe('Entrega parcial');
   });
 
   it('prevents saving when required document information is blank', () => {

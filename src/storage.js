@@ -604,7 +604,7 @@ export function saveDocuments(documents){
 function isProductivityRecord(document_){
   return Boolean(document_)
     && !isEmpty(document_.indicador)
-    && !isEmpty(document_.unidad)
+    && (document_.unidad === undefined || !isEmpty(document_.unidad))
     && !isEmpty(document_.asignacionId)
     && isValidDate(document_.startDate)
     && isValidDate(document_.endDate);
@@ -671,8 +671,39 @@ export function validateProductivityDocument(payload = {}){
     }
   }
 
+  // Unidad opcional para mantener compatibilidad con registros anteriores
   const unidad = normalizeText(payload.unidad);
-  if(!unidad) errors.unidad = 'La unidad es obligatoria';
+
+  // Validación de turno (opcional; si se informa, debe ser válido)
+  const turno = normalizeText(payload.turno);
+  if(!isEmpty(turno) && turno !== 'Mañana' && turno !== 'Tarde'){
+    errors.turno = 'El turno debe ser Mañana o Tarde';
+  }
+
+  // Validación de meta (opcional; si se informa, debe ser un número no negativo)
+  if(!isEmpty(payload.meta)){
+    const meta = Number(payload.meta);
+    if(!Number.isFinite(meta) || meta < 0){
+      errors.meta = 'La meta debe ser un número mayor o igual a cero';
+    }
+  }
+
+  // Validación de evaluación cualitativa (escala 1-5; opcional)
+  const camposEvaluacion = [
+    { key: 'evaluacionCalidad', label: 'Calidad' },
+    { key: 'evaluacionResponsabilidad', label: 'Responsabilidad' },
+    { key: 'evaluacionCumplimiento', label: 'Cumplimiento de procedimientos' },
+    { key: 'evaluacionColaboracion', label: 'Colaboración' }
+  ];
+  for(const { key, label } of camposEvaluacion){
+    const valor = payload[key];
+    if(!isEmpty(valor)){
+      const n = Number(valor);
+      if(!Number.isFinite(n) || n < 1 || n > 5 || !Number.isInteger(n)){
+        errors[key] = `La evaluación de ${label.toLowerCase()} debe ser un número entero entre 1 y 5`;
+      }
+    }
+  }
 
   if(!isEmpty(payload.folio)){
     const folio = Number(payload.folio);
@@ -714,10 +745,18 @@ export function normalizeProductivityDocument(payload = {}){
     endDate,
     indicador: normalizeText(payload.indicador),
     resultado: isEmpty(payload.resultado) ? undefined : Number(payload.resultado),
-    unidad: normalizeText(payload.unidad),
+    unidad: normalizeText(payload.unidad) || undefined,
     asignacionId: resolveAssignmentId(payload, entityId, startDate, endDate),
     folio: isEmpty(payload.folio) ? undefined : Number(payload.folio),
-    notes: normalizeText(payload.notes) || undefined
+    notes: normalizeText(payload.notes) || undefined,
+    turno: normalizeText(payload.turno) || undefined,
+    meta: isEmpty(payload.meta) ? undefined : Number(payload.meta),
+    evaluacionCalidad: isEmpty(payload.evaluacionCalidad) ? undefined : Number(payload.evaluacionCalidad),
+    evaluacionResponsabilidad: isEmpty(payload.evaluacionResponsabilidad) ? undefined : Number(payload.evaluacionResponsabilidad),
+    evaluacionCumplimiento: isEmpty(payload.evaluacionCumplimiento) ? undefined : Number(payload.evaluacionCumplimiento),
+    evaluacionColaboracion: isEmpty(payload.evaluacionColaboracion) ? undefined : Number(payload.evaluacionColaboracion),
+    observaciones: normalizeText(payload.observaciones) || undefined,
+    oportunidadesMejora: normalizeText(payload.oportunidadesMejora) || undefined
   };
 }
 

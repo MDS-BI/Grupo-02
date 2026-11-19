@@ -226,7 +226,7 @@ No se crea una entidad nueva.
 | `totalAmount` | number | No | No utilizado |
 | `currency` | string | No | No utilizado |
 | `paymentTerms` | string | No | No utilizado |
-| `notes` | string | No | Opcional |
+| `notes` | string | No | Eliminado del formulario en 002 (cafetería). Se conserva para compatibilidad con registros anteriores. |
 | `status` | string | No | Sin ciclo obligatorio |
 | `createdAt` | string | Sí | Fecha de creación |
 | `updatedAt` | string | Sí | Última actualización |
@@ -236,9 +236,31 @@ No se crea una entidad nueva.
 | Campo | Tipo | Obligatorio | Descripción |
 |---|---|---|---|
 | `indicador` | text | Sí | Indicador medido |
-| `resultado` | number | Sí | Resultado numérico |
-| `unidad` | text | Sí | Unidad de medida |
+| `resultado` | number | Sí | Resultado obtenido |
+| `meta` | number | No | Meta esperada para el indicador |
+| `unidad` | text | No | Unidad de medida. Eliminado del formulario en 002 (cafetería). Se conserva para compatibilidad con registros anteriores. |
 | `asignacionId` | text | Sí | Identificador de asignación histórica |
+| `turno` | select | No | Turno en que se realizó la actividad (Mañana, Tarde) |
+| `evaluacionCalidad` | number | No | Calidad del desempeño, escala 1-5 |
+| `evaluacionResponsabilidad` | number | No | Responsabilidad del trabajador, escala 1-5 |
+| `evaluacionCumplimiento` | number | No | Cumplimiento de procedimientos, escala 1-5 |
+| `evaluacionColaboracion` | number | No | Colaboración en el trabajo, escala 1-5 |
+| `observaciones` | text | No | Observaciones sobre el desempeño |
+| `oportunidadesMejora` | text | No | Oportunidades de mejora identificadas |
+
+#### Indicadores sugeridos por cargo
+
+La configuración del módulo incluye un catálogo de indicadores sugeridos por cargo (`INDICADORES_POR_CARGO`), utilizado para proponer automáticamente los indicadores relevantes cuando se selecciona un trabajador. El usuario puede aceptar la sugerencia o elegir otro indicador.
+
+| Cargo | Indicadores sugeridos (unidad) |
+|---|---|
+| Barista | Calidad de café (puntos), Velocidad de preparación (segundos), Limpieza de estación (puntos), Conocimiento de menú (puntos) |
+| Cajero | Precisión de cobro (puntos), Atención al cliente (puntos), Manejo de efectivo (puntos), Cierre de caja (puntos) |
+| Mesero | Atención a mesas (puntos), Conocimiento de menú (puntos), Tiempo de respuesta (minutos), Propinas promedio (moneda) |
+| Cocinero | Preparación de platos (puntos), Higiene en cocina (puntos), Tiempos de entrega (minutos), Control de inventario (puntos) |
+| Encargado | Supervisión de turno (puntos), Gestión de inventario (puntos), Atención a clientes (puntos), Cierre de operaciones (puntos) |
+
+Si el cargo del trabajador no tiene indicadores sugeridos configurados, el campo de indicador permanece libre para ingreso manual.
 
 #### Relación de asignacionId
 
@@ -307,8 +329,16 @@ Campos personalizados para `document`:
 
 - `indicador`
 - `resultado`
+- `meta`
 - `unidad`
 - `asignacionId`
+- `turno`
+- `evaluacionCalidad`
+- `evaluacionResponsabilidad`
+- `evaluacionCumplimiento`
+- `evaluacionColaboracion`
+- `observaciones`
+- `oportunidadesMejora`
 
 Los campos personalizados deben usar tipos admitidos por el ERP base y no pueden coincidir con nombres de campos base.
 
@@ -388,10 +418,15 @@ Este diagrama representa las estructuras utilizadas por 002 y no reemplaza el ME
 - Período no anterior al ingreso.
 - Indicador entre 3 y 60 caracteres.
 - Resultado numérico no negativo.
-- Unidad obligatoria.
 - Folio entero positivo.
+- Turno: si se informa, debe ser Mañana o Tarde.
+- Meta: si se informa, debe ser un número mayor o igual a cero.
+- Evaluaciones cualitativas (calidad, responsabilidad, cumplimiento, colaboración): si se informan, deben ser enteros entre 1 y 5.
+- Observaciones y oportunidades de mejora: textos opcionales sin restricción de formato.
+- Unidad y notas: eliminados del formulario en 002 (cafetería). Se conservan para compatibilidad con registros anteriores; si se informan, se almacenan sin restricción.
 - Advertencia ante duplicados.
 - Corrección limitada al registro seleccionado.
+- Los nuevos campos son opcionales para mantener compatibilidad con registros anteriores.
 
 ### 6.5. Casos especiales
 
