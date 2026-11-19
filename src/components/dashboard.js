@@ -5,7 +5,9 @@ import {
   loadDepartments,
   loadDepartmentHistory,
   getDocumentPeriod,
-  currentPeriod
+  currentPeriod,
+  calcularMetasConsolidadas,
+  loadMetasConsolidadas
 } from '../storage.js';
 
 const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
@@ -27,6 +29,8 @@ const ICONS = {
   search: ['M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z', 'm21 21-4.35-4.35'],
   arrow: ['M5 12h14', 'm13 6 6 6-6 6']
 };
+
+let selectedDepartmentId = null;
 
 function element(tag, className, text){
   const node = document.createElement(tag);
@@ -185,6 +189,25 @@ function panel(bodyId, title, meta, iconName){
   return section;
 }
 
+function createChartPanel(){
+  const section = element('section', 'panel');
+  const head = element('div', 'panel-head');
+  const titleWrap = element('div', 'panel-title-wrap');
+  titleWrap.append(icon('activity', 'panel-icon'));
+
+  const titleContainer = element('div', 'chart-title-container');
+  const title = element('h2', 'panel-title chart-title', 'Seleccione departamento');
+  titleContainer.appendChild(title);
+  titleContainer.style.cursor = 'pointer';
+  titleContainer.title = 'Seleccione un departamento para visualizar sus metas y resultados';
+  titleWrap.appendChild(titleContainer);
+
+  const body = element('div', 'panel-body');
+  body.id = 'dashboard-chart';
+  section.append(head, body);
+  return section;
+}
+
 function decorateActionButtons(actionGrid){
   if(!actionGrid) return;
   const iconNames = {
@@ -214,11 +237,6 @@ function ensureLayout(view){
 
   const shell = element('div', 'dashboard-shell');
 
-  const header = element('header', 'dashboard-header');
-  const headerText = element('div', 'dashboard-header-text');
-  headerText.append(heading, subtitle);
-  header.append(headerText, element('span', 'dashboard-badge', 'ERP · Vista general'));
-
   const kpiSection = element('section', 'dashboard-section');
   kpiSection.appendChild(element('h2', 'section-title', 'Indicadores clave'));
   const existingIcons = ['users', 'file'];
@@ -234,7 +252,7 @@ function ensureLayout(view){
 
   const panels = element('div', 'dashboard-panels');
   panels.append(
-    panel('dashboard-chart', 'Registros por mes', 'Últimos seis meses', 'activity'),
+    createChartPanel(),
     panel('dashboard-activity', 'Actividad reciente', 'Últimos 5 registros', 'file')
   );
 
@@ -242,38 +260,201 @@ function ensureLayout(view){
   actionSection.appendChild(actionsHeading);
   actionSection.appendChild(actionGrid);
 
-  shell.append(header, kpiSection, panels, actionSection);
+  shell.append(kpiSection, panels, actionSection);
   view.appendChild(shell);
   view.dataset.dashboardLayout = 'ready';
   decorateActionButtons(actionGrid);
 }
 
-function renderChart(data){
+function renderLineChart(months, metaSeries, resultSeries, departmentName){
   const container = document.getElementById('dashboard-chart');
   if(!container) return;
   container.replaceChildren();
 
-  const max = Math.max(1, ...data.map(item => item.count));
-  const summary = data.map(item => `${item.label}: ${item.count}`).join('; ');
-  const chart = element('div', 'chart');
-  chart.setAttribute('role', 'img');
-  chart.setAttribute('aria-label', `Cantidad de registros por mes en los últimos seis meses. ${summary}.`);
-  const bars = element('div', 'chart-bars');
+  const titleContainer = element('div', 'chart-title-container');
+  const title = element('h2', 'panel-title chart-title', departmentName || 'Seleccione departamento');
+  titleContainer.appendChild(title);
+  titleContainer.style.cursor = departmentName ? 'pointer' : 'default';
+  titleContainer.title = departmentName
+    ? 'Haga clic para cambiar de departamento'
+    : 'Seleccione un departamento para visualizar sus metas y resultados';
+  container.appendChild(titleContainer);
 
-  data.forEach(item => {
-    const column = element('div', 'chart-column');
-    column.title = `${item.label}: ${item.count} registro(s)`;
-    const value = element('span', 'chart-value', String(item.count));
-    const track = element('div', 'chart-track');
-    const bar = element('div', 'chart-bar');
-    bar.style.height = item.count === 0 ? '0%' : `${Math.max(8, Math.round((item.count / max) * 100))}%`;
-    track.appendChild(bar);
-    column.append(value, track, element('span', 'chart-label', item.shortLabel));
-    bars.appendChild(column);
+  const allValues = [...metaSeries, ...resultSeries].filter(v => v !== null && v !== undefined);
+  const maxValue = allValues.length > 0 ? Math.max(...allValues) : 1;
+  const yMax = Math.max(maxValue, 1);
+
+  const chartWidth = container.clientWidth || 400;
+  const chartHeight = 180;
+  const margin = { top: 30, right: 40, bottom: 40, left: 50 };
+  const width = chartWidth - margin.left - margin.right;
+  const height = chartHeight - margin.top - margin.bottom;
+
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('width', chartWidth);
+  svg.setAttribute('height', chartHeight);
+  svg.setAttribute('class', 'line-chart');
+
+  const group = document.createElementNS(SVG_NS, 'g');
+  group.setAttribute('transform', `translate(${margin.left},${margin.top})`);
+
+  // Ejes
+  const xStep = width / (months.length - 1);
+  const monthsShort = months.map(m => m.slice(5, 7));
+
+  // Línea de meta esperada
+  const metaLine = document.createElementNS(SVG_NS, 'polyline');
+  const metaPoints = months.map((m, i) => {
+    const x = i * xStep;
+    const y = height - (metaSeries[i] || 0) / yMax * height;
+    return `${x},${y}`;
+  }).join(' ');
+  metaLine.setAttribute('points', metaPoints);
+  metaLine.setAttribute('fill', 'none');
+  metaLine.setAttribute('stroke', '#0f766e');
+  metaLine.setAttribute('stroke-width', '2.5');
+  group.appendChild(metaLine);
+
+  // Línea de resultado
+  const resultLine = document.createElementNS(SVG_NS, 'polyline');
+  const resultPoints = months.map((m, i) => {
+    const x = i * xStep;
+    const y = height - (resultSeries[i] || 0) / yMax * height;
+    return `${x},${y}`;
+  }).join(' ');
+  resultLine.setAttribute('points', resultPoints);
+  resultLine.setAttribute('fill', 'none');
+  resultLine.setAttribute('stroke', '#2563eb');
+  resultLine.setAttribute('stroke-width', '2.5');
+  group.appendChild(resultLine);
+
+  // Marcadores y etiquetas para meta
+  months.forEach((m, i) => {
+    const x = i * xStep;
+    const y = height - (metaSeries[i] || 0) / yMax * height;
+    const circle = document.createElementNS(SVG_NS, 'circle');
+    circle.setAttribute('cx', x);
+    circle.setAttribute('cy', y);
+    circle.setAttribute('r', '4');
+    circle.setAttribute('fill', '#0f766e');
+    circle.setAttribute('stroke', '#ffffff');
+    circle.setAttribute('stroke-width', '2');
+    circle.setAttribute('class', 'chart-point');
+    circle.setAttribute('data-month', m);
+    circle.setAttribute('data-series', 'meta');
+    circle.setAttribute('data-value', metaSeries[i] || 0);
+    group.appendChild(circle);
   });
 
-  chart.appendChild(bars);
-  container.append(chart, element('p', 'chart-legend', 'Cantidad de registros almacenados. No representa niveles de productividad.'));
+  // Marcadores y etiquetas para resultado
+  months.forEach((m, i) => {
+    const x = i * xStep;
+    const y = height - (resultSeries[i] || 0) / yMax * height;
+    const circle = document.createElementNS(SVG_NS, 'circle');
+    circle.setAttribute('cx', x);
+    circle.setAttribute('cy', y);
+    circle.setAttribute('r', '4');
+    circle.setAttribute('fill', '#2563eb');
+    circle.setAttribute('stroke', '#ffffff');
+    circle.setAttribute('stroke-width', '2');
+    circle.setAttribute('class', 'chart-point');
+    circle.setAttribute('data-month', m);
+    circle.setAttribute('data-series', 'resultado');
+    circle.setAttribute('data-value', resultSeries[i] || 0);
+    group.appendChild(circle);
+  });
+
+  // Etiquetas del eje X
+  months.forEach((m, i) => {
+    const x = i * xStep;
+    const label = document.createElementNS(SVG_NS, 'text');
+    label.setAttribute('x', x);
+    label.setAttribute('y', height + 25);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('font-size', '11');
+    label.setAttribute('fill', '#64748b');
+    label.textContent = monthsShort[i] || '';
+    group.appendChild(label);
+  });
+
+  // Etiquetas del eje Y
+  for(let i = 0; i <= 5; i++){
+    const value = Math.round((yMax * i) / 5);
+    const y = height - (i / 5) * height;
+    const label = document.createElementNS(SVG_NS, 'text');
+    label.setAttribute('x', -10);
+    label.setAttribute('y', y + 4);
+    label.setAttribute('text-anchor', 'end');
+    label.setAttribute('font-size', '10');
+    label.setAttribute('fill', '#64748b');
+    label.textContent = value;
+    group.appendChild(label);
+  }
+
+  svg.appendChild(group);
+  container.appendChild(svg);
+
+  // Leyenda
+  const legend = element('div', 'chart-legend');
+  const metaItem = element('div', 'legend-item');
+  metaItem.innerHTML = `<span class="legend-color" style="background:#0f766e"></span><span class="legend-label">Meta esperada</span>`;
+  const resultItem = element('div', 'legend-item');
+  resultItem.innerHTML = `<span class="legend-color" style="background:#2563eb"></span><span class="legend-label">Resultado</span>`;
+  legend.appendChild(metaItem);
+  legend.appendChild(resultItem);
+  container.appendChild(legend);
+
+  // Mensaje si no hay departamento seleccionado
+  if(!departmentName){
+    const emptyMsg = element('p', 'empty', 'Seleccione un departamento para visualizar sus metas y resultados.');
+    container.appendChild(emptyMsg);
+  }
+}
+
+function setupChartTitleInteractivity(){
+  const container = document.getElementById('dashboard-chart');
+  if(!container) return;
+  const titleContainer = container.querySelector('.chart-title-container');
+  if(!titleContainer) return;
+
+  titleContainer.addEventListener('click', ()=>{
+    const departments = loadDepartments();
+    if(departments.length === 0) return;
+
+    // Remover selector existente si lo hay
+    const existing = container.querySelector('.department-selector');
+    if(existing){
+      existing.remove();
+      return;
+    }
+
+    const selectorWrap = element('div', 'department-selector');
+    const label = element('label', '', 'Departamento:');
+    const select = element('select', 'department-select');
+    select.innerHTML = '<option value="">-- Seleccione un departamento --</option>';
+    departments.forEach(d=>{
+      const opt = document.createElement('option');
+      opt.value = d.id_departamento;
+      opt.textContent = d.nombre;
+      if(d.id_departamento === selectedDepartmentId) opt.selected = true;
+      select.appendChild(opt);
+    });
+
+    select.addEventListener('change', (e)=>{
+      selectedDepartmentId = e.target.value || null;
+      if(selectedDepartmentId){
+        localStorage.setItem('erp_dashboard_department', selectedDepartmentId);
+      } else {
+        localStorage.removeItem('erp_dashboard_department');
+      }
+      selectorWrap.remove();
+      renderDashboard();
+    });
+
+    selectorWrap.appendChild(label);
+    selectorWrap.appendChild(select);
+    container.appendChild(selectorWrap);
+  });
 }
 
 function renderRecentActivity(records){
@@ -337,10 +518,44 @@ export function renderDashboard(){
   setText('stat-assignments', String(currentAssignmentCount()));
   setText('stat-assignments-label', 'Asignaciones vigentes');
 
-  const title = document.querySelector('#dashboard-chart')?.closest('.panel')?.querySelector('.panel-title');
-  if(title) title.textContent = isRRHHMode() ? 'Registros de productividad por mes' : 'Registros por mes';
+  // Recargar selección del departamento guardada
+  if(!selectedDepartmentId){
+    const saved = localStorage.getItem('erp_dashboard_department');
+    if(saved){
+      selectedDepartmentId = saved;
+    }
+  }
 
-  const documents = loadDocuments();
-  renderChart(monthlyCounts(documents));
-  renderRecentActivity(recentRecords(documents, loadEntities()));
+  // Asegurar que las metas consolidadas estén actualizadas
+  calcularMetasConsolidadas();
+
+  const months = monthKeys();
+  const consolidations = loadMetasConsolidadas();
+
+  let metaSeries = months.map(() => 0);
+  let resultSeries = months.map(() => 0);
+  let departmentName = null;
+
+  if(selectedDepartmentId){
+    const department = loadDepartments().find(d => d.id_departamento === selectedDepartmentId);
+    if(department){
+      departmentName = department.nombre;
+      consolidations.forEach(c=>{
+        if(c.departamentoId === selectedDepartmentId){
+          const monthIndex = months.findIndex(m => m === c.periodo);
+          if(monthIndex >= 0){
+            metaSeries[monthIndex] = c.metaConsolidada || 0;
+            resultSeries[monthIndex] = c.resultadoConsolidado || 0;
+          }
+        }
+      });
+    } else {
+      selectedDepartmentId = null;
+      localStorage.removeItem('erp_dashboard_department');
+    }
+  }
+
+  renderLineChart(months, metaSeries, resultSeries, departmentName);
+  setupChartTitleInteractivity();
+  renderRecentActivity(recentRecords(loadDocuments(), loadEntities()));
 }

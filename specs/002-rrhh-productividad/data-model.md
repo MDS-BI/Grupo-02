@@ -344,6 +344,34 @@ Los campos personalizados deben usar tipos admitidos por el ERP base y no pueden
 
 `statusLifecycle` no es obligatorio para 002.
 
+### 4.6. Metas y resultados consolidadas por departamento y período
+
+El sistema calcula y almacena internamente la suma de las metas esperadas y la suma de los resultados de todos los registros de productividad, agrupados por departamento y período mensual (AAAA-MM). Estos valores son utilizados internamente y no se muestran en la interfaz de usuario.
+
+#### Estructura de almacenamiento
+
+| Campo | Tipo | Descripción |
+|---|---|---|
+| `departamentoId` | string | Identificador único del departamento |
+| `departamentoNombre` | string | Nombre visible del departamento |
+| `periodo` | string | Período mensual en formato AAAA-MM |
+| `metaConsolidada` | number | Suma de las metas esperadas del grupo |
+| `resultadoConsolidado` | number | Suma de los resultados del grupo |
+
+#### Clave de almacenamiento
+
+Las metas y resultados consolidadas se almacenan en `erp_base_module:metas_consolidadas` como un arreglo JSON de objetos con la estructura anterior.
+
+#### Reglas de negocio
+
+- La combinación `departamentoId + periodo` es única, evitando duplicados.
+- Se utiliza el departamento histórico asociado al registro (vía `asignacionId`), no el departamento actual del trabajador.
+- Los registros sin meta válida no contribuyen a `metaConsolidada`; los registros sin resultado válido no contribuyen a `resultadoConsolidada`. Ambas sumas son independientes.
+- El mecanismo de recálculo es idempotente: ejecutarlo varias veces sin modificar los registros individuales produce el mismo resultado para ambas variables.
+- Las metas y resultados consolidadas se recalculan automáticamente tras crear, modificar o eliminar cualquier registro de productividad.
+- Si un grupo queda sin registros asociados, su variable consolidada se elimina.
+- La meta esperada y el resultado de un registro pueden ser diferentes; cada una se suma de forma independiente.
+
 ## 5. Relaciones y cardinalidades
 
 | Relación | Cardinalidad | Implementación |

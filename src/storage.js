@@ -4,6 +4,7 @@ export const ENTITIES_KEY = 'erp_base_module:entities';
 export const DOCUMENTS_KEY = 'erp_base_module:documents';
 export const DEPARTMENTS_KEY = 'erp_base_module:departamentos';
 export const HISTORY_KEY = 'erp_base_module:historial_departamentos';
+export const METAS_CONSOLIDADAS_KEY = 'erp_base_module:metas_consolidadas';
 
 const OPEN_END = '9999-12-31';
 
@@ -845,6 +846,7 @@ export function addDocument(payload){
     const list = loadDocuments();
     list.push(document);
     saveDocuments(list);
+    calcularMetasConsolidadas();
     return document;
   }
 
@@ -902,6 +904,7 @@ export function updateDocument(id, updates){
       updatedAt: new Date().toISOString()
     };
     saveDocuments(list);
+    calcularMetasConsolidadas();
     return list[idx];
   }
 
@@ -948,6 +951,7 @@ export function deleteDocument(id){
   const list = loadDocuments();
   const newList = list.filter(d => d.id !== id);
   saveDocuments(newList);
+  calcularMetasConsolidadas();
   return newList;
 }
 
@@ -955,7 +959,80 @@ export function deleteDocumentsForEntity(entityId){
   const list = loadDocuments();
   const newList = list.filter(d => d.entity_id !== entityId);
   saveDocuments(newList);
+  calcularMetasConsolidadas();
   return newList;
+}
+
+// ---------------------------------------------------------------------------
+// Metas y resultados consolidadas por departamento y período
+// ---------------------------------------------------------------------------
+
+export function loadMetasConsolidadas(){
+  return readCollection(METAS_CONSOLIDADAS_KEY, 'las metas y resultados consolidadas');
+}
+
+export function saveMetasConsolidadas(metas){
+  return writeCollection(METAS_CONSOLIDADAS_KEY, 'las metas y resultados consolidadas', metas);
+}
+
+/**
+ * Calcula y persiste las metas esperadas y los resultados consolidadas por
+ * departamento y período.
+ * Recorre todos los registros individuales de productividad, los agrupa por
+ * identificador de departamento + período (AAAA-MM) y suma de forma
+ * independiente las metas esperadas y los resultados.
+ * Utiliza el departamento histórico asociado al registro (vía asignacionId),
+ * no el departamento actual del trabajador.
+ * Es idempotente: ejecutarla varias veces sin modificar los registros
+ * individuales produce exactamente el mismo resultado.
+ */
+export function calcularMetasConsolidadas(){
+  const documentos = loadDocuments().filter(d => isProductivityRecord(d));
+  const departamentos = loadDepartments();
+
+  const grupos = new Map();
+
+  for(const doc of documentos){
+    const departamento = getDepartmentForDocument(doc);
+    const periodo = getDocumentPeriod(doc);
+    const meta = Number(doc.meta);
+    const resultado = Number(doc.resultado);
+
+    if(!departamento || !periodo){
+      continue;
+    }
+
+    const metaValida = Number.isFinite(meta) && meta >= 0;
+    const resultadoValido = Number.isFinite(resultado) && resultado >= 0;
+
+    if(!metaValida && !resultadoValido){
+      continue;
+    }
+
+    const clave = `${departamento.id_departamento}|${periodo}`;
+
+    if(!grupos.has(clave)){
+      grupos.set(clave, {
+        departamentoId: departamento.id_departamento,
+        departamentoNombre: departamento.nombre,
+        periodo,
+        metaConsolidada: 0,
+        resultadoConsolidado: 0
+      });
+    }
+
+    const grupo = grupos.get(clave);
+    if(metaValida){
+      grupo.metaConsolidada += meta;
+    }
+    if(resultadoValido){
+      grupo.resultadoConsolidado += resultado;
+    }
+  }
+
+  const consolidado = Array.from(grupos.values());
+  saveMetasConsolidadas(consolidado);
+  return consolidado;
 }
 
 export function getDocumentPeriod(doc){

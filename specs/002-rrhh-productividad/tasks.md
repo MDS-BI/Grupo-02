@@ -48,7 +48,8 @@ Los responsables deben asignarse cuando el grupo confirme qué integrante desarr
 | 6 | HU4: visualización de evolución | T063–T070 | 8 |
 | 7 | Pruebas, documentación y cierre | T071–T086 | 16 |
 | 8 | Adaptación registro de productividad — cafetería | T087–T095 | 9 |
-| **Total** | | **T001–T095** | **95** |
+| 9 | Metas consolidadas por departamento y período | T096–T105 | 10 |
+| **Total** | | **T001–T105** | **105** |
 
 ---
 
@@ -434,7 +435,7 @@ El incremento 002 se considera finalizado cuando:
 
 ---
 
-**Nota final:** La implementación técnica, la suite automatizada (14 archivos, 136 pruebas), T076 (500 registros en Edge aislado) y la compilación están completas. Permanecen pendientes T072 (aprobación del texto de advertencia), T083 (mediciones de usuario SC-001 a SC-003 y evaluación de SC-004), T084 (asignación de responsables) y la revisión final del grupo. T085, T086 y T087–T095 están completadas. No se realizaron commits ni push automáticos.
+**Nota final:** La implementación técnica, la suite automatizada (14 archivos, 165 pruebas), T076 (500 registros en Edge aislado) y la compilación están completas. Permanecen pendientes T072 (aprobación del texto de advertencia), T083 (mediciones de usuario SC-001 a SC-003 y evaluación de SC-004), T084 (asignación de responsables) y la revisión final del grupo. T085, T086, T087–T095 y T096–T100 están completadas. No se realizaron commits ni push automáticos.
 
 ---
 
@@ -451,6 +452,18 @@ El incremento 002 se considera finalizado cuando:
 - [x] T093 Actualizar `history-view.js`, `evolution-view.js`, `document-list.js` y `dashboard.js` para mostrar los nuevos campos en historial, evolución, lista y dashboard.
 - [x] T094 Agregar pruebas unitarias para los nuevos campos en `tests/unit/rrhh-storage.test.js`.
 - [x] T095 Actualizar documentación: `spec.md`, `data-model.md`, `tasks.md` y `plan.md` con los nuevos requisitos, campos y validaciones.
+
+---
+
+## Fase 9: Metas consolidadas por departamento y período
+
+**Propósito:** Implementar el cálculo, consolidación y almacenamiento interno de la suma de metas esperadas agrupadas por departamento y período mensual, con recálculo automático ante creación, modificación o eliminación de registros de productividad.
+
+- [x] T096 Agregar clave `METAS_CONSOLIDADAS_KEY` y funciones `loadMetasConsolidadas`/`saveMetasConsolidadas` en `storage.js`.
+- [x] T097 Implementar función `calcularMetasConsolidadas` que agrupe documentos por departamento+período y sume las metas.
+- [x] T098 Llamar a `calcularMetasConsolidadas` automáticamente en `addDocument`, `updateDocument`, `deleteDocument` y `deleteDocumentsForEntity`.
+- [x] T099 Agregar pruebas unitarias para metas consolidadas en `tests/unit/rrhh-storage.test.js` (14 pruebas).
+- [x] T100 Actualizar documentación: `spec.md` (requisitos FR-043 a FR-048, casos límite 26-33), `data-model.md` (sección 4.6), `tasks.md` (Fase 9).
 
 ---
 

@@ -614,8 +614,10 @@ function applyLabels(config){
   qs('brand-name').textContent = config.moduleName;
   applyShellLabels();
 
-  qs('dashboard-heading').textContent = config.moduleName;
-  qs('dashboard-subtitle').textContent = rrhh
+  const dashboardHeading = qs('dashboard-heading');
+  const dashboardSubtitle = qs('dashboard-subtitle');
+  if(dashboardHeading) dashboardHeading.textContent = config.moduleName;
+  if(dashboardSubtitle) dashboardSubtitle.textContent = rrhh
     ? `Gestiona ${entities.toLowerCase()}, departamentos y ${documents.toLowerCase()} en un solo lugar.`
     : `Gestiona tus ${entities.toLowerCase()} y ${documents.toLowerCase()} en un solo lugar.`;
   qs('action-new-entity-title').textContent = `${femEntity ? 'Nueva' : 'Nuevo'} ${entity}`;

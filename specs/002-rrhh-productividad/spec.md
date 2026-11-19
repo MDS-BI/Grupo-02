@@ -365,6 +365,15 @@ Los errores de validación deben comunicarse mediante mensajes claros para el us
 - **FR-040:** El sistema DEBE permitir registrar observaciones y oportunidades de mejora asociadas al registro de productividad.
 - **FR-041:** El sistema DEBE mostrar los datos de turno, meta, evaluación cualitativa, observaciones y oportunidades de mejora al consultar el historial y la evolución.
 - **FR-042:** El sistema DEBE mantener compatibilidad con registros de productividad creados antes de incorporar estos campos.
+- **FR-043:** El sistema DEBE calcular internamente la suma de metas esperadas y la suma de resultados agrupadas por departamento y período mensual (AAAA-MM).
+- **FR-044:** El sistema DEBE utilizar el departamento histórico asociado al registro (vía asignación), no el departamento actual del trabajador.
+- **FR-045:** El sistema DEBE almacenar de forma persistente tanto la meta esperada consolidada como el resultado consolidado en el almacenamiento local del navegador.
+- **FR-046:** El sistema DEBE recalcular automáticamente ambas variables consolidadas al crear, modificar o eliminar un registro de productividad.
+- **FR-047:** El mecanismo de recálculo DEBE ser idempotente: ejecutarlo varias veces sin modificar los registros individuales produce el mismo resultado.
+- **FR-048:** La meta esperada consolidada y el resultado consolidado NO DEBEN mostrarse al usuario en ninguna sección de la interfaz; permanecen almacenados internamente para futuras funcionalidades.
+- **FR-049:** La meta esperada consolidada y el resultado consolidado DEBEN calcularse de forma independiente a partir de sus respectivos campos individuales.
+- **FR-050:** Al modificar únicamente la meta esperada de un registro, solo debe cambiar la meta esperada consolidada (el resultado consolidado se mantiene).
+- **FR-051:** Al modificar únicamente el resultado de un registro, solo debe cambiar el resultado consolidado (la meta esperada consolidada se mantiene).
 
 ---
 
@@ -419,6 +428,26 @@ Los errores de validación deben comunicarse mediante mensajes claros para el us
 24. **Evaluación fuera de rango:** si se informa una evaluación cualitativa fuera de 1 a 5, o no entera, se rechaza el registro.
 
 25. **Registro sin campos nuevos:** un registro creado antes de incorporar los campos de turno, meta, evaluación cualitativa, observaciones y oportunidades de mejora continúa siendo válido y consultable.
+
+26. **Metas consolidadas por departamento y período:** dos registros del mismo departamento y mismo mes suman sus metas esperadas en un solo grupo consolidado.
+
+27. **Departamentos diferentes no comparten suma:** registros de departamentos distintos generan grupos de metas consolidadas separados.
+
+28. **Meses diferentes generan grupos separados:** el mismo departamento en meses distintos genera variables de meta consolidada independientes.
+
+29. **Cambio de departamento:** al cambiar el departamento de un registro, su meta deja de contar en el grupo anterior y se incorpora al nuevo.
+
+30. **Cambio de período:** al cambiar el mes de un registro, su meta deja de contar en el grupo anterior y se incorpora al nuevo.
+
+31. **Eliminación de registro:** al eliminar un registro, su meta esperada y su resultado dejan de formar parte de las sumas consolidadas. Si el grupo queda sin registros, su variable consolidada se elimina.
+
+32. **Recálculo idempotente:** ejecutar el mecanismo de recálculo varias veces sin modificar registros individuales produce el mismo resultado para ambas variables.
+
+33. **Metas y resultados ocultas:** las metas consolidadas y los resultados consolidados no se muestran en ninguna sección de la interfaz de usuario.
+
+34. **Independencia de variables:** la meta esperada consolidada y el resultado consolidado se calculan de forma independiente; modificar uno no afecta al otro.
+
+35. **Resultado 0 válido:** un registro con resultado 0 es válido y contribuye 0 a la suma del resultado consolidado.
 
 Los comportamientos adicionales sobre errores de almacenamiento y advertencias de datos ficticios deberán validarse con el grupo antes de cerrar la especificación.
 

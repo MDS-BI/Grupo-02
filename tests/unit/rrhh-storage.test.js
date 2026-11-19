@@ -5,7 +5,9 @@ import {
   updateDepartmentAssignment, deleteDepartmentAssignment, changeDepartment,
   getCurrentAssignment, getAssignmentsForEntity, addDocument, updateDocument,
   loadDocuments, saveDocuments, validateDocument, findDuplicateProductivity,
-  getProductivityHistory, getComparableMeasurements, inspectDocumentsForRRHH
+  getProductivityHistory, getComparableMeasurements, inspectDocumentsForRRHH,
+  calcularMetasConsolidadas, loadMetasConsolidadas, saveMetasConsolidadas,
+  getDepartmentForAssignment, deleteDocument
 } from '../../src/storage.js';
 import { setActiveConfig, RRHH_CONFIG } from '../../src/module-config.js';
 
@@ -297,5 +299,462 @@ describe('productividad', () => {
     expect(saved.unidad).toBeUndefined();
     expect(saved.notes).toBeUndefined();
     expect(saved.observaciones).toBe('Sin unidad ni notas.');
+  });
+});
+
+describe('metas consolidadas por departamento y período', () => {
+  function seedCafe(){
+    clearAll();
+    setActiveConfig(RRHH_CONFIG);
+
+    const deptCafe = addDepartment({ nombre: 'Team cafe' });
+    const deptJefatura = addDepartment({ nombre: 'Jefatura' });
+
+    const daniela = addEntity({
+      name: 'Daniela', code: 'W-001', cargo: 'Barista',
+      fechaIngreso: '2026-01-15', estadoLaboral: 'Activo',
+      departamentoId: deptCafe.id_departamento
+    });
+    const bruno = addEntity({
+      name: 'Bruno', code: 'W-002', cargo: 'Cajero',
+      fechaIngreso: '2026-01-15', estadoLaboral: 'Activo',
+      departamentoId: deptJefatura.id_departamento
+    });
+
+    const asignacionDaniela = addDepartmentAssignment({
+      entity_id: daniela.entity_id,
+      id_departamento: deptCafe.id_departamento,
+      fecha_inicio: '2026-01-15'
+    });
+    const asignacionBruno = addDepartmentAssignment({
+      entity_id: bruno.entity_id,
+      id_departamento: deptJefatura.id_departamento,
+      fecha_inicio: '2026-01-15'
+    });
+
+    return { deptCafe, deptJefatura, daniela, bruno, asignacionDaniela, asignacionBruno };
+  }
+
+  function addProductividad(entityId, asignacionId, periodo, meta, indicador = 'Calidad de café', resultado = 50){
+    const [year, month] = periodo.split('-').map(Number);
+    const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
+    return addDocument({
+      entityId,
+      period: periodo,
+      indicador,
+      resultado,
+      unidad: 'puntos',
+      asignacionId,
+      turno: 'Mañana',
+      meta,
+      evaluacionCalidad: 4,
+      evaluacionResponsabilidad: 4,
+      evaluacionCumplimiento: 4,
+      evaluacionColaboracion: 4,
+      startDate: `${periodo}-01`,
+      endDate: `${periodo}-${String(lastDay).padStart(2, '0')}`
+    });
+  }
+
+  it('suma metas de dos trabajadores del mismo departamento y período', () => {
+    const { deptCafe, daniela, bruno, asignacionDaniela } = seedCafe();
+
+    // Mover a Bruno a Team cafe para noviembre (cierra su asignación en Jefatura)
+    changeDepartment(bruno.entity_id, deptCafe.id_departamento, '2026-11-01');
+    const asignacionBrunoCafe = getCurrentAssignment(bruno.entity_id);
+
+    // Ambos registros en noviembre, que está cubierto por las asignaciones vigentes
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-11', 100);
+    addProductividad(bruno.entity_id, asignacionBrunoCafe.id_historial, '2026-11', 120);
+
+    const metas = loadMetasConsolidadas();
+    const grupo = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-11');
+    expect(grupo).toBeDefined();
+    expect(grupo.metaConsolidada).toBe(220);
+  });
+
+  it('no comparte suma entre departamentos diferentes', () => {
+    const { deptCafe, deptJefatura, daniela, bruno, asignacionDaniela, asignacionBruno } = seedCafe();
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100);
+    addProductividad(bruno.entity_id, asignacionBruno.id_historial, '2026-10', 80);
+
+    const metas = loadMetasConsolidadas();
+    const cafe = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10');
+    const jefatura = metas.find(m => m.departamentoId === deptJefatura.id_departamento && m.periodo === '2026-10');
+    expect(cafe.metaConsolidada).toBe(100);
+    expect(jefatura.metaConsolidada).toBe(80);
+  });
+
+  it('genera variables separadas para el mismo departamento en meses diferentes', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100);
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-11', 150);
+
+    const metas = loadMetasConsolidadas();
+    const oct = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10');
+    const nov = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-11');
+    expect(oct.metaConsolidada).toBe(100);
+    expect(nov.metaConsolidada).toBe(150);
+  });
+
+  it('un trabajador con varios registros contribuye a cada grupo correspondiente', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100);
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 50);
+
+    const metas = loadMetasConsolidadas();
+    const grupo = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10');
+    expect(grupo.metaConsolidada).toBe(150);
+  });
+
+  it('actualiza la suma al crear un nuevo registro', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100);
+    let metas = loadMetasConsolidadas();
+    expect(metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10')?.metaConsolidada).toBe(100);
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 50);
+    metas = loadMetasConsolidadas();
+    expect(metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10')?.metaConsolidada).toBe(150);
+  });
+
+  it('actualiza la suma al modificar una meta individual', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    const doc = addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 120);
+    let metas = loadMetasConsolidadas();
+    expect(metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10')?.metaConsolidada).toBe(120);
+
+    const updated = updateDocument(doc.id, { meta: 200 });
+    expect(updated.meta).toBe(200);
+
+    metas = loadMetasConsolidadas();
+    expect(metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10')?.metaConsolidada).toBe(200);
+  });
+
+  it('actualiza los grupos anterior y nuevo al cambiar de departamento', () => {
+    const { deptCafe, deptJefatura, daniela, asignacionDaniela } = seedCafe();
+
+    // Registro en Team cafe para octubre (departamento histórico)
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100);
+
+    // Cambiar de departamento a partir de noviembre (sin conflicto con registro de octubre)
+    changeDepartment(daniela.entity_id, deptJefatura.id_departamento, '2026-11-01');
+    const nuevaAsignacion = getCurrentAssignment(daniela.entity_id);
+
+    // Nuevo registro en Jefatura para noviembre
+    addProductividad(daniela.entity_id, nuevaAsignacion.id_historial, '2026-11', 50);
+
+    const metas = loadMetasConsolidadas();
+    const cafe = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10');
+    const jefatura = metas.find(m => m.departamentoId === deptJefatura.id_departamento && m.periodo === '2026-11');
+    expect(cafe.metaConsolidada).toBe(100);
+    expect(jefatura.metaConsolidada).toBe(50);
+  });
+
+  it('actualiza los grupos al cambiar de período', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100);
+
+    const doc = loadDocuments()[0];
+    const updated = updateDocument(doc.id, { period: '2026-11', startDate: '2026-11-01', endDate: '2026-11-30' });
+
+    const metas = loadMetasConsolidadas();
+    const oct = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10');
+    const nov = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-11');
+    expect(oct).toBeUndefined();
+    expect(nov.metaConsolidada).toBe(100);
+  });
+
+  it('recalcula al eliminar un registro', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100);
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 50);
+
+    const docs = loadDocuments();
+    deleteDocument(docs[0].id);
+
+    const metas = loadMetasConsolidadas();
+    const grupo = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10');
+    expect(grupo.metaConsolidada).toBe(50);
+  });
+
+  it('elimina el grupo consolidado si queda sin registros', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    const doc = addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100);
+    deleteDocument(doc.id);
+
+    const metas = loadMetasConsolidadas();
+    const grupo = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10');
+    expect(grupo).toBeUndefined();
+    expect(metas.length).toBe(0);
+  });
+
+  it('es idempotente: ejecutar varias veces produce el mismo resultado', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100);
+
+    const primera = calcularMetasConsolidadas();
+    const segunda = calcularMetasConsolidadas();
+    const tercera = calcularMetasConsolidadas();
+
+    expect(primera).toEqual(segunda);
+    expect(segunda).toEqual(tercera);
+    expect(primera[0].metaConsolidada).toBe(100);
+  });
+
+  it('persiste los resultados en localStorage tras recalcular', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100);
+
+    const metas = loadMetasConsolidadas();
+    expect(metas.length).toBe(1);
+    expect(metas[0].metaConsolidada).toBe(100);
+    expect(metas[0].departamentoId).toBe(deptCafe.id_departamento);
+    expect(metas[0].periodo).toBe('2026-10');
+    expect(metas[0].departamentoNombre).toBe('Team cafe');
+  });
+
+  it('no altera los registros individuales de productividad', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    const doc = addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100);
+    const docsAntes = loadDocuments();
+    calcularMetasConsolidadas();
+    const docsDespues = loadDocuments();
+
+    expect(docsDespues.length).toBe(docsAntes.length);
+    expect(docsDespues[0].meta).toBe(docsAntes[0].meta);
+    expect(docsDespues[0].resultado).toBe(docsAntes[0].resultado);
+  });
+
+  it('crea grupo con meta 0 cuando solo hay resultado válido', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    // Meta undefined, pero resultado por defecto es 50 (válido)
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', undefined);
+
+    const metas = loadMetasConsolidadas();
+    expect(metas.length).toBe(1);
+    expect(metas[0].metaConsolidada).toBe(0);
+    expect(metas[0].resultadoConsolidado).toBe(50);
+  });
+
+  // --- Pruebas para Resultado consolidado ---
+
+  it('suma resultados de dos trabajadores del mismo departamento y período', () => {
+    const { deptCafe, daniela, bruno, asignacionDaniela } = seedCafe();
+
+    changeDepartment(bruno.entity_id, deptCafe.id_departamento, '2026-11-01');
+    const asignacionBrunoCafe = getCurrentAssignment(bruno.entity_id);
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-11', 100, undefined, 90);
+    addProductividad(bruno.entity_id, asignacionBrunoCafe.id_historial, '2026-11', 120, undefined, 110);
+
+    const metas = loadMetasConsolidadas();
+    const grupo = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-11');
+    expect(grupo).toBeDefined();
+    expect(grupo.metaConsolidada).toBe(220);
+    expect(grupo.resultadoConsolidado).toBe(200);
+  });
+
+  it('no comparte resultado entre departamentos diferentes', () => {
+    const { deptCafe, deptJefatura, daniela, bruno, asignacionDaniela, asignacionBruno } = seedCafe();
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100, undefined, 90);
+    addProductividad(bruno.entity_id, asignacionBruno.id_historial, '2026-10', 80, undefined, 70);
+
+    const metas = loadMetasConsolidadas();
+    const cafe = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10');
+    const jefatura = metas.find(m => m.departamentoId === deptJefatura.id_departamento && m.periodo === '2026-10');
+    expect(cafe.metaConsolidada).toBe(100);
+    expect(cafe.resultadoConsolidado).toBe(90);
+    expect(jefatura.metaConsolidada).toBe(80);
+    expect(jefatura.resultadoConsolidado).toBe(70);
+  });
+
+  it('genera variables separadas para el mismo departamento en meses diferentes', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100, undefined, 90);
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-11', 150, undefined, 140);
+
+    const metas = loadMetasConsolidadas();
+    const oct = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10');
+    const nov = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-11');
+    expect(oct.metaConsolidada).toBe(100);
+    expect(oct.resultadoConsolidado).toBe(90);
+    expect(nov.metaConsolidada).toBe(150);
+    expect(nov.resultadoConsolidado).toBe(140);
+  });
+
+  it('un trabajador con varios registros contribuye a cada grupo correspondiente', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100, undefined, 90);
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 50, undefined, 40);
+
+    const metas = loadMetasConsolidadas();
+    const grupo = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10');
+    expect(grupo.metaConsolidada).toBe(150);
+    expect(grupo.resultadoConsolidado).toBe(130);
+  });
+
+  it('actualiza el resultado al crear un nuevo registro', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100, undefined, 90);
+    let metas = loadMetasConsolidadas();
+    expect(metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10')?.resultadoConsolidado).toBe(90);
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 50, undefined, 40);
+    metas = loadMetasConsolidadas();
+    expect(metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10')?.resultadoConsolidado).toBe(130);
+  });
+
+  it('actualiza solo el resultado consolidado al modificar únicamente el resultado individual', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    const doc = addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 120, undefined, 80);
+    let metas = loadMetasConsolidadas();
+    expect(metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10')?.metaConsolidada).toBe(120);
+    expect(metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10')?.resultadoConsolidado).toBe(80);
+
+    const updated = updateDocument(doc.id, { resultado: 150 });
+    expect(updated.resultado).toBe(150);
+
+    metas = loadMetasConsolidadas();
+    const grupo = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10');
+    expect(grupo.metaConsolidada).toBe(120);
+    expect(grupo.resultadoConsolidado).toBe(150);
+  });
+
+  it('actualiza solo la meta consolidada al modificar únicamente la meta individual', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    const doc = addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 120, undefined, 80);
+    let metas = loadMetasConsolidadas();
+    expect(metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10')?.metaConsolidada).toBe(120);
+    expect(metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10')?.resultadoConsolidado).toBe(80);
+
+    const updated = updateDocument(doc.id, { meta: 200 });
+    expect(updated.meta).toBe(200);
+
+    metas = loadMetasConsolidadas();
+    const grupo = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10');
+    expect(grupo.metaConsolidada).toBe(200);
+    expect(grupo.resultadoConsolidado).toBe(80);
+  });
+
+  it('actualiza ambos grupos al cambiar de departamento', () => {
+    const { deptCafe, deptJefatura, daniela, asignacionDaniela } = seedCafe();
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100, undefined, 90);
+
+    changeDepartment(daniela.entity_id, deptJefatura.id_departamento, '2026-11-01');
+    const nuevaAsignacion = getCurrentAssignment(daniela.entity_id);
+
+    addProductividad(daniela.entity_id, nuevaAsignacion.id_historial, '2026-11', 50, undefined, 40);
+
+    const metas = loadMetasConsolidadas();
+    const cafe = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10');
+    const jefatura = metas.find(m => m.departamentoId === deptJefatura.id_departamento && m.periodo === '2026-11');
+    expect(cafe.metaConsolidada).toBe(100);
+    expect(cafe.resultadoConsolidado).toBe(90);
+    expect(jefatura.metaConsolidada).toBe(50);
+    expect(jefatura.resultadoConsolidado).toBe(40);
+  });
+
+  it('actualiza ambos grupos al cambiar de período', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100, undefined, 90);
+
+    const doc = loadDocuments()[0];
+    const updated = updateDocument(doc.id, { period: '2026-11', startDate: '2026-11-01', endDate: '2026-11-30' });
+
+    const metas = loadMetasConsolidadas();
+    const oct = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10');
+    const nov = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-11');
+    expect(oct).toBeUndefined();
+    expect(nov.metaConsolidada).toBe(100);
+    expect(nov.resultadoConsolidado).toBe(90);
+  });
+
+  it('recalcula ambos valores al eliminar un registro', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100, undefined, 90);
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 50, undefined, 40);
+
+    const docs = loadDocuments();
+    deleteDocument(docs[0].id);
+
+    const metas = loadMetasConsolidadas();
+    const grupo = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10');
+    expect(grupo.metaConsolidada).toBe(50);
+    expect(grupo.resultadoConsolidado).toBe(40);
+  });
+
+  it('elimina el grupo consolidado si queda sin registros', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    const doc = addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100, undefined, 90);
+    deleteDocument(doc.id);
+
+    const metas = loadMetasConsolidadas();
+    const grupo = metas.find(m => m.departamentoId === deptCafe.id_departamento && m.periodo === '2026-10');
+    expect(grupo).toBeUndefined();
+    expect(metas.length).toBe(0);
+  });
+
+  it('es idempotente para ambos valores', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100, undefined, 90);
+
+    const primera = calcularMetasConsolidadas();
+    const segunda = calcularMetasConsolidadas();
+    const tercera = calcularMetasConsolidadas();
+
+    expect(primera).toEqual(segunda);
+    expect(segunda).toEqual(tercera);
+    expect(primera[0].metaConsolidada).toBe(100);
+    expect(primera[0].resultadoConsolidado).toBe(90);
+  });
+
+  it('persiste ambos valores en localStorage tras recalcular', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100, undefined, 90);
+
+    const metas = loadMetasConsolidadas();
+    expect(metas.length).toBe(1);
+    expect(metas[0].metaConsolidada).toBe(100);
+    expect(metas[0].resultadoConsolidado).toBe(90);
+    expect(metas[0].departamentoId).toBe(deptCafe.id_departamento);
+    expect(metas[0].periodo).toBe('2026-10');
+    expect(metas[0].departamentoNombre).toBe('Team cafe');
+  });
+
+  it('registra resultado 0 cuando el resultado individual es 0', () => {
+    const { deptCafe, daniela, asignacionDaniela } = seedCafe();
+
+    // Resultado 0 es válido (>= 0 y finito)
+    addProductividad(daniela.entity_id, asignacionDaniela.id_historial, '2026-10', 100, undefined, 0);
+
+    const metas = loadMetasConsolidadas();
+    expect(metas.length).toBe(1);
+    expect(metas[0].metaConsolidada).toBe(100);
+    expect(metas[0].resultadoConsolidado).toBe(0);
   });
 });

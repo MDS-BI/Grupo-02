@@ -53,7 +53,6 @@ describe('User Story 6 - relabel screens from configuration', () => {
     });
     expect(document.title).toBe('Ventas');
     expect(qs('brand-name').textContent).toBe('Ventas');
-    expect(qs('dashboard-heading').textContent).toBe('Ventas');
     expect(qs('nav-entities-label').textContent).toBe('Clientes');
     expect(qs('nav-documents-label').textContent).toBe('Pedidos de Venta');
     expect(qs('action-new-entity-title').textContent).toBe('Nuevo Cliente');
