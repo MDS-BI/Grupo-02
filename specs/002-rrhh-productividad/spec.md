@@ -5,28 +5,28 @@
 **Rama de trabajo de Git**: `correccion-specs-002`  
 **Creada**: 2026-10-20  
 **Actualizada**: 2026-11-09  
-**Estado**: Implementación completada; suite automatizada aprobada (14 archivos, 132 pruebas) y prueba técnica de 500 registros aprobada (T076). Pendientes las mediciones manuales de SC-001 a SC-003, la evaluación de usuarios de SC-004 (T083), la aprobación de la advertencia (T072) y la asignación de responsables (T084).
+**Estado**: Implementación completada; suite automatizada aprobada (14 archivos, 132 pruebas) y prueba técnica de 500 registros aprobada (T076). Advertencia sobre datos ficticios aprobada (T072) y responsables asignados (T084). Pendientes las mediciones manuales de SC-001 a SC-003 y la evaluación de usuarios de SC-004 (T083).
 **Entrada**: Incremento 002 sobre el módulo base ERP (001). Decisiones de alcance aprobadas para esta especificación.
 
 ---
 
 ## 1. Definición del problema
 
-Las organizaciones enfrentan dificultades para mantener un registro histórico y centralizado del desempeño y la productividad de sus trabajadores a lo largo del tiempo.
+Las cafeterías enfrentan dificultades para mantener un registro histórico y centralizado del desempeño, la productividad y el cumplimiento de metas de ventas de su personal a lo largo del tiempo.
 
-Cuando un trabajador cambia de departamento, de jefatura o de responsabilidades, la información previa puede dispersarse o perderse, dificultando comprender su evolución profesional, identificar tendencias de rendimiento y detectar necesidades de capacitación y apoyo.
+Cuando un integrante del equipo cambia de área (barra, cocina o salón), de turno (mañana o tarde) o de responsabilidades, la información previa puede dispersarse o perderse, dificultando comprender su evolución, identificar tendencias de rendimiento y detectar necesidades de capacitación y apoyo.
 
-Este módulo busca conservar las mediciones de productividad junto con el contexto del departamento al que pertenecía cada trabajador durante el período registrado.
+Este módulo busca conservar las mediciones de productividad y las metas de ventas junto con el contexto del área y el turno en que cada trabajador de la cafetería realizó su actividad durante el período registrado.
 
 ---
 
 ## 2. Usuarios y necesidades
 
-- **Encargado de RR. HH. (usuario principal):** necesita registrar trabajadores, gestionar asignaciones de departamento, ingresar mediciones periódicas de productividad y consultar el historial de cada trabajador.
+- **Administrador o encargado de la cafetería (usuario principal):** necesita registrar al personal de barra, cocina y salón, gestionar sus asignaciones de área y turno, ingresar mediciones periódicas de productividad y metas de ventas, y consultar el historial de cada trabajador.
 
-- **Jefatura de departamento (usuario secundario):** necesita consultar la productividad de los integrantes de su departamento para dar seguimiento a su desempeño.
+- **Jefatura de área —jefe de barra, jefe de cocina o encargado de salón (usuario secundario):** necesita consultar la productividad y el cumplimiento de metas de los integrantes de su área y turno (mañana o tarde) para dar seguimiento a su desempeño.
 
-- **Dirección o gerencia (usuario potencial futuro):** podría consultar información resumida para apoyar la toma de decisiones.
+- **Dirección o gerencia de la cafetería (usuario potencial futuro):** podría consultar información resumida de ventas y productividad para apoyar la toma de decisiones.
 
 **Limitación del MVP:** no se implementa autenticación ni control de acceso. La distinción entre tipos de usuarios describe sus necesidades, pero no representa una restricción de seguridad implementada.
 
@@ -141,15 +141,15 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 ### Historia de Usuario 1: Registro de medición de productividad (Prioridad: P1)
 
-**Como** encargado de RR. HH.,  
-**quiero** registrar los resultados de productividad de un trabajador en un período específico,  
-**para** mantener actualizado su expediente laboral.
+**Como** encargado de la cafetería,  
+**quiero** registrar los resultados de productividad y el cumplimiento de metas de ventas de un trabajador de barra, cocina o salón en un período y turno específicos (mañana o tarde),  
+**para** mantener actualizado su expediente y poder dar seguimiento al desempeño del equipo.
 
-**Justificación de prioridad:** es la funcionalidad principal del incremento. Sin mediciones no existe información para consultar ni analizar.
+**Justificación de prioridad:** es la funcionalidad principal del incremento. Sin mediciones no existe información para consultar ni analizar el cumplimiento de las metas de la cafetería.
 
-**Prueba independiente:** registrar un trabajador, asignarle un departamento y guardar una medición que posteriormente aparezca en su historial.
+**Prueba independiente:** registrar un trabajador de la cafetería, asignarlo a un área (barra, cocina o salón) en un turno y guardar una medición que posteriormente aparezca en su historial.
 
-**Responsable:** Por confirmar.
+**Responsable:** Daphnne Hidalgo Mundaca.
 
 **Requisitos relacionados:** FR-012 a FR-023.
 
@@ -191,15 +191,15 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 ### Historia de Usuario 2: Consulta del historial de desempeño (Prioridad: P1)
 
-**Como** encargado de RR. HH.,  
-**quiero** consultar el historial de productividad de un trabajador,  
+**Como** jefe de barra, jefe de cocina o encargado de salón de la cafetería,  
+**quiero** consultar el historial de productividad y de metas de ventas de un trabajador, incluyendo su área y su turno (mañana o tarde),  
 **para** analizar cómo han evolucionado sus resultados durante distintos períodos.
 
-**Justificación de prioridad:** permite conservar y consultar la trayectoria de productividad de cada trabajador.
+**Justificación de prioridad:** permite conservar y consultar la trayectoria de productividad de cada integrante del equipo de la cafetería.
 
-**Prueba independiente:** seleccionar un trabajador con varias mediciones y visualizar sus registros ordenados por período.
+**Prueba independiente:** seleccionar un trabajador de la cafetería con varias mediciones y visualizar sus registros ordenados por período, con el área y el turno correspondientes.
 
-**Responsable:** Por confirmar.
+**Responsable:** Bruno Phillipe Cabalin Ferreira.
 
 **Requisitos relacionados:** FR-024 a FR-027.
 
@@ -219,15 +219,15 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 ### Historia de Usuario 3: Gestión de trabajadores y asignaciones de departamento (Prioridad: P1)
 
-**Como** encargado de RR. HH.,  
-**quiero** registrar trabajadores y administrar sus asignaciones a departamentos,  
-**para** mantener actualizada su información laboral y conservar el historial de sus cambios de departamento.
+**Como** administrador de la cafetería,  
+**quiero** registrar al personal de barra, cocina y salón y administrar sus asignaciones de área y turno (mañana o tarde),  
+**para** mantener actualizada su información laboral y conservar el historial de sus cambios de área.
 
-**Justificación de prioridad:** es necesaria para asociar correctamente cada medición al trabajador y al departamento de su período.
+**Justificación de prioridad:** es necesaria para asociar correctamente cada medición al trabajador y al área o turno de su período.
 
-**Prueba independiente:** registrar un trabajador, asignarlo a un departamento, cambiarlo a otro y comprobar que la asignación anterior se conserva.
+**Prueba independiente:** registrar un trabajador de la cafetería, asignarlo a un área (por ejemplo, barra) en turno de mañana, cambiarlo a otra área o turno y comprobar que la asignación anterior se conserva.
 
-**Responsable:** Por confirmar.
+**Responsable:** Consuelo Estefania Hidalgo Salgado.
 
 **Requisitos relacionados:** FR-001 a FR-011.
 
@@ -253,15 +253,15 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 ### Historia de Usuario 4: Visualización de la evolución de productividad (Prioridad: P2)
 
-**Como** encargado de RR. HH.,  
-**quiero** visualizar la evolución de los indicadores de productividad de un trabajador a lo largo del tiempo,  
-**para** identificar tendencias en su desempeño y apoyar la toma de decisiones.
+**Como** administrador de la cafetería o jefe de área,  
+**quiero** visualizar la evolución de los indicadores de productividad y de las metas de ventas de un trabajador a lo largo del tiempo, distinguiendo su área y su turno (mañana o tarde),  
+**para** identificar tendencias en el desempeño del equipo y apoyar la toma de decisiones de la cafetería.
 
 **Justificación de prioridad:** permite analizar las mediciones registradas, pero depende de que las funcionalidades anteriores estén disponibles.
 
-**Prueba independiente:** seleccionar un trabajador con mediciones comparables de distintos períodos y observar su evolución.
+**Prueba independiente:** seleccionar un trabajador de la cafetería con mediciones comparables de distintos períodos y observar su evolución por área y turno.
 
-**Responsable:** Por confirmar.
+**Responsable:** Bastián Ignacio Reinado Bravo.
 
 **Requisitos relacionados:** FR-028 a FR-031.
 
@@ -419,7 +419,7 @@ Los errores de validación deben comunicarse mediante mensajes claros para el us
 
 20. **Intento de registrar liquidaciones:** las funcionalidades de planilla no forman parte del incremento 002.
 
-21. **Ingreso accidental de datos reales:** el sistema debe mostrar una advertencia de uso exclusivo de datos ficticios. No se garantiza la detección automática de información real.
+21. **Ingreso accidental de datos reales:** el sistema debe mostrar una advertencia de uso exclusivo de datos ficticios. No se garantiza la detección automática de información real. **Texto aprobado (T072):** "Aviso: Este módulo funciona exclusivamente en almacenamiento local con fines académicos. Ingrese únicamente datos ficticios; no registre información personal ni laboral real."
 
 22. **Turno inválido:** si se informa un turno que no sea Mañana o Tarde, se rechaza el registro.
 
@@ -449,7 +449,7 @@ Los errores de validación deben comunicarse mediante mensajes claros para el us
 
 35. **Resultado 0 válido:** un registro con resultado 0 es válido y contribuye 0 a la suma del resultado consolidado.
 
-Los comportamientos adicionales sobre errores de almacenamiento y advertencias de datos ficticios deberán validarse con el grupo antes de cerrar la especificación.
+Los comportamientos adicionales sobre errores de almacenamiento deberán validarse con el grupo antes de cerrar la especificación; la advertencia sobre uso exclusivo de datos ficticios fue aprobada (T072).
 
 ---
 
@@ -549,23 +549,24 @@ La aplicación está destinada a demostraciones académicas con datos ficticios.
 
 ### 14.1. Asignación de responsables
 
-Las cuatro historias de usuario están definidas e implementadas. El grupo aún debe confirmar qué integrante será responsable de cada una; esto no cambia su alcance ni su estado técnico.
+Las cuatro historias de usuario están definidas, implementadas y con responsable asignado por el grupo (T084 cerrado); esto no cambia su alcance ni su estado técnico.
 
-| Historia | Responsable | Estado |
+| Historia o tarea | Responsable | Estado |
 |---|---|---|
-| HU1 — Registro de medición de productividad | Pendiente de asignación por el grupo | Implementada; pruebas automatizadas aprobadas |
-| HU2 — Consulta del historial de desempeño | Pendiente de asignación por el grupo | Implementada; pruebas automatizadas aprobadas |
-| HU3 — Gestión de trabajadores y asignaciones de departamento | Pendiente de asignación por el grupo | Implementada; pruebas automatizadas aprobadas |
-| HU4 — Visualización de la evolución de productividad | Pendiente de asignación por el grupo | Implementada; pruebas automatizadas aprobadas |
+| HU1 — Registro de medición de productividad | Daphnne Hidalgo Mundaca | Implementada; pruebas automatizadas aprobadas |
+| HU2 — Consulta del historial de desempeño | Bruno Phillipe Cabalin Ferreira | Implementada; pruebas automatizadas aprobadas |
+| HU3 — Gestión de trabajadores y asignaciones de departamento | Consuelo Estefania Hidalgo Salgado | Implementada; pruebas automatizadas aprobadas |
+| HU4 — Visualización de la evolución de productividad | Bastián Ignacio Reinado Bravo | Implementada; pruebas automatizadas aprobadas |
+| Soporte de integración, pruebas manuales y validación documental (T072, T083, T085) | Lucas Soarzo Mancilla y Emilio Vejar Bravo | Asignado |
 
-La asignación de responsables deberá ser acordada por el grupo antes de cerrar la planificación.
+La asignación de responsables quedó acordada por el grupo y permite cerrar la planificación.
 
-Si el grupo tiene más integrantes que historias de usuario, podrán distribuirse tareas de implementación, pruebas, integración y documentación sin inventar historias adicionales.
+Los integrantes adicionales se distribuyen las tareas de soporte de integración, pruebas manuales y validación documental sin inventar historias adicionales.
 
 ### 14.2. Verificaciones de cierre
 
-- Confirmar los responsables de cada historia de usuario (pendiente de asignación por el grupo; T084).
-- Aprobar el texto de la advertencia sobre datos ficticios (pendiente; T072).
+- Responsables de cada historia de usuario y tareas de soporte asignados por el grupo (T084 cerrado).
+- Texto de la advertencia sobre datos ficticios aprobado por el grupo (T072 cerrado): "Aviso: Este módulo funciona exclusivamente en almacenamiento local con fines académicos. Ingrese únicamente datos ficticios; no registre información personal ni laboral real."
 - Completar la prueba manual de extremo a extremo y documentar las mediciones de SC-001 a SC-004 (pendiente; T083).
 - Prueba técnica con 500 registros en Edge aislado: verificada (T076); evaluación de usuarios reales para SC-004 pendiente (T083).
 - Coherencia entre `plan.md`, `data-model.md`, `tasks.md` y esta especificación revisada: completada (T085).
