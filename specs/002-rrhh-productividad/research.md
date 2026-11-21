@@ -8,7 +8,7 @@ La revisión de la implementación existente confirma que 002 debe seguir usando
 
 - Las claves de persistencia y los campos existentes se documentan en `data-model.md` y `contracts/storage.md`.
 - Cada medición referencia su asignación histórica mediante `asignacionId`; el departamento histórico se resuelve desde esa asignación.
-- Las cuatro historias se implementan con componentes y almacenamiento del proyecto base.
+- Las seis historias corresponden a funcionalidades implementadas con componentes y almacenamiento del proyecto base; HU5 y HU6 se relacionan con tareas y pruebas existentes.
 - El MER original de nueve entidades se conserva; no se agregan entidades al modelo.
 - No se requiere API externa ni contrato HTTP para este MVP local.
 

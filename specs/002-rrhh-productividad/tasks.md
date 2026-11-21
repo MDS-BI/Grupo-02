@@ -4,9 +4,9 @@
 **Entrada:** `spec.md`, `plan.md` y `data-model.md` de `specs/002-rrhh-productividad/`  
 **Prerrequisitos:** Documentación de 002 y recuperación/verificación del módulo base (E0)  
 **Rama de trabajo:** `correccion-specs-002`  
-**Estado:** Implementación técnica completada; suite automatizada aprobada (14 archivos, 165 pruebas), T076 verificada en Edge aislado y T072, T083 y T084 completadas y aprobadas por el grupo. Sigue pendiente la revisión final del grupo.
+**Estado:** Las seis historias corresponden a funcionalidades existentes. Suite automatizada aprobada (14 archivos, 165 pruebas), T076 verificada en Edge aislado y T072, T083 y T084 completadas; el grupo confirmó la distribución de responsables. Sigue pendiente la revisión final del grupo.
 
-**Separación de trabajo:** T001–T009 (E0) recuperan y verifican el módulo base del incremento 001; no son funcionalidades nuevas de 002. T010–T070 registran la infraestructura y las cuatro historias del incremento 002. T071–T086 registran las verificaciones, documentación y cierre.
+**Separación de trabajo:** T001–T009 (E0) recuperan y verifican el módulo base del incremento 001; no son funcionalidades nuevas de 002. T010–T070 cubren infraestructura y HU1–HU4. HU5 y HU6 se relacionan con tareas y pruebas ya existentes en las fases 2, 4, 7 y 8. T071–T086 registran las verificaciones, documentación y cierre.
 
 **Regla de trabajo con IA:** Se permite utilizar OpenCode para crear, modificar y ejecutar código del proyecto, con supervisión de los integrantes del grupo. Los cambios deben revisarse y probarse antes de considerarse terminados. OpenCode no puede realizar commits, push, merge, eliminar datos existentes ni cambiar de rama sin autorización explícita.
 
@@ -24,6 +24,8 @@ Cada tarea utiliza el formato:
 - `[US2]`: historia de usuario 2.
 - `[US3]`: historia de usuario 3.
 - `[US4]`: historia de usuario 4.
+- `[US5]`: historia de usuario 5.
+- `[US6]`: historia de usuario 6.
 
 ## Responsables
 
@@ -33,10 +35,12 @@ Cada tarea utiliza el formato:
 | HU2 — Consulta del historial de desempeño | Lucas Omar Soarzo Mancilla | Aprobada por el grupo (T084) |
 | HU3 — Gestión de trabajadores y asignaciones | Consuelo Estefania Hidalgo Salgado | Aprobada por el grupo (T084) |
 | HU4 — Visualización de la evolución | Bastián Ignacio Reinado Bravo | Aprobada por el grupo (T084) |
-| Especificaciones y documentación | Daphnne Hidalgo Mundaca | Aprobada por el grupo (T084) |
-| Implementación, integración y pruebas | Emilio Vejar Bravo | Aprobada por el grupo (T084) |
+| HU5 — Indicadores por cargo y turnos | Daphnne Hidalgo | Aprobada por el grupo (T084) |
+| HU6 — Validación y protección de registros | Emilio Vejar | Aprobada por el grupo (T084) |
+| Especificaciones y documentación | Daphnne Hidalgo Mundaca | Asignación de apoyo aprobada previamente |
+| Implementación, integración y pruebas | Emilio Vejar Bravo | Asignación de apoyo aprobada previamente |
 
-La distribución anterior está fundamentada en commits y aportes documentados y fue aprobada por el grupo (T084 completada).
+La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T084). Se mantienen las asignaciones de apoyo previamente documentadas.
 
 ## Resumen de fases
 
@@ -85,7 +89,7 @@ La distribución anterior está fundamentada en commits y aportes documentados y
 
 ## Fase 2: Infraestructura fundacional
 
-**Propósito:** Preparar almacenamiento, configuración, validaciones y componentes comunes necesarios para implementar las cuatro historias de usuario.
+**Propósito:** Preparar almacenamiento, configuración, validaciones y componentes comunes utilizados por las historias de usuario del incremento.
 
 **Dependencia:** Fase 1 completada.
 
@@ -119,7 +123,7 @@ La distribución anterior está fundamentada en commits y aportes documentados y
 
 - [x] T021 Integrar la configuración del módulo y las nuevas operaciones de almacenamiento con `src/main.js` y `src/app.js`, ajustando las rutas a la estructura real recuperada.
 
-- [x] T022 Implementar el manejo de errores de localStorage para informar fallos de lectura o escritura y evitar confirmaciones falsas de guardado. Preparar una advertencia provisional de uso exclusivo de datos ficticios; la aprobación del texto definitivo no debe bloquear la infraestructura técnica.
+- [x] T022 [US6] Implementar el manejo de errores de localStorage para informar fallos de lectura o escritura y evitar confirmaciones falsas de guardado. Preparar una advertencia provisional de uso exclusivo de datos ficticios; la aprobación del texto definitivo no debe bloquear la infraestructura técnica.
 
 **Punto de control:** El almacenamiento de departamentos y asignaciones funciona, la configuración carga correctamente y las validaciones compartidas están disponibles.
 
@@ -189,11 +193,11 @@ La distribución anterior está fundamentada en commits y aportes documentados y
 
 - [x] T040 [P] [US1] Agregar pruebas unitarias para validar el período mensual, el primer y último día del mes, el rechazo de períodos futuros y los anteriores al ingreso.
 
-- [x] T041 [P] [US1] Agregar pruebas unitarias para indicador de 3 a 60 caracteres, resultado numérico no negativo y unidad obligatoria.
+- [x] T041 [P] [US1] [US6] Agregar pruebas unitarias para indicador de 3 a 60 caracteres, resultado numérico no negativo y unidad obligatoria.
 
 - [x] T042 [P] [US1] Agregar pruebas unitarias para validar asignaciones: existencia, pertenencia al trabajador, superposición con el período y selección automática o explícita.
 
-- [x] T043 [P] [US1] Agregar pruebas unitarias para detectar duplicados con advertencia y generar automáticamente un folio entero positivo.
+- [x] T043 [P] [US1] [US6] Agregar pruebas unitarias para detectar duplicados con advertencia y generar automáticamente un folio entero positivo.
 
 - [x] T044 [P] [US1] Agregar pruebas de integración para seleccionar explícitamente un trabajador, persistir su entity_id, crear una medición con asignacionId válido, folio automático y sin campos monetarios, y comprobar que el registro corresponde al trabajador seleccionado.
 
@@ -207,13 +211,13 @@ La distribución anterior está fundamentada en commits y aportes documentados y
 
 - [x] T048 [US1] Implementar la selección de asignación histórica: automática si existe una sola válida, explícita si existen varias y rechazo si no existe ninguna.
 
-- [x] T049 [US1] Implementar las validaciones de productividad y mostrar mensajes claros ante datos incorrectos.
+- [x] T049 [US1] [US6] Implementar las validaciones de productividad y mostrar mensajes claros ante datos incorrectos.
 
-- [x] T050 [US1] Implementar la detección de registros duplicados del mismo trabajador, período e indicador. Mostrar advertencia y permitir continuar con confirmación.
+- [x] T050 [US1] [US6] Implementar la detección de registros duplicados del mismo trabajador, período e indicador. Mostrar advertencia y permitir continuar con confirmación.
 
 - [x] T051 [US1] Implementar la generación automática de folio entero positivo en `src/storage.js`, utilizando el mayor folio válido más uno.
 
-- [x] T052 [US1] Antes de guardar registros de productividad en erp_base_module:documents, inspeccionar los documentos existentes e identificar registros no productivos, folios inválidos y posibles incompatibilidades. Definir y aplicar un tratamiento seguro mediante respaldo, migración o limpieza con confirmación, sin eliminar datos silenciosamente. Si no puede garantizarse una operación segura, bloquear el guardado e informar el problema. Después de esta verificación, persistir Document con entity_id, folio, período, campos personalizados y asignacionId, sin utilizar campos monetarios.
+- [x] T052 [US1] [US6] Antes de guardar registros de productividad en erp_base_module:documents, inspeccionar los documentos existentes e identificar registros no productivos, folios inválidos y posibles incompatibilidades. Definir y aplicar un tratamiento seguro mediante respaldo, migración o limpieza con confirmación, sin eliminar datos silenciosamente. Si no puede garantizarse una operación segura, bloquear el guardado e informar el problema. Después de esta verificación, persistir Document con entity_id, folio, período, campos personalizados y asignacionId, sin utilizar campos monetarios.
 
 - [x] T053 [US1] Implementar la corrección de una medición existente, actualizando únicamente el registro seleccionado, conservando su folio y aplicando nuevamente las validaciones.
 
@@ -301,7 +305,7 @@ La distribución anterior está fundamentada en commits y aportes documentados y
 
 - [x] T073 [P] Verificar el renderizado seguro del contenido ingresado por el usuario, evitando la ejecución de scripts desde campos de texto.
 
-- [x] T074 [P] Verificar el comportamiento ante `localStorage` lleno, bloqueado o no disponible, sin mostrar confirmaciones falsas de guardado.
+- [x] T074 [P] [US6] Verificar el comportamiento ante `localStorage` lleno, bloqueado o no disponible, sin mostrar confirmaciones falsas de guardado.
 
 - [x] T075 [P] Verificar que la aplicación no presente autenticación, roles ni control de acceso como funcionalidades implementadas.
 
@@ -311,7 +315,7 @@ La distribución anterior está fundamentada en commits y aportes documentados y
 
 - [x] T078 [P] Verificar el diseño responsivo de formularios, listados, historial y evolución.
 
-- [x] T079 [P] Verificar que los documentos de productividad no utilicen campos monetarios ni se mezclen con liquidaciones. Comprobar y documentar el tratamiento realizado sobre documentos anteriores y folios inválidos, conservando evidencia de cualquier migración o limpieza autorizada.
+- [x] T079 [P] [US6] Verificar que los documentos de productividad no utilicen campos monetarios ni se mezclen con liquidaciones. Comprobar y documentar el tratamiento realizado sobre documentos anteriores y folios inválidos, conservando evidencia de cualquier migración o limpieza autorizada.
 
 - [x] T080 [P] Verificar que el MER original de nueve entidades permanezca sin modificaciones, no se agreguen entidades y exista `specs/001-erp-base-module/mer.png` con PK, FK y cardinalidades.
 
@@ -321,13 +325,13 @@ La distribución anterior está fundamentada en commits y aportes documentados y
 
 - [x] T083 Completada — Aprobada: prueba manual de extremo a extremo HU3 → HU1 → HU2 → HU4 con datos ficticios. **Resultados manuales reportados por el grupo:** creación de departamentos y trabajadores; asignaciones y cambios de departamento; registro y consulta de productividad; evolución entre dos períodos; conservación del departamento histórico; persistencia tras recargar la página. SC-001, SC-002 y SC-003 se probaron manualmente; las funciones respondieron rápidamente y no se reportaron fallos. Para SC-004, los 6 integrantes completaron las tareas de registro y consulta sin ayuda (6/6, 100%); criterio aprobado. La medición técnica de renderizado de 500 filas en Edge también queda registrada como referencia.
 
-- [x] T084 Completada — Aprobada por el grupo. La distribución de responsabilidades documentada en `spec.md` §14.1 y en esta tabla quedó ratificada por el grupo.
+- [x] T084 Completada — Aprobada por el grupo. Distribución confirmada: HU1 Bruno Cabalin; HU2 Lucas Soarzo; HU3 Consuelo Hidalgo; HU4 Bastián Reinado; HU5 Daphnne Hidalgo; HU6 Emilio Vejar.
 
 - [x] T085 Revisar la coherencia de Spec Kit (`spec.md`, `plan.md`, `research.md`, `data-model.md`, `quickstart.md`, `contracts/` y `tasks.md`), README e imagen MER, sin alterar funcionalidades.
 
 - [x] T086 Preparar el resumen final de cambios para revisión del grupo, manteniendo el trabajo en `correccion-specs-002`, sin commits ni push automáticos por parte de OpenCode.
 
-**Punto de control:** Las cuatro historias de usuario están integradas, probadas y documentadas.
+**Punto de control:** HU1–HU4 están integradas y probadas manualmente; HU5 y HU6 se relacionan con funcionalidades y tareas existentes.
 
 ---
 
@@ -341,7 +345,7 @@ La distribución anterior está fundamentada en commits y aportes documentados y
 4. **Fase 4 — HU1:** Depende de HU3.
 5. **Fase 5 — HU2:** Depende de HU1.
 6. **Fase 6 — HU4:** Depende de HU2.
-7. **Fase 7:** Revisión final después de integrar las cuatro historias.
+7. **Fase 7:** Revisión final de HU1–HU4 y de las funcionalidades existentes vinculadas a HU5 y HU6.
 
 ### Tareas paralelizables
 
@@ -390,6 +394,8 @@ Las tareas de restauración T003, T004 y T005 también pueden prepararse por sep
 | HU2 | Fase 5 |
 | HU3 | Fase 3 |
 | HU4 | Fase 6 |
+| HU5 | Fase 8: T087–T094 |
+| HU6 | Fases 2, 4 y 7: T022, T040–T043, T049–T052, T074 y T079 |
 
 ---
 
@@ -422,7 +428,8 @@ El incremento 002 se considera finalizado cuando:
 - [x] Se reutilizó `Entity` para trabajadores.
 - [x] Se reutilizó `Document` para productividad.
 - [x] Se implementaron `Departamento` e `Historial_Departamento`.
-- [x] Las cuatro historias de usuario funcionan con validación automatizada.
+- [x] HU1–HU4 funcionan con validación automatizada.
+- [x] HU5 y HU6 describen funcionalidades implementadas y trazadas a tareas y pruebas existentes.
 - [x] Las mediciones están asociadas a asignaciones históricas válidas.
 - [x] Los cambios de departamento no destruyen el historial anterior.
 - [x] Las correcciones de productividad no modifican registros distintos del seleccionado.
@@ -434,11 +441,12 @@ El incremento 002 se considera finalizado cuando:
 - [x] Se verificó la coherencia final de `spec.md`, `plan.md`, `data-model.md` y `tasks.md`.
 - [x] Se aprobó el texto de la advertencia y se verificó su presentación (T072).
 - [x] T083 se completó y aprobó conforme a los criterios establecidos.
+- [x] Se confirmó la distribución de responsables para las seis historias (T084).
 - [ ] El grupo revisó los cambios antes de integrarlos.
 
 ---
 
-**Nota final:** La implementación técnica, la suite automatizada, T072, T076 (500 registros en Edge aislado), T083, T084 y la compilación están completadas. SC-004 fue aprobado por 6/6 integrantes (100%) y SC-001 a SC-003 se probaron manualmente sin fallos reportados. Sigue pendiente la revisión final del grupo. T085, T086, T087–T095 y T096–T100 están completadas. No se realizaron commits ni push automáticos.
+**Nota final:** La implementación técnica, la suite automatizada, T072, T076 (500 registros en Edge aislado), T083, T084 y la compilación están completadas. HU5 y HU6 corresponden a funcionalidades vinculadas con tareas y pruebas existentes. Sigue pendiente la revisión final del grupo. T085, T086, T087–T095 y T096–T100 están completadas. No se realizaron commits ni push automáticos.
 
 ---
 
@@ -446,15 +454,17 @@ El incremento 002 se considera finalizado cuando:
 
 **Propósito:** Adaptar el registro de actividad/productividad existente para el contexto de una cafetería, incorporando selección automática de indicadores por cargo, identificación de turnos, metas y resultados, evaluación cualitativa y observaciones/oportunidades de mejora, manteniendo la estética y arquitectura actuales.
 
-- [x] T087 Configurar `INDICADORES_POR_CARGO` y función `indicadoresParaCargo` en `module-config.js` para sugerir indicadores según el cargo del trabajador (Barista, Cajero, Mesero, Cocinero, Encargado).
-- [x] T088 Agregar campos personalizados de documento: `turno`, `meta`, `evaluacionCalidad`, `evaluacionResponsabilidad`, `evaluacionCumplimiento`, `evaluacionColaboracion`, `observaciones`, `oportunidadesMejora` en `module-config.js`.
-- [x] T089 Agregar elementos HTML para turno, meta, evaluaciones cualitativas, observaciones y oportunidades de mejora en `index.html` dentro de `#productivity-fields`.
-- [x] T090 Actualizar `document-form.js` para recolectar, mostrar y limpiar los nuevos campos, y mostrar errores de validación.
-- [x] T091 Implementar sugerencia automática de indicadores según cargo en `app.js` (`suggestIndicatorsForEntity`) al seleccionar un trabajador.
-- [x] T092 Actualizar `storage.js` con validaciones y normalización de los nuevos campos (turno, meta, evaluaciones 1-5, observaciones, oportunidades).
-- [x] T093 Actualizar `history-view.js`, `evolution-view.js`, `document-list.js` y `dashboard.js` para mostrar los nuevos campos en historial, evolución, lista y dashboard.
-- [x] T094 Agregar pruebas unitarias para los nuevos campos en `tests/unit/rrhh-storage.test.js`.
+- [x] T087 [US5] Configurar `INDICADORES_POR_CARGO` y función `indicadoresParaCargo` en `module-config.js` para sugerir indicadores según el cargo del trabajador (Barista, Cajero, Mesero, Cocinero, Encargado).
+- [x] T088 [US5] Agregar campos personalizados de documento: `turno`, `meta`, `evaluacionCalidad`, `evaluacionResponsabilidad`, `evaluacionCumplimiento`, `evaluacionColaboracion`, `observaciones`, `oportunidadesMejora` en `module-config.js`.
+- [x] T089 [US5] Agregar elementos HTML para turno, meta, evaluaciones cualitativas, observaciones y oportunidades de mejora en `index.html` dentro de `#productivity-fields`.
+- [x] T090 [US5] Actualizar `document-form.js` para recolectar, mostrar y limpiar los nuevos campos, y mostrar errores de validación.
+- [x] T091 [US5] Implementar sugerencia automática de indicadores según cargo en `app.js` (`suggestIndicatorsForEntity`) al seleccionar un trabajador.
+- [x] T092 [US5] [US6] Actualizar `storage.js` con validaciones y normalización de los nuevos campos (turno, meta, evaluaciones 1-5, observaciones, oportunidades).
+- [x] T093 [US5] Actualizar `history-view.js`, `evolution-view.js`, `document-list.js` y `dashboard.js` para mostrar los nuevos campos en historial, evolución, lista y dashboard.
+- [x] T094 [US5] [US6] Agregar pruebas unitarias para los nuevos campos en `tests/unit/rrhh-storage.test.js`.
 - [x] T095 Actualizar documentación: `spec.md`, `data-model.md`, `tasks.md` y `plan.md` con los nuevos requisitos, campos y validaciones.
+
+**Trazabilidad de HU5 y HU6 con tareas y pruebas existentes:** HU5 se relaciona con T087–T094; T094 corresponde a las pruebas unitarias existentes de campos de productividad, incluidos turno y validación. HU6 se relaciona con T022, T040–T043, T049–T052, T074 y T079; las comprobaciones existentes cubren validaciones, duplicados, documentos incompatibles y errores de almacenamiento, además de la suite general T081. No se agregan tareas de implementación ni pruebas nuevas.
 
 ---
 
@@ -480,6 +490,6 @@ El incremento 002 se considera finalizado cuando:
 - Se impedirá eliminar asignaciones que tengan mediciones vinculadas.
 - Un trabajador con documentos de productividad o asignaciones históricas no podrá eliminarse físicamente.
 - Las pruebas se prepararán antes o junto con la implementación correspondiente y se verificará su fallo inicial cuando sea aplicable.
-- La aprobación del texto de advertencia de datos ficticios (T072) y la distribución de responsabilidades aprobada por el grupo (T084) están completadas.
+- La aprobación del texto de advertencia de datos ficticios (T072) y la distribución de responsables para HU1–HU6 confirmada por el grupo (T084) están completadas.
 - Los criterios de éxito SC-001 a SC-004 deberán verificarse mediante mediciones o evaluaciones documentadas.
 - Las modificaciones realizadas con ayuda de OpenCode deben ser revisadas y comprendidas por integrantes del grupo, conforme a la regla de trabajo con IA indicada al inicio de este documento.

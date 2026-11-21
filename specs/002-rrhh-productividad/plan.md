@@ -1,8 +1,8 @@
 # Implementation Plan: Módulo de RR. HH. — Historial de Productividad Laboral
 
-**Rama**: `correccion-specs-002` | **Fecha**: 2026-11-09 | **Especificación**: `specs/002-rrhh-productividad/spec.md` | **Estado**: Implementación, suite automatizada, prueba técnica con 500 registros y pruebas manuales SC-001 a SC-004 completadas; T072 y T084 aprobadas por el grupo.
+**Rama**: `correccion-specs-002` | **Fecha**: 2026-11-09 | **Especificación**: `specs/002-rrhh-productividad/spec.md` | **Estado**: Las seis historias corresponden a funcionalidades implementadas. Suite automatizada, prueba técnica con 500 registros, pruebas manuales SC-001 a SC-004, T072 y T084 completadas; la distribución de responsables para HU1–HU6 fue confirmada por el grupo.
 
-**Entrada**: Especificación 002 con sus 4 historias de usuario y decisiones aprobadas, y MER de 9 entidades documentado en `specs/001-erp-base-module/data-model.md` como referencia. **Rol de planificación y tareas**.
+**Entrada**: Especificación 002 con sus 6 historias de usuario y decisiones de alcance, y MER de 9 entidades documentado en `specs/001-erp-base-module/data-model.md` como referencia. **Rol de planificación y tareas**.
 
 **Nota sobre el modelo de datos**: El MER de 9 entidades de 001 se conserva sin modificaciones y se utiliza como referencia. El incremento 002 se apoya en `Entity`/Trabajador, `Departamento`, `Historial_Departamento` y `Document`. `specs/002-rrhh-productividad/data-model.md` está completado y verificado contra el MER; sirvió de entrada para generar `tasks.md`. No se crean entidades nuevas.
 
@@ -40,6 +40,10 @@ No se crean tablas ni entidades nuevas; no se alteran los nombres ni la semánti
 
 4. **Visualización de la evolución**: presentar los resultados históricos en tablas o paneles resumidos. Solo se comparan mediciones del mismo indicador y la misma unidad. No se comparan como equivalentes indicadores o unidades diferentes. Si no existen datos suficientes, se informa la situación. No se calcula una puntuación única automática ni se emiten juicios de desempeño. La comparación entre departamentos o trabajadores queda fuera del alcance.
 
+5. **Indicadores por cargo y turnos (HU5)**: el formulario sugiere indicadores según el cargo y permite guardar el turno. Ya implementado en la configuración y el formulario de productividad.
+
+6. **Validación y protección de registros (HU6)**: el sistema muestra errores, advierte sobre duplicados y bloquea registros incompatibles o fallos de almacenamiento para evitar guardados incorrectos o pérdida silenciosa de datos. Ya implementado en las validaciones y el almacenamiento.
+
 **Fuera del alcance de 002**: planilla, remuneraciones, contratos y liquidaciones de sueldo; comparación de productividad entre departamentos o trabajadores; catálogo avanzado de indicadores y fórmulas; cálculo automático de una puntuación única de productividad; autenticación, inicio de sesión, roles y control de acceso; auditoría de modificaciones; exportación, respaldo central y sincronización multiusuario; backend y base de datos remota; uso de información real de trabajadores.
 
 Las funcionalidades de planilla y liquidaciones permanecen documentadas en el modelo 001 y en el MER existente; no se elimina su documentación. Las entidades `Tarea`, `Meta` y `Registro_Horas` permanecen en el MER, pero no se utilizan como flujos de negocio en 002. Su integración completa queda fuera del alcance de este incremento.
@@ -49,19 +53,19 @@ Las funcionalidades de planilla y liquidaciones permanecen documentadas en el mo
 | Etapa | Contenido | Depende de | Estado |
 |---|---|---|---|
 | E0 - Recuperación/verificación del módulo base | Restaurado y verificado en el árbol de trabajo; `src/`, `index.html` y `tests/` están operativos. | - | Completada |
-| E1 - Especificación funcional | `spec.md` con problema, usuarios, alcance, 4 historias de usuario, criterios de aceptación, reglas de validación y criterios de éxito. | - | Completada |
+| E1 - Especificación funcional | `spec.md` con problema, usuarios, alcance, 6 historias de usuario, criterios de aceptación, reglas de validación y criterios de éxito. | - | Completada |
 | E2 - Modelo de datos 002 | `data-model.md` alineado con el MER de 9 entidades de 001; sin entidades nuevas; verificación de campos y relaciones. | E1 | Completada |
 | E3 - Planificación y tareas | `plan.md` y `tasks.md` con alcance, etapas, dependencias, tareas, pruebas y riesgos. | E1, E2 | Completada |
 | E4 - Gestión de trabajadores, departamentos y asignaciones | Formularios de trabajadores y departamentos, asignaciones históricas, validaciones y vista del departamento actual con asignaciones anteriores. | E0, E2, E3 | Completada |
 | E5 - Registro e historial de productividad | Formulario de medición por período, selección de asignación, validaciones y consulta cronológica del historial. | E4 | Completada |
 | E6 - Visualización de la evolución | Tablas o paneles resumidos de resultados históricos comparables. | E5 | Completada |
-| E7 - Integración, pruebas y documentación de ejecución | Integración de E4, E5 y E6; suite automatizada aprobada e instrucciones de ejecución. La validación manual de cierre sigue pendiente. | E4, E5, E6 | Implementación y pruebas automatizadas completadas; validación manual pendiente |
+| E7 - Integración, pruebas y documentación de ejecución | Integración de E4, E5 y E6, más las funcionalidades existentes de HU5 y HU6; suite automatizada aprobada e instrucciones de ejecución. | E4, E5, E6 | Implementación, pruebas automatizadas y validación manual T083 completadas |
 
-**Regla de dependencias cumplida**: E0, E2 y E3 habilitaron E4; E4 habilitó E5; E5 habilitó E6; E7 integró el incremento y aprobó la suite automatizada. La validación manual final permanece pendiente.
+**Regla de dependencias cumplida**: E0, E2 y E3 habilitaron E4; E4 habilitó E5; E5 habilitó E6; E7 integró el incremento, aprobó la suite automatizada y completó la validación manual T083.
 
 **Criterios de finalización**: las etapas de implementación quedaron terminadas cuando sus entregables existen, fueron revisados y satisfacen las funciones del MVP sin regresiones. La recuperación del código base quedó completada; las verificaciones manuales y aprobaciones de cierre pendientes se detallan en §10.
 
-## 5. Roles de trabajo (distribución aprobada por el grupo)
+## 5. Roles de trabajo (distribución confirmada)
 
 | Rol | Responsabilidad | Entregables |
 |---|---|---|
@@ -71,7 +75,7 @@ Las funcionalidades de planilla y liquidaciones permanecen documentadas en el mo
 | Rol 4 — Planificación y tareas | Alcance, etapas, dependencias, tareas, pruebas y riesgos. | `plan.md` y `tasks.md` |
 | Rol 5 — Visualización e integración | Tablas o paneles resumidos, integración con el registro, pruebas de ejecución e instrucciones. | Código de visualización, integración y documentación de ejecución |
 
-La distribución de roles e historias que figura en `spec.md` §14.1 está basada en commits y aportes documentados y fue aprobada por el grupo (T084 completada). Los nombres de archivos de código se confirmaron después de E0, según la estructura real del módulo base.
+La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T084) y está registrada en `spec.md` §14.1 y `tasks.md`. Se mantienen las asignaciones de apoyo previamente documentadas. Los nombres de archivos de código se confirmaron después de E0, según la estructura real del módulo base.
 
 ## 6. Ampliaciones futuras (fuera del alcance de 002)
 
@@ -130,14 +134,14 @@ Se permiten extensiones aditivas de los archivos existentes del módulo ERP base
 - Escala acotada: el módulo base garantiza agilidad hasta aproximadamente 500 registros de entidad. Con muchos trabajadores y períodos se debe verificar el rendimiento de listas y tablas.
 - Permisos: no hay autenticación real; la privacidad depende del control físico del equipo.
 
-**Distinción MVP vs. ampliaciones**: son obligatorias únicamente las cuatro funciones de §3 sobre el modelo existente; todo lo demás queda explícitamente fuera del alcance inicial.
+**Distinción MVP vs. ampliaciones**: son obligatorias las seis funciones de §3 sobre el modelo existente; todo lo demás queda explícitamente fuera del alcance inicial.
 
 ## 9. Documentación de implementación
 
 - `data-model.md` completado y alineado con el MER de 9 entidades, sin modificar el MER ni crear entidades nuevas.
 - Nombres de campos verificados contra las estructuras reales del módulo base.
 - `README.md` actualizado con el alcance de 002, datos ficticios, almacenamiento local y ausencia de autenticación.
-- Distribución de responsabilidades documentada en `spec.md` §14.1 y `tasks.md`, basada en commits y aportes documentados y aprobada por el grupo (T084 completada).
+- Distribución de responsables para HU1–HU6 documentada y confirmada por el grupo (T084 completada).
 - Manejo de errores de almacenamiento implementado y probado automáticamente; el texto de advertencia sobre datos ficticios fue aprobado y su presentación verificada (T072 completada).
 - Coherencia entre `spec.md`, `plan.md`, `data-model.md` y `tasks.md` revisada (T085).
 - `tasks.md` generado y actualizado con el estado real de implementación.
@@ -146,4 +150,4 @@ Se permiten extensiones aditivas de los archivos existentes del módulo ERP base
 
 ## 10. Estado de tasks.md
 
-`tasks.md` fue generado con tareas concretas de implementación y pruebas por etapa, mapeadas a los roles de §5. La implementación, las pruebas automatizadas, la prueba técnica T076, T072 (aprobación y verificación de presentación de la advertencia), T083 (pruebas manuales SC-001 a SC-004) y T084 (distribución de responsabilidades aprobada por el grupo) están completadas. T085 y T086 están completadas; la revisión final del grupo sigue pendiente.
+`tasks.md` contiene tareas concretas de implementación y pruebas por etapa. HU5 y HU6 se relacionan con funcionalidades y pruebas existentes; no agregan implementación. La implementación, las pruebas automatizadas, T076, T072, T083 y T084 están completadas. T085 y T086 están completadas; la revisión final del grupo sigue pendiente.

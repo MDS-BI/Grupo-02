@@ -6,7 +6,7 @@
 **Fecha:** 2026-11-09  
 **Especificación:** `specs/002-rrhh-productividad/spec.md`  
 **MER de referencia:** `specs/001-erp-base-module/data-model.md`  
-**Estado:** Modelo implementado y verificado; suite automatizada y prueba técnica con 500 registros verificadas (T076). T072 está completada: la advertencia fue aprobada por el grupo y su presentación se verificó. T083 (pruebas manuales SC-001 a SC-004) está completada y aprobada. T084 está completada: la distribución de responsabilidades fue aprobada por el grupo.
+**Estado:** Modelo implementado y verificado; suite automatizada y prueba técnica con 500 registros verificadas (T076). T072 está completada: la advertencia fue aprobada por el grupo y su presentación se verificó. T083 (pruebas manuales SC-001 a SC-004) está completada y aprobada. T084 está completada: el grupo confirmó la distribución de responsables para HU1–HU6.
 
 ## 1. Propósito y alcance
 
@@ -14,7 +14,7 @@ Este documento define el modelo de datos del incremento 002, correspondiente al 
 
 Se conserva el MER de nueve entidades documentado en el incremento 001, sin modificar sus entidades ni relaciones.
 
-Para implementar las cuatro historias de usuario:
+Para implementar las seis historias de usuario:
 
 - Se reutiliza `Entity` para representar trabajadores.
 - Se reutiliza `Document` para representar registros de productividad.
@@ -694,7 +694,7 @@ La aplicación no debe utilizarse para tomar decisiones laborales automáticas b
 | 500 registros: Historial, Evolución y navegación en Edge aislado | Verificado: 500 filas; renderizado 113.7 ms/113.5 ms; cuatro vistas 145.4 ms; sin errores (T076) |
 | Evaluación con usuarios reales para SC-004 | Completada y aprobada (T083) |
 | Advertencia sobre datos ficticios | Texto aprobado por el grupo y presentación verificada (T072 completada) |
-| Responsables de historias de usuario | Distribución basada en commits y aportes documentados, aprobada por el grupo (T084 completada) |
+| Responsables de historias de usuario | Distribución de HU1–HU6 confirmada por el grupo (T084 completada) |
 
 ## 12. Criterios de aceptación del modelo
 
@@ -707,7 +707,7 @@ El modelo se considera coherente cuando:
 - Se definen los campos y relaciones.
 - Se conserva el historial ante cambios de departamento.
 - Cada medición referencia una asignación histórica válida.
-- Se documentan las validaciones de las cuatro historias.
+- Se documentan las validaciones de las seis historias.
 - Se define la generación automática de folio.
 - Se mantiene la compatibilidad con las claves existentes.
 - Se documenta la protección contra eliminación en cascada.

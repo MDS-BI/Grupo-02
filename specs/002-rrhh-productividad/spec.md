@@ -5,7 +5,7 @@
 **Rama de trabajo de Git**: `correccion-specs-002`  
 **Creada**: 2026-10-20  
 **Actualizada**: 2026-11-09  
-**Estado**: Implementación técnica completada; suite automatizada y prueba técnica de 500 registros verificadas (T076). El texto de advertencia fue aprobado por el grupo y su presentación se verificó (T072 completada). Las pruebas manuales SC-001 a SC-004 están completadas y aprobadas (T083). La distribución de responsabilidades fue aprobada por el grupo (T084 completada).
+**Estado**: Implementación técnica completada; suite automatizada y prueba técnica de 500 registros verificadas (T076). El texto de advertencia fue aprobado por el grupo y su presentación se verificó (T072 completada). Las pruebas manuales SC-001 a SC-004 están completadas y aprobadas (T083). La distribución de responsabilidades para HU1–HU6 fue confirmada por el grupo (T084 completada).
 **Entrada**: Incremento 002 sobre el módulo base ERP (001). Decisiones de alcance aprobadas para esta especificación.
 
 ---
@@ -43,6 +43,10 @@ El incremento 002 contempla las siguientes funcionalidades:
 3. **Consulta del historial laboral:** mostrar cronológicamente las mediciones de productividad, conservando el departamento correspondiente a cada período.
 
 4. **Visualización de la evolución:** presentar resultados históricos en tablas o paneles resumidos para facilitar el análisis de la productividad.
+
+5. **Indicadores por cargo y turnos:** sugerir indicadores según el cargo del trabajador y permitir registrar el turno de la actividad (HU5).
+
+6. **Validación y protección de registros:** advertir sobre datos inválidos o duplicados y bloquear el guardado ante documentos incompatibles (HU6).
 
 ---
 
@@ -149,7 +153,7 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 **Prueba independiente:** registrar un trabajador de la cafetería, asignarlo a un área (barra, cocina o salón) en un turno y guardar una medición que posteriormente aparezca en su historial.
 
-**Responsable:** Daphnne Hidalgo Mundaca.
+**Responsable:** Bruno Phillipe Cabalin Ferreira.
 
 **Requisitos relacionados:** FR-012 a FR-023.
 
@@ -199,7 +203,7 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 **Prueba independiente:** seleccionar un trabajador de la cafetería con varias mediciones y visualizar sus registros ordenados por período, con el área y el turno correspondientes.
 
-**Responsable:** Bruno Phillipe Cabalin Ferreira.
+**Responsable:** Lucas Omar Soarzo Mancilla.
 
 **Requisitos relacionados:** FR-024 a FR-027.
 
@@ -278,6 +282,42 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 5. **Dados** registros insuficientes, **cuando** se consulta la evolución, **entonces** se informa que no existen datos suficientes.
 
 6. **Dada** la visualización de productividad, **cuando** se muestran los resultados, **entonces** el sistema no genera una puntuación única automática ni emite juicios de desempeño.
+
+---
+
+### Historia de Usuario 5: Indicadores por cargo y turnos (Prioridad: P1)
+
+**Como** encargado de una cafetería,<br>
+**quiero** seleccionar indicadores de productividad según el cargo y registrar el turno del trabajador,<br>
+**para** evaluar su desempeño considerando su contexto laboral.
+
+**Responsable:** Daphnne Hidalgo.
+
+**Requisitos relacionados:** FR-036, FR-037 y FR-041.
+
+#### Criterios de aceptación
+
+1. Al seleccionar un trabajador con un cargo configurado, el formulario sugiere un indicador correspondiente a ese cargo.
+2. El registro permite seleccionar Mañana o Tarde y conserva el turno para mostrarlo en el historial y la evolución.
+
+---
+
+### Historia de Usuario 6: Validación y protección de registros (Prioridad: P1)
+
+**Como** encargado de RR. HH.,<br>
+**quiero** recibir advertencias cuando los registros tengan errores, estén duplicados o existan datos incompatibles,<br>
+**para** evitar guardar información incorrecta o perder registros.
+
+**Responsable:** Emilio Vejar.
+
+**Requisitos relacionados:** FR-020 y FR-021; reglas de validación y protección documentadas en esta especificación.
+
+#### Criterios de aceptación
+
+1. Los datos inválidos se rechazan con un mensaje claro antes de guardarse.
+2. Los registros duplicados muestran una advertencia y solo se guardan si se confirma.
+3. Si existen documentos incompatibles con productividad, se bloquea el guardado y se informa al usuario sin eliminarlos silenciosamente.
+4. Si falla el almacenamiento, se informa que no se guardó y no se muestra una confirmación de éxito.
 
 ---
 
@@ -547,9 +587,9 @@ La aplicación está destinada a demostraciones académicas con datos ficticios.
 
 ## 14. Pendientes de aprobación y cierre
 
-### 14.1. Distribución aprobada de responsabilidades
+### 14.1. Distribución confirmada de responsabilidades
 
-Las cuatro historias de usuario están definidas e implementadas. La siguiente distribución, fundamentada en los commits y aportes documentados del incremento, fue aprobada por el grupo (T084 completada).
+La distribución de responsables para las seis historias fue confirmada por el grupo (T084 completada). Se mantienen las asignaciones de apoyo previamente documentadas.
 
 | Historia o área de trabajo | Responsable | Estado |
 |---|---|---|
@@ -557,17 +597,19 @@ Las cuatro historias de usuario están definidas e implementadas. La siguiente d
 | HU2 — Consulta del historial de desempeño | Lucas Omar Soarzo Mancilla | Aprobada por el grupo (T084) |
 | HU3 — Gestión de trabajadores y asignaciones de departamento | Consuelo Estefania Hidalgo Salgado | Aprobada por el grupo (T084) |
 | HU4 — Visualización de la evolución de productividad | Bastián Ignacio Reinado Bravo | Aprobada por el grupo (T084) |
-| Especificaciones y documentación | Daphnne Hidalgo Mundaca | Aprobada por el grupo (T084) |
-| Implementación, integración y pruebas | Emilio Vejar Bravo | Aprobada por el grupo (T084) |
+| HU5 — Indicadores por cargo y turnos | Daphnne Hidalgo | Aprobada por el grupo (T084) |
+| HU6 — Validación y protección de registros | Emilio Vejar | Aprobada por el grupo (T084) |
+| Especificaciones y documentación | Daphnne Hidalgo Mundaca | Asignación de apoyo aprobada previamente |
+| Implementación, integración y pruebas | Emilio Vejar Bravo | Asignación de apoyo aprobada previamente |
 
-La distribución fue aprobada por el grupo y no agrega historias de usuario.
+La distribución ampliada a seis historias está confirmada por el grupo.
 
-La tarea de ratificación de responsabilidades quedó completada (T084).
+La confirmación de la distribución ampliada completa T084.
 
 ### 14.2. Verificaciones de cierre
 
 - Texto de la advertencia sobre datos ficticios aprobado por el grupo y presentación verificada (T072 completada): "Aviso: Este módulo funciona exclusivamente en almacenamiento local con fines académicos. Ingrese únicamente datos ficticios; no registre información personal ni laboral real."
-- Distribución de responsabilidades aprobada por el grupo (T084 completada).
+- Distribución de responsabilidades para HU1–HU6 confirmada por el grupo (T084 completada).
 - Prueba manual de extremo a extremo y criterios SC-001 a SC-004: completados y aprobados (T083).
 - Prueba técnica con 500 registros en Edge aislado: verificada (T076).
 - Coherencia entre `plan.md`, `data-model.md`, `tasks.md` y esta especificación revisada: completada (T085).
