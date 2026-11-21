@@ -4,7 +4,7 @@
 **Entrada:** `spec.md`, `plan.md` y `data-model.md` de `specs/002-rrhh-productividad/`  
 **Prerrequisitos:** Documentación de 002 y recuperación/verificación del módulo base (E0)  
 **Rama de trabajo:** `correccion-specs-002`  
-**Estado:** Implementación técnica completada; suite automatizada aprobada (14 archivos, 165 pruebas), T076 verificada en Edge aislado y T072 completada (advertencia aprobada y presentación verificada). Pendientes T083, la ratificación de la propuesta de responsabilidades T084 y la revisión del grupo.
+**Estado:** Implementación técnica completada; suite automatizada aprobada (14 archivos, 165 pruebas), T076 verificada en Edge aislado y T072 completada (advertencia aprobada y presentación verificada). T083 está parcialmente pendiente: faltan tiempos cronometrados para SC-001 a SC-003. También siguen pendientes la ratificación de la propuesta de responsabilidades T084 y la revisión del grupo.
 
 **Separación de trabajo:** T001–T009 (E0) recuperan y verifican el módulo base del incremento 001; no son funcionalidades nuevas de 002. T010–T070 registran la infraestructura y las cuatro historias del incremento 002. T071–T086 registran las verificaciones, documentación y cierre.
 
@@ -319,7 +319,7 @@ La distribución anterior es una propuesta fundamentada en commits y aportes doc
 
 - [x] T082 Ejecutar la compilación de producción y comprobar que se completa sin errores. Registrar el resultado junto con el estado de las comprobaciones de calidad de código.
 
-- [ ] T083 Ejecutar y documentar una prueba manual de extremo a extremo HU3 → HU1 → HU2 → HU4 con datos ficticios. **Resultados parciales ejecutados por el grupo:** creación de departamentos y trabajadores; asignaciones y cambios de departamento; registro y consulta de productividad; evolución entre dos períodos; conservación del departamento histórico; persistencia tras recargar la página. Las pruebas de integración también automatizan el registro y consulta, pero no miden el tiempo de una persona. **Medición técnica SC-003:** Historial renderizó 500 filas en 113.7 ms en Edge headless; no equivale a una medición de tiempo de tarea humana. **Pendiente para cerrar T083:** cronometrar SC-001, SC-002 y SC-003 con usuario, evaluar SC-004 con usuarios reales (al menos 90%) y registrar evidencias y resultados.
+- [ ] T083 Ejecutar y documentar una prueba manual de extremo a extremo HU3 → HU1 → HU2 → HU4 con datos ficticios. **Resultados manuales reportados por el grupo:** creación de departamentos y trabajadores; asignaciones y cambios de departamento; registro y consulta de productividad; evolución entre dos períodos; conservación del departamento histórico; persistencia tras recargar la página. SC-001, SC-002 y SC-003 se probaron manualmente; las funciones respondieron rápidamente y no se reportaron fallos, pero no se anotaron tiempos exactos. Para SC-004, los 6 integrantes completaron las tareas de registro y consulta sin ayuda (6/6, 100%); criterio aprobado. **Pendiente para cerrar T083:** registrar los tiempos cronometrados de SC-001, SC-002 y SC-003. La medición técnica de renderizado de 500 filas en Edge no sustituye esos tiempos de usuario.
 
 - [ ] T084 Ratificar en el grupo la propuesta de distribución de responsabilidades documentada en `spec.md` §14.1 y en la tabla de este archivo. La propuesta se basa en commits y aportes documentados; no se considera aprobada por todos hasta su ratificación.
 
@@ -433,12 +433,12 @@ El incremento 002 se considera finalizado cuando:
 - [x] Se ejecutaron y documentaron las pruebas.
 - [x] Se verificó la coherencia final de `spec.md`, `plan.md`, `data-model.md` y `tasks.md`.
 - [x] Se aprobó el texto de la advertencia y se verificó su presentación (T072).
-- [ ] Se completaron las validaciones manuales T083 y se ratificó la propuesta de responsabilidades T084.
+- [ ] Se completó T083 (pendientes los tiempos cronometrados de SC-001 a SC-003) y se ratificó la propuesta de responsabilidades T084.
 - [ ] El grupo revisó los cambios antes de integrarlos.
 
 ---
 
-**Nota final:** La implementación técnica, la suite automatizada, T072, T076 (500 registros en Edge aislado) y la compilación están completadas. Permanecen pendientes T083 (mediciones de usuario SC-001 a SC-003 y evaluación de SC-004), la ratificación de la propuesta de responsabilidades T084 y la revisión final del grupo. T085, T086, T087–T095 y T096–T100 están completadas. No se realizaron commits ni push automáticos.
+**Nota final:** La implementación técnica, la suite automatizada, T072, T076 (500 registros en Edge aislado) y la compilación están completadas. T083 está parcialmente pendiente: se reportó SC-004 aprobado con 6/6 integrantes (100%) y se probaron manualmente SC-001 a SC-003, pero faltan sus tiempos cronometrados. También están pendientes la ratificación de la propuesta de responsabilidades T084 y la revisión final del grupo. T085, T086, T087–T095 y T096–T100 están completadas. No se realizaron commits ni push automáticos.
 
 ---
 
