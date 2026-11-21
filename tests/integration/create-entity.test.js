@@ -33,6 +33,8 @@ describe('User Story 1 - create and organize entities', () => {
   it('creates a new entity that appears in storage and the edit selector', () => {
     qs('nav-entities').click();
     expect(qs('view-entities').hidden).toBe(false);
+    expect(qs('creditLimit').closest('[data-base-entity]').hidden).toBe(false);
+    expect(qs('paymentTerms').closest('[data-base-entity]').hidden).toBe(false);
     qs('name').value = 'Acme';
     qs('code').value = 'AC-001';
     qs('entity-form').dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true }));

@@ -1,6 +1,6 @@
 # Implementation Plan: Módulo de RR. HH. — Historial de Productividad Laboral
 
-**Rama**: `correccion-specs-002` | **Fecha**: 2026-11-09 | **Especificación**: `specs/002-rrhh-productividad/spec.md` | **Estado**: Implementación y prueba técnica con 500 registros completadas; suite automatizada aprobada (14 archivos, 132 pruebas). Pendientes las mediciones manuales de SC-001 a SC-003, usuarios reales para SC-004 y decisiones del grupo
+**Rama**: `correccion-specs-002` | **Fecha**: 2026-11-09 | **Especificación**: `specs/002-rrhh-productividad/spec.md` | **Estado**: Implementación y prueba técnica con 500 registros completadas; suite automatizada verificada. Pendientes T072 (aprobación de la advertencia), T083 (mediciones manuales de SC-001 a SC-003 y evaluación de usuarios para SC-004) y T084 (confirmación de responsables) por el grupo.
 
 **Entrada**: Especificación 002 con sus 4 historias de usuario y decisiones aprobadas, y MER de 9 entidades documentado en `specs/001-erp-base-module/data-model.md` como referencia. **Rol de planificación y tareas**.
 
@@ -71,7 +71,7 @@ Las funcionalidades de planilla y liquidaciones permanecen documentadas en el mo
 | Rol 4 — Planificación y tareas | Alcance, etapas, dependencias, tareas, pruebas y riesgos. | `plan.md` y `tasks.md` |
 | Rol 5 — Visualización e integración | Tablas o paneles resumidos, integración con el registro, pruebas de ejecución e instrucciones. | Código de visualización, integración y documentación de ejecución |
 
-La asignación de estos roles a integrantes del grupo y la responsabilidad de cada historia de usuario quedan pendientes de confirmación, según `spec.md` §14.1. No se inventan nombres de responsables ni archivos existentes. Los nombres de archivos de código se confirmaron después de E0, según la estructura real del módulo base.
+La asignación de estos roles a integrantes del grupo y la responsabilidad de cada historia de usuario quedan pendientes de confirmación (T084), según `spec.md` §14.1. Los nombres propuestos allí no se consideran aprobados por el grupo. Los nombres de archivos de código se confirmaron después de E0, según la estructura real del módulo base.
 
 ## 6. Ampliaciones futuras (fuera del alcance de 002)
 
@@ -137,8 +137,8 @@ Se permiten extensiones aditivas de los archivos existentes del módulo ERP base
 - `data-model.md` completado y alineado con el MER de 9 entidades, sin modificar el MER ni crear entidades nuevas.
 - Nombres de campos verificados contra las estructuras reales del módulo base.
 - `README.md` actualizado con el alcance de 002, datos ficticios, almacenamiento local y ausencia de autenticación.
-- Confirmar los responsables de las 4 historias de usuario y registrarlos en `spec.md` §14.1 y en `tasks.md` (pendiente de asignación por el grupo; T084).
-- Manejo de errores de almacenamiento implementado y probado automáticamente; aprobación del texto de advertencia sobre datos ficticios pendiente con el grupo (T072).
+- Confirmar los responsables de las 4 historias de usuario y registrarlos en `spec.md` §14.1 y en `tasks.md` (pendiente de confirmación por el grupo; T084). Los nombres que aparecen actualmente en `spec.md` son propuestas, no una aprobación.
+- Manejo de errores de almacenamiento implementado y probado automáticamente; el texto propuesto de advertencia sobre datos ficticios sigue pendiente de aprobación del grupo (T072).
 - Coherencia entre `spec.md`, `plan.md`, `data-model.md` y `tasks.md` revisada (T085).
 - `tasks.md` generado y actualizado con el estado real de implementación.
 - Instrucciones de ejecución y prueba documentadas en `README.md` y `tasks.md`.
@@ -146,4 +146,4 @@ Se permiten extensiones aditivas de los archivos existentes del módulo ERP base
 
 ## 10. Estado de tasks.md
 
-`tasks.md` fue generado con tareas concretas de implementación y pruebas por etapa, mapeadas a los roles de §5. La implementación, las pruebas automatizadas y la prueba técnica T076 están completadas. Pendientes de cierre: T072 (aprobación de advertencia), T083 (mediciones manuales de SC-001 a SC-003 y evaluación de usuarios de SC-004) y T084 (asignación de responsables). T085 y T086 están completadas; la revisión final del grupo sigue pendiente.
+`tasks.md` fue generado con tareas concretas de implementación y pruebas por etapa, mapeadas a los roles de §5. La implementación, las pruebas automatizadas y la prueba técnica T076 están completadas. Pendientes de cierre: T072 (aprobación de la advertencia por el grupo), T083 (mediciones manuales de SC-001 a SC-003 y evaluación de usuarios de SC-004) y T084 (confirmación de responsables por el grupo). T085 y T086 están completadas; la revisión final del grupo sigue pendiente.

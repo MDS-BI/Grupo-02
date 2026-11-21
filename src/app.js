@@ -654,6 +654,7 @@ function applyLabels(config){
   qs('document-status-control').hidden = rrhh;
   if(rrhh) qs('document-custom-fields').hidden = true;
 
+  document.querySelectorAll('[data-base-entity]').forEach(el => { el.hidden = rrhh; });
   document.querySelectorAll('[data-base-document]').forEach(el => { el.hidden = rrhh; });
 
   if(rrhh){

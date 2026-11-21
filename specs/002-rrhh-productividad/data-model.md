@@ -6,7 +6,7 @@
 **Fecha:** 2026-11-09  
 **Especificación:** `specs/002-rrhh-productividad/spec.md`  
 **MER de referencia:** `specs/001-erp-base-module/data-model.md`  
-**Estado:** Modelo implementado y verificado; suite automatizada aprobada (14 archivos, 132 pruebas) y prueba técnica con 500 registros aprobada (T076). Pendientes las mediciones manuales SC-001 a SC-003, la evaluación de usuarios de SC-004 y la asignación de responsables.
+**Estado:** Modelo implementado y verificado; suite automatizada y prueba técnica con 500 registros verificadas (T076). Pendientes T072 (aprobación del texto de advertencia), T083 (mediciones manuales SC-001 a SC-003 y evaluación de usuarios de SC-004) y T084 (confirmación de responsables por el grupo).
 
 ## 1. Propósito y alcance
 
@@ -652,7 +652,7 @@ Limitaciones:
 
 Solo deben utilizarse datos ficticios.
 
-Se muestra una advertencia visible de uso exclusivo de información ficticia; el texto definitivo queda pendiente de aprobación del grupo.
+Se muestra una advertencia visible de uso exclusivo de información ficticia; el texto propuesto queda pendiente de aprobación del grupo (T072).
 
 Los campos de texto deben mostrarse de manera segura, evitando ejecutar scripts ingresados por usuarios.
 
@@ -689,12 +689,12 @@ La aplicación no debe utilizarse para tomar decisiones laborales automáticas b
 | Datos anteriores en documents | Verificación implementada con bloqueo seguro y cubierta por pruebas automatizadas |
 | Código base en working tree | Restaurado y verificado |
 | Nombres reales de campos | Verificados en implementación |
-| Suite automatizada | Aprobada: 14 archivos de prueba, 132 pruebas |
+| Suite automatizada | Aprobada: 14 archivos de prueba, 165 pruebas |
 | Prueba manual de extremo a extremo y criterios SC-001 a SC-004 | Pendiente (T083) |
 | 500 registros: Historial, Evolución y navegación en Edge aislado | Verificado: 500 filas; renderizado 113.7 ms/113.5 ms; cuatro vistas 145.4 ms; sin errores (T076) |
 | Evaluación con usuarios reales para SC-004 | Pendiente (T083) |
-| Advertencia sobre datos ficticios | Texto pendiente de aprobación del grupo (T072) |
-| Responsables de historias de usuario | Pendientes de asignación por el grupo (T084) |
+| Advertencia sobre datos ficticios | Texto propuesto, pendiente de aprobación del grupo (T072) |
+| Responsables de historias de usuario | Propuestas documentadas; pendientes de confirmación por el grupo (T084) |
 
 ## 12. Criterios de aceptación del modelo
 

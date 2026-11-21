@@ -5,7 +5,7 @@
 **Rama de trabajo de Git**: `correccion-specs-002`  
 **Creada**: 2026-10-20  
 **Actualizada**: 2026-11-09  
-**Estado**: Implementación completada; suite automatizada aprobada (14 archivos, 132 pruebas) y prueba técnica de 500 registros aprobada (T076). Advertencia sobre datos ficticios aprobada (T072) y responsables asignados (T084). Pendientes las mediciones manuales de SC-001 a SC-003 y la evaluación de usuarios de SC-004 (T083).
+**Estado**: Implementación técnica completada; suite automatizada y prueba técnica de 500 registros verificadas (T076). La aprobación del texto de advertencia (T072) y la confirmación de responsables (T084) siguen pendientes del grupo. También están pendientes las mediciones manuales de SC-001 a SC-003 y la evaluación de usuarios de SC-004 (T083).
 **Entrada**: Incremento 002 sobre el módulo base ERP (001). Decisiones de alcance aprobadas para esta especificación.
 
 ---
@@ -419,7 +419,7 @@ Los errores de validación deben comunicarse mediante mensajes claros para el us
 
 20. **Intento de registrar liquidaciones:** las funcionalidades de planilla no forman parte del incremento 002.
 
-21. **Ingreso accidental de datos reales:** el sistema debe mostrar una advertencia de uso exclusivo de datos ficticios. No se garantiza la detección automática de información real. **Texto aprobado (T072):** "Aviso: Este módulo funciona exclusivamente en almacenamiento local con fines académicos. Ingrese únicamente datos ficticios; no registre información personal ni laboral real."
+21. **Ingreso accidental de datos reales:** el sistema debe mostrar una advertencia de uso exclusivo de datos ficticios. No se garantiza la detección automática de información real. **Texto propuesto, pendiente de aprobación del grupo (T072):** "Aviso: Este módulo funciona exclusivamente en almacenamiento local con fines académicos. Ingrese únicamente datos ficticios; no registre información personal ni laboral real."
 
 22. **Turno inválido:** si se informa un turno que no sea Mañana o Tarde, se rechaza el registro.
 
@@ -449,7 +449,7 @@ Los errores de validación deben comunicarse mediante mensajes claros para el us
 
 35. **Resultado 0 válido:** un registro con resultado 0 es válido y contribuye 0 a la suma del resultado consolidado.
 
-Los comportamientos adicionales sobre errores de almacenamiento deberán validarse con el grupo antes de cerrar la especificación; la advertencia sobre uso exclusivo de datos ficticios fue aprobada (T072).
+Los comportamientos adicionales sobre errores de almacenamiento deberán validarse con el grupo antes de cerrar la especificación. El texto de la advertencia sobre uso exclusivo de datos ficticios sigue pendiente de aprobación (T072).
 
 ---
 
@@ -547,26 +547,26 @@ La aplicación está destinada a demostraciones académicas con datos ficticios.
 
 ## 14. Pendientes de aprobación y cierre
 
-### 14.1. Asignación de responsables
+### 14.1. Confirmación de responsables
 
-Las cuatro historias de usuario están definidas, implementadas y con responsable asignado por el grupo (T084 cerrado); esto no cambia su alcance ni su estado técnico.
+Las cuatro historias de usuario están definidas e implementadas. Los nombres que aparecen a continuación son propuestas existentes en este documento; el grupo aún debe confirmar las asignaciones para cerrar T084. Esto no cambia el estado técnico de las historias.
 
 | Historia o tarea | Responsable | Estado |
 |---|---|---|
-| HU1 — Registro de medición de productividad | Daphnne Hidalgo Mundaca | Implementada; pruebas automatizadas aprobadas |
-| HU2 — Consulta del historial de desempeño | Bruno Phillipe Cabalin Ferreira | Implementada; pruebas automatizadas aprobadas |
-| HU3 — Gestión de trabajadores y asignaciones de departamento | Consuelo Estefania Hidalgo Salgado | Implementada; pruebas automatizadas aprobadas |
-| HU4 — Visualización de la evolución de productividad | Bastián Ignacio Reinado Bravo | Implementada; pruebas automatizadas aprobadas |
-| Soporte de integración, pruebas manuales y validación documental (T072, T083, T085) | Lucas Soarzo Mancilla y Emilio Vejar Bravo | Asignado |
+| HU1 — Registro de medición de productividad | Daphnne Hidalgo Mundaca (propuesta) | Implementada; responsable pendiente de confirmación (T084) |
+| HU2 — Consulta del historial de desempeño | Bruno Phillipe Cabalin Ferreira (propuesta) | Implementada; responsable pendiente de confirmación (T084) |
+| HU3 — Gestión de trabajadores y asignaciones de departamento | Consuelo Estefania Hidalgo Salgado (propuesta) | Implementada; responsable pendiente de confirmación (T084) |
+| HU4 — Visualización de la evolución de productividad | Bastián Ignacio Reinado Bravo (propuesta) | Implementada; responsable pendiente de confirmación (T084) |
+| Soporte de integración, pruebas manuales y validación documental (T072, T083, T085) | Lucas Soarzo Mancilla y Emilio Vejar Bravo (propuestas) | Pendiente de confirmación (T084) |
 
-La asignación de responsables quedó acordada por el grupo y permite cerrar la planificación.
+No se registra como acordada ninguna asignación de responsables hasta que el grupo la confirme.
 
-Los integrantes adicionales se distribuyen las tareas de soporte de integración, pruebas manuales y validación documental sin inventar historias adicionales.
+Las tareas de soporte de integración, pruebas manuales y validación documental también requieren confirmación de responsables; no se agregan historias de usuario.
 
 ### 14.2. Verificaciones de cierre
 
-- Responsables de cada historia de usuario y tareas de soporte asignados por el grupo (T084 cerrado).
-- Texto de la advertencia sobre datos ficticios aprobado por el grupo (T072 cerrado): "Aviso: Este módulo funciona exclusivamente en almacenamiento local con fines académicos. Ingrese únicamente datos ficticios; no registre información personal ni laboral real."
+- Responsables de cada historia de usuario y tareas de soporte: pendientes de confirmación por el grupo (T084).
+- Texto propuesto para la advertencia sobre datos ficticios, pendiente de aprobación por el grupo (T072): "Aviso: Este módulo funciona exclusivamente en almacenamiento local con fines académicos. Ingrese únicamente datos ficticios; no registre información personal ni laboral real."
 - Completar la prueba manual de extremo a extremo y documentar las mediciones de SC-001 a SC-004 (pendiente; T083).
 - Prueba técnica con 500 registros en Edge aislado: verificada (T076); evaluación de usuarios reales para SC-004 pendiente (T083).
 - Coherencia entre `plan.md`, `data-model.md`, `tasks.md` y esta especificación revisada: completada (T085).

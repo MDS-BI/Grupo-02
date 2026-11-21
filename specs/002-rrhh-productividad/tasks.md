@@ -4,7 +4,7 @@
 **Entrada:** `spec.md`, `plan.md` y `data-model.md` de `specs/002-rrhh-productividad/`  
 **Prerrequisitos:** Documentación de 002 y recuperación/verificación del módulo base (E0)  
 **Rama de trabajo:** `correccion-specs-002`  
-**Estado:** Implementación técnica completada; suite automatizada aprobada (14 archivos, 132 pruebas) y T076 verificada en Edge aislado. Pendientes las mediciones manuales de T083, la aprobación del texto de advertencia (T072), la asignación de responsables (T084) y la revisión del grupo.
+**Estado:** Implementación técnica completada; suite automatizada aprobada (14 archivos, 165 pruebas) y T076 verificada en Edge aislado. Pendientes las mediciones manuales de T083, la aprobación del texto de advertencia (T072), la confirmación de responsables (T084) y la revisión del grupo.
 
 **Separación de trabajo:** T001–T009 (E0) recuperan y verifican el módulo base del incremento 001; no son funcionalidades nuevas de 002. T010–T070 registran la infraestructura y las cuatro historias del incremento 002. T071–T086 registran las verificaciones, documentación y cierre.
 
@@ -48,8 +48,8 @@ Los responsables deben asignarse cuando el grupo confirme qué integrante desarr
 | 6 | HU4: visualización de evolución | T063–T070 | 8 |
 | 7 | Pruebas, documentación y cierre | T071–T086 | 16 |
 | 8 | Adaptación registro de productividad — cafetería | T087–T095 | 9 |
-| 9 | Metas consolidadas por departamento y período | T096–T105 | 10 |
-| **Total** | | **T001–T105** | **105** |
+| 9 | Metas consolidadas por departamento y período | T096–T100 | 5 |
+| **Total** | | **T001–T100** | **100** |
 
 ---
 
@@ -313,7 +313,7 @@ Los responsables deben asignarse cuando el grupo confirme qué integrante desarr
 
 - [x] T080 [P] Verificar que el MER original de nueve entidades permanezca sin modificaciones, no se agreguen entidades y exista `specs/001-erp-base-module/mer.png` con PK, FK y cardinalidades.
 
-- [x] T081 Ejecutar la suite completa de pruebas unitarias y de integración. Resultado automatizado: 14 archivos y 132 pruebas aprobadas. Además, ejecutar las comprobaciones de linting, formato y análisis estático exigidas por la constitución del proyecto, utilizando las herramientas configuradas o documentando las que falten. Registrar fallos y correcciones.
+- [x] T081 Ejecutar la suite completa de pruebas unitarias y de integración. Resultado automatizado: 14 archivos y 165 pruebas aprobadas. Además, ejecutar las comprobaciones de linting, formato y análisis estático exigidas por la constitución del proyecto, utilizando las herramientas configuradas o documentando las que falten. Registrar fallos y correcciones.
 
 - [x] T082 Ejecutar la compilación de producción y comprobar que se completa sin errores. Registrar el resultado junto con el estado de las comprobaciones de calidad de código.
 
@@ -435,7 +435,7 @@ El incremento 002 se considera finalizado cuando:
 
 ---
 
-**Nota final:** La implementación técnica, la suite automatizada (14 archivos, 165 pruebas), T076 (500 registros en Edge aislado) y la compilación están completas. Permanecen pendientes T072 (aprobación del texto de advertencia), T083 (mediciones de usuario SC-001 a SC-003 y evaluación de SC-004), T084 (asignación de responsables) y la revisión final del grupo. T085, T086, T087–T095 y T096–T100 están completadas. No se realizaron commits ni push automáticos.
+**Nota final:** La implementación técnica, la suite automatizada, T076 (500 registros en Edge aislado) y la compilación están completadas. Permanecen pendientes T072 (aprobación del texto de advertencia por el grupo), T083 (mediciones de usuario SC-001 a SC-003 y evaluación de SC-004), T084 (confirmación de responsables por el grupo) y la revisión final del grupo. T085, T086, T087–T095 y T096–T100 están completadas. No se realizaron commits ni push automáticos.
 
 ---
 

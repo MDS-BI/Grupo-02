@@ -80,6 +80,8 @@ describe('Incremento 002 - RR. HH. y productividad', () => {
     expect(qs('nav-documents-label').textContent).toBe('Registros de Productividad');
     expect(qs('data-warning').hidden).toBe(false);
     expect(qs('productivity-fields').hidden).toBe(false);
+    expect(qs('creditLimit').closest('[data-base-entity]').hidden).toBe(true);
+    expect(qs('paymentTerms').closest('[data-base-entity]').hidden).toBe(true);
   });
 
   it('crea departamentos desde la vista de departamentos', () => {
