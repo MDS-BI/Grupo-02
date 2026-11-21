@@ -33,3 +33,15 @@ Feedback Avance 03 (16/11/26)
 - hacer mejoras de funcionalidad e interfaz de usuario, incluir data simulada para probar campos, incluir mejoras de estilo, transicion, navegacion, etcetera.
 
 Presentaicon de MVP final en 2 semanas.
+
+## Registro de avances del grupo — 21/11/2026
+
+**Avances:**
+- Organización y actualización de los documentos de Spec Kit.
+- Implementación de las cuatro historias de usuario de RR. HH. y productividad.
+- Adaptación funcional al contexto de una cafetería.
+- Mejoras de interfaz y ocultamiento visual de campos innecesarios.
+- 165 pruebas automatizadas aprobadas y compilación exitosa.
+- Registro incremental de modificaciones en GitHub.
+
+**Pendientes:** confirmar responsabilidades del grupo (T084), aprobar la advertencia (T072) y completar las pruebas manuales (T083).
