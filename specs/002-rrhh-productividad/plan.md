@@ -1,6 +1,6 @@
 # Implementation Plan: Módulo de RR. HH. — Historial de Productividad Laboral
 
-**Rama**: `correccion-specs-002` | **Fecha**: 2026-11-09 | **Especificación**: `specs/002-rrhh-productividad/spec.md` | **Estado**: Implementación, suite automatizada, prueba técnica con 500 registros y pruebas manuales SC-001 a SC-004 completadas; T072 aprobada. Pendiente la ratificación de la propuesta de responsabilidades T084.
+**Rama**: `correccion-specs-002` | **Fecha**: 2026-11-09 | **Especificación**: `specs/002-rrhh-productividad/spec.md` | **Estado**: Implementación, suite automatizada, prueba técnica con 500 registros y pruebas manuales SC-001 a SC-004 completadas; T072 y T084 aprobadas por el grupo.
 
 **Entrada**: Especificación 002 con sus 4 historias de usuario y decisiones aprobadas, y MER de 9 entidades documentado en `specs/001-erp-base-module/data-model.md` como referencia. **Rol de planificación y tareas**.
 
@@ -61,7 +61,7 @@ Las funcionalidades de planilla y liquidaciones permanecen documentadas en el mo
 
 **Criterios de finalización**: las etapas de implementación quedaron terminadas cuando sus entregables existen, fueron revisados y satisfacen las funciones del MVP sin regresiones. La recuperación del código base quedó completada; las verificaciones manuales y aprobaciones de cierre pendientes se detallan en §10.
 
-## 5. Roles de trabajo (propuesta pendiente de ratificación)
+## 5. Roles de trabajo (distribución aprobada por el grupo)
 
 | Rol | Responsabilidad | Entregables |
 |---|---|---|
@@ -71,7 +71,7 @@ Las funcionalidades de planilla y liquidaciones permanecen documentadas en el mo
 | Rol 4 — Planificación y tareas | Alcance, etapas, dependencias, tareas, pruebas y riesgos. | `plan.md` y `tasks.md` |
 | Rol 5 — Visualización e integración | Tablas o paneles resumidos, integración con el registro, pruebas de ejecución e instrucciones. | Código de visualización, integración y documentación de ejecución |
 
-La distribución de roles e historias que figura en `spec.md` §14.1 es una propuesta basada en commits y aportes documentados, no un acuerdo de todos los integrantes. Su ratificación queda pendiente (T084). Los nombres de archivos de código se confirmaron después de E0, según la estructura real del módulo base.
+La distribución de roles e historias que figura en `spec.md` §14.1 está basada en commits y aportes documentados y fue aprobada por el grupo (T084 completada). Los nombres de archivos de código se confirmaron después de E0, según la estructura real del módulo base.
 
 ## 6. Ampliaciones futuras (fuera del alcance de 002)
 
@@ -137,7 +137,7 @@ Se permiten extensiones aditivas de los archivos existentes del módulo ERP base
 - `data-model.md` completado y alineado con el MER de 9 entidades, sin modificar el MER ni crear entidades nuevas.
 - Nombres de campos verificados contra las estructuras reales del módulo base.
 - `README.md` actualizado con el alcance de 002, datos ficticios, almacenamiento local y ausencia de autenticación.
-- Ratificar en el grupo la propuesta de distribución de responsabilidades documentada en `spec.md` §14.1 y `tasks.md` (pendiente; T084). La propuesta se basa en commits y aportes documentados y no se presenta como aprobada por todos.
+- Distribución de responsabilidades documentada en `spec.md` §14.1 y `tasks.md`, basada en commits y aportes documentados y aprobada por el grupo (T084 completada).
 - Manejo de errores de almacenamiento implementado y probado automáticamente; el texto de advertencia sobre datos ficticios fue aprobado y su presentación verificada (T072 completada).
 - Coherencia entre `spec.md`, `plan.md`, `data-model.md` y `tasks.md` revisada (T085).
 - `tasks.md` generado y actualizado con el estado real de implementación.
@@ -146,4 +146,4 @@ Se permiten extensiones aditivas de los archivos existentes del módulo ERP base
 
 ## 10. Estado de tasks.md
 
-`tasks.md` fue generado con tareas concretas de implementación y pruebas por etapa, mapeadas a los roles de §5. La implementación, las pruebas automatizadas, la prueba técnica T076, T072 (aprobación y verificación de presentación de la advertencia) y T083 (pruebas manuales SC-001 a SC-004) están completadas. Pendiente de cierre: la ratificación de la propuesta de responsabilidades T084. T085 y T086 están completadas; la revisión final del grupo sigue pendiente.
+`tasks.md` fue generado con tareas concretas de implementación y pruebas por etapa, mapeadas a los roles de §5. La implementación, las pruebas automatizadas, la prueba técnica T076, T072 (aprobación y verificación de presentación de la advertencia), T083 (pruebas manuales SC-001 a SC-004) y T084 (distribución de responsabilidades aprobada por el grupo) están completadas. T085 y T086 están completadas; la revisión final del grupo sigue pendiente.

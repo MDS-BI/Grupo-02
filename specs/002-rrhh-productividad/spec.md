@@ -5,7 +5,7 @@
 **Rama de trabajo de Git**: `correccion-specs-002`  
 **Creada**: 2026-10-20  
 **Actualizada**: 2026-11-09  
-**Estado**: Implementación técnica completada; suite automatizada y prueba técnica de 500 registros verificadas (T076). El texto de advertencia fue aprobado por el grupo y su presentación se verificó (T072 completada). Las pruebas manuales SC-001 a SC-004 están completadas y aprobadas (T083). La propuesta de distribución de responsabilidades está documentada y pendiente de ratificación (T084).
+**Estado**: Implementación técnica completada; suite automatizada y prueba técnica de 500 registros verificadas (T076). El texto de advertencia fue aprobado por el grupo y su presentación se verificó (T072 completada). Las pruebas manuales SC-001 a SC-004 están completadas y aprobadas (T083). La distribución de responsabilidades fue aprobada por el grupo (T084 completada).
 **Entrada**: Incremento 002 sobre el módulo base ERP (001). Decisiones de alcance aprobadas para esta especificación.
 
 ---
@@ -547,27 +547,27 @@ La aplicación está destinada a demostraciones académicas con datos ficticios.
 
 ## 14. Pendientes de aprobación y cierre
 
-### 14.1. Propuesta de distribución de responsabilidades
+### 14.1. Distribución aprobada de responsabilidades
 
-Las cuatro historias de usuario están definidas e implementadas. La siguiente distribución es una propuesta fundamentada en los commits y aportes documentados del incremento; no implica que todos los integrantes la hayan aprobado. La ratificación del grupo sigue pendiente para cerrar T084.
+Las cuatro historias de usuario están definidas e implementadas. La siguiente distribución, fundamentada en los commits y aportes documentados del incremento, fue aprobada por el grupo (T084 completada).
 
-| Historia o área de trabajo | Responsable propuesto | Estado |
+| Historia o área de trabajo | Responsable | Estado |
 |---|---|---|
-| HU1 — Registro de medición de productividad | Bruno Phillipe Cabalin Ferreira | Propuesta; pendiente de ratificación (T084) |
-| HU2 — Consulta del historial de desempeño | Lucas Omar Soarzo Mancilla | Propuesta; pendiente de ratificación (T084) |
-| HU3 — Gestión de trabajadores y asignaciones de departamento | Consuelo Estefania Hidalgo Salgado | Propuesta; pendiente de ratificación (T084) |
-| HU4 — Visualización de la evolución de productividad | Bastián Ignacio Reinado Bravo | Propuesta; pendiente de ratificación (T084) |
-| Especificaciones y documentación | Daphnne Hidalgo Mundaca | Propuesta; pendiente de ratificación (T084) |
-| Implementación, integración y pruebas | Emilio Vejar Bravo | Propuesta; pendiente de ratificación (T084) |
+| HU1 — Registro de medición de productividad | Bruno Phillipe Cabalin Ferreira | Aprobada por el grupo (T084) |
+| HU2 — Consulta del historial de desempeño | Lucas Omar Soarzo Mancilla | Aprobada por el grupo (T084) |
+| HU3 — Gestión de trabajadores y asignaciones de departamento | Consuelo Estefania Hidalgo Salgado | Aprobada por el grupo (T084) |
+| HU4 — Visualización de la evolución de productividad | Bastián Ignacio Reinado Bravo | Aprobada por el grupo (T084) |
+| Especificaciones y documentación | Daphnne Hidalgo Mundaca | Aprobada por el grupo (T084) |
+| Implementación, integración y pruebas | Emilio Vejar Bravo | Aprobada por el grupo (T084) |
 
-Esta distribución se presenta como propuesta y no como acuerdo de todos los integrantes.
+La distribución fue aprobada por el grupo y no agrega historias de usuario.
 
-La ratificación de las responsabilidades por el grupo sigue pendiente (T084); no se agregan historias de usuario.
+La tarea de ratificación de responsabilidades quedó completada (T084).
 
 ### 14.2. Verificaciones de cierre
 
 - Texto de la advertencia sobre datos ficticios aprobado por el grupo y presentación verificada (T072 completada): "Aviso: Este módulo funciona exclusivamente en almacenamiento local con fines académicos. Ingrese únicamente datos ficticios; no registre información personal ni laboral real."
-- Propuesta de distribución de responsabilidades documentada; ratificación del grupo pendiente (T084).
+- Distribución de responsabilidades aprobada por el grupo (T084 completada).
 - Prueba manual de extremo a extremo y criterios SC-001 a SC-004: completados y aprobados (T083).
 - Prueba técnica con 500 registros en Edge aislado: verificada (T076).
 - Coherencia entre `plan.md`, `data-model.md`, `tasks.md` y esta especificación revisada: completada (T085).

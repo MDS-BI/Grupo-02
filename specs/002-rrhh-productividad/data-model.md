@@ -6,7 +6,7 @@
 **Fecha:** 2026-11-09  
 **Especificación:** `specs/002-rrhh-productividad/spec.md`  
 **MER de referencia:** `specs/001-erp-base-module/data-model.md`  
-**Estado:** Modelo implementado y verificado; suite automatizada y prueba técnica con 500 registros verificadas (T076). T072 está completada: la advertencia fue aprobada por el grupo y su presentación se verificó. T083 (pruebas manuales SC-001 a SC-004) está completada y aprobada. Pendiente la ratificación de la propuesta de responsabilidades T084.
+**Estado:** Modelo implementado y verificado; suite automatizada y prueba técnica con 500 registros verificadas (T076). T072 está completada: la advertencia fue aprobada por el grupo y su presentación se verificó. T083 (pruebas manuales SC-001 a SC-004) está completada y aprobada. T084 está completada: la distribución de responsabilidades fue aprobada por el grupo.
 
 ## 1. Propósito y alcance
 
@@ -694,7 +694,7 @@ La aplicación no debe utilizarse para tomar decisiones laborales automáticas b
 | 500 registros: Historial, Evolución y navegación en Edge aislado | Verificado: 500 filas; renderizado 113.7 ms/113.5 ms; cuatro vistas 145.4 ms; sin errores (T076) |
 | Evaluación con usuarios reales para SC-004 | Completada y aprobada (T083) |
 | Advertencia sobre datos ficticios | Texto aprobado por el grupo y presentación verificada (T072 completada) |
-| Responsables de historias de usuario | Propuesta basada en commits y aportes documentados; ratificación pendiente (T084) |
+| Responsables de historias de usuario | Distribución basada en commits y aportes documentados, aprobada por el grupo (T084 completada) |
 
 ## 12. Criterios de aceptación del modelo
 
