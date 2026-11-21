@@ -1,6 +1,6 @@
 # Implementation Plan: Módulo de RR. HH. — Historial de Productividad Laboral
 
-**Rama**: `correccion-specs-002` | **Fecha**: 2026-11-09 | **Especificación**: `specs/002-rrhh-productividad/spec.md` | **Estado**: Implementación y prueba técnica con 500 registros completadas; suite automatizada verificada. T072 está completada: el texto de advertencia fue aprobado y su presentación se verificó. Pendientes T083 (mediciones manuales de SC-001 a SC-003 y evaluación de usuarios para SC-004) y la ratificación de la propuesta de responsabilidades T084.
+**Rama**: `correccion-specs-002` | **Fecha**: 2026-11-09 | **Especificación**: `specs/002-rrhh-productividad/spec.md` | **Estado**: Implementación, suite automatizada, prueba técnica con 500 registros y pruebas manuales SC-001 a SC-004 completadas; T072 aprobada. Pendiente la ratificación de la propuesta de responsabilidades T084.
 
 **Entrada**: Especificación 002 con sus 4 historias de usuario y decisiones aprobadas, y MER de 9 entidades documentado en `specs/001-erp-base-module/data-model.md` como referencia. **Rol de planificación y tareas**.
 
@@ -146,4 +146,4 @@ Se permiten extensiones aditivas de los archivos existentes del módulo ERP base
 
 ## 10. Estado de tasks.md
 
-`tasks.md` fue generado con tareas concretas de implementación y pruebas por etapa, mapeadas a los roles de §5. La implementación, las pruebas automatizadas, la prueba técnica T076 y T072 (aprobación y verificación de presentación de la advertencia) están completadas. Pendientes de cierre: T083 (mediciones manuales de SC-001 a SC-003 y evaluación de usuarios de SC-004) y la ratificación de la propuesta de responsabilidades T084. T085 y T086 están completadas; la revisión final del grupo sigue pendiente.
+`tasks.md` fue generado con tareas concretas de implementación y pruebas por etapa, mapeadas a los roles de §5. La implementación, las pruebas automatizadas, la prueba técnica T076, T072 (aprobación y verificación de presentación de la advertencia) y T083 (pruebas manuales SC-001 a SC-004) están completadas. Pendiente de cierre: la ratificación de la propuesta de responsabilidades T084. T085 y T086 están completadas; la revisión final del grupo sigue pendiente.

@@ -5,7 +5,7 @@
 **Rama de trabajo de Git**: `correccion-specs-002`  
 **Creada**: 2026-10-20  
 **Actualizada**: 2026-11-09  
-**Estado**: Implementación técnica completada; suite automatizada y prueba técnica de 500 registros verificadas (T076). El texto de advertencia fue aprobado por el grupo y su presentación se verificó (T072 completada). La propuesta de distribución de responsabilidades está documentada y pendiente de ratificación (T084). También están pendientes las mediciones manuales de SC-001 a SC-003 y la evaluación de usuarios de SC-004 (T083).
+**Estado**: Implementación técnica completada; suite automatizada y prueba técnica de 500 registros verificadas (T076). El texto de advertencia fue aprobado por el grupo y su presentación se verificó (T072 completada). Las pruebas manuales SC-001 a SC-004 están completadas y aprobadas (T083). La propuesta de distribución de responsabilidades está documentada y pendiente de ratificación (T084).
 **Entrada**: Incremento 002 sobre el módulo base ERP (001). Decisiones de alcance aprobadas para esta especificación.
 
 ---
@@ -568,8 +568,8 @@ La ratificación de las responsabilidades por el grupo sigue pendiente (T084); n
 
 - Texto de la advertencia sobre datos ficticios aprobado por el grupo y presentación verificada (T072 completada): "Aviso: Este módulo funciona exclusivamente en almacenamiento local con fines académicos. Ingrese únicamente datos ficticios; no registre información personal ni laboral real."
 - Propuesta de distribución de responsabilidades documentada; ratificación del grupo pendiente (T084).
-- Completar la prueba manual de extremo a extremo y documentar las mediciones de SC-001 a SC-004 (pendiente; T083).
-- Prueba técnica con 500 registros en Edge aislado: verificada (T076); evaluación de usuarios reales para SC-004 pendiente (T083).
+- Prueba manual de extremo a extremo y criterios SC-001 a SC-004: completados y aprobados (T083).
+- Prueba técnica con 500 registros en Edge aislado: verificada (T076).
 - Coherencia entre `plan.md`, `data-model.md`, `tasks.md` y esta especificación revisada: completada (T085).
 - Nombres de campos verificados contra las estructuras reales del módulo base; tareas de implementación registradas en `tasks.md`: completado.
 - Mantener los cambios en la rama `correccion-specs-002` hasta su revisión.
