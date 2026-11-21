@@ -6,7 +6,7 @@
 **Fecha:** 2026-11-09  
 **Especificación:** `specs/002-rrhh-productividad/spec.md`  
 **MER de referencia:** `specs/001-erp-base-module/data-model.md`  
-**Estado:** Modelo implementado y verificado; suite automatizada y prueba técnica con 500 registros verificadas (T076). Pendientes T072 (aprobación del texto de advertencia), T083 (mediciones manuales SC-001 a SC-003 y evaluación de usuarios de SC-004) y T084 (confirmación de responsables por el grupo).
+**Estado:** Modelo implementado y verificado; suite automatizada y prueba técnica con 500 registros verificadas (T076). T072 está completada: la advertencia fue aprobada por el grupo y su presentación se verificó. Pendientes T083 (mediciones manuales SC-001 a SC-003 y evaluación de usuarios de SC-004) y la ratificación de la propuesta de responsabilidades T084.
 
 ## 1. Propósito y alcance
 
@@ -545,7 +545,7 @@ Cuando `localStorage` esté lleno, bloqueado o no disponible:
 - No se promete recuperación automática.
 - Se evita presentar información no persistida como si estuviera guardada.
 
-El manejo de errores está implementado y cubierto por pruebas automatizadas. La aprobación del texto de la advertencia sobre datos ficticios queda pendiente del grupo (T072).
+El manejo de errores está implementado y cubierto por pruebas automatizadas. El grupo aprobó el texto de la advertencia sobre datos ficticios y su presentación se verificó (T072 completada).
 
 ## 8. Consultas lógicas por historia de usuario
 
@@ -652,7 +652,7 @@ Limitaciones:
 
 Solo deben utilizarse datos ficticios.
 
-Se muestra una advertencia visible de uso exclusivo de información ficticia; el texto propuesto queda pendiente de aprobación del grupo (T072).
+Se muestra una advertencia visible de uso exclusivo de información ficticia. El grupo aprobó el texto y su presentación se verificó (T072 completada).
 
 Los campos de texto deben mostrarse de manera segura, evitando ejecutar scripts ingresados por usuarios.
 
@@ -693,8 +693,8 @@ La aplicación no debe utilizarse para tomar decisiones laborales automáticas b
 | Prueba manual de extremo a extremo y criterios SC-001 a SC-004 | Pendiente (T083) |
 | 500 registros: Historial, Evolución y navegación en Edge aislado | Verificado: 500 filas; renderizado 113.7 ms/113.5 ms; cuatro vistas 145.4 ms; sin errores (T076) |
 | Evaluación con usuarios reales para SC-004 | Pendiente (T083) |
-| Advertencia sobre datos ficticios | Texto propuesto, pendiente de aprobación del grupo (T072) |
-| Responsables de historias de usuario | Propuestas documentadas; pendientes de confirmación por el grupo (T084) |
+| Advertencia sobre datos ficticios | Texto aprobado por el grupo y presentación verificada (T072 completada) |
+| Responsables de historias de usuario | Propuesta basada en commits y aportes documentados; ratificación pendiente (T084) |
 
 ## 12. Criterios de aceptación del modelo
 

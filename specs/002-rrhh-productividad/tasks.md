@@ -4,7 +4,7 @@
 **Entrada:** `spec.md`, `plan.md` y `data-model.md` de `specs/002-rrhh-productividad/`  
 **Prerrequisitos:** Documentación de 002 y recuperación/verificación del módulo base (E0)  
 **Rama de trabajo:** `correccion-specs-002`  
-**Estado:** Implementación técnica completada; suite automatizada aprobada (14 archivos, 165 pruebas) y T076 verificada en Edge aislado. Pendientes las mediciones manuales de T083, la aprobación del texto de advertencia (T072), la confirmación de responsables (T084) y la revisión del grupo.
+**Estado:** Implementación técnica completada; suite automatizada aprobada (14 archivos, 165 pruebas), T076 verificada en Edge aislado y T072 completada (advertencia aprobada y presentación verificada). Pendientes T083, la ratificación de la propuesta de responsabilidades T084 y la revisión del grupo.
 
 **Separación de trabajo:** T001–T009 (E0) recuperan y verifican el módulo base del incremento 001; no son funcionalidades nuevas de 002. T010–T070 registran la infraestructura y las cuatro historias del incremento 002. T071–T086 registran las verificaciones, documentación y cierre.
 
@@ -27,14 +27,16 @@ Cada tarea utiliza el formato:
 
 ## Responsables
 
-| Historia | Responsable | Estado |
+| Historia o área de trabajo | Responsable propuesto | Estado |
 |---|---|---|
-| HU1 — Registro de medición de productividad | Por confirmar | Implementado; validación automatizada completada |
-| HU2 — Consulta del historial de desempeño | Por confirmar | Implementado; validación automatizada completada |
-| HU3 — Gestión de trabajadores y asignaciones | Por confirmar | Implementado; validación automatizada completada |
-| HU4 — Visualización de la evolución | Por confirmar | Implementado; validación automatizada completada |
+| HU1 — Registro de medición de productividad | Bruno Phillipe Cabalin Ferreira | Propuesta basada en commits y aportes; pendiente de ratificación (T084) |
+| HU2 — Consulta del historial de desempeño | Lucas Omar Soarzo Mancilla | Propuesta basada en commits y aportes; pendiente de ratificación (T084) |
+| HU3 — Gestión de trabajadores y asignaciones | Consuelo Estefania Hidalgo Salgado | Propuesta basada en commits y aportes; pendiente de ratificación (T084) |
+| HU4 — Visualización de la evolución | Bastián Ignacio Reinado Bravo | Propuesta basada en commits y aportes; pendiente de ratificación (T084) |
+| Especificaciones y documentación | Daphnne Hidalgo Mundaca | Propuesta basada en aportes documentados; pendiente de ratificación (T084) |
+| Implementación, integración y pruebas | Emilio Vejar Bravo | Propuesta basada en commits y aportes; pendiente de ratificación (T084) |
 
-Los responsables deben asignarse cuando el grupo confirme qué integrante desarrollará cada historia. No se inventarán nombres.
+La distribución anterior es una propuesta fundamentada en commits y aportes documentados; no afirma que todos los integrantes la hayan aprobado. Su ratificación por el grupo sigue pendiente (T084).
 
 ## Resumen de fases
 
@@ -295,7 +297,7 @@ Los responsables deben asignarse cuando el grupo confirme qué integrante desarr
 
 - [x] T071 [P] Actualizar `README.md` con el alcance de 002, uso de datos ficticios, almacenamiento local, ausencia de autenticación y conservación de la documentación de planilla.
 
-- [ ] T072 [P] Confirmar con el grupo el texto definitivo de la advertencia de uso exclusivo de datos ficticios, actualizarlo si corresponde y verificar que se muestre correctamente. Esta aprobación no bloquea las tareas técnicas anteriores.
+- [x] T072 [P] Confirmar con el grupo el texto definitivo de la advertencia de uso exclusivo de datos ficticios, actualizarlo si corresponde y verificar que se muestre correctamente. El grupo aprobó el texto y se verificó su presentación.
 
 - [x] T073 [P] Verificar el renderizado seguro del contenido ingresado por el usuario, evitando la ejecución de scripts desde campos de texto.
 
@@ -319,7 +321,7 @@ Los responsables deben asignarse cuando el grupo confirme qué integrante desarr
 
 - [ ] T083 Ejecutar y documentar una prueba manual de extremo a extremo HU3 → HU1 → HU2 → HU4 con datos ficticios. **Resultados parciales ejecutados por el grupo:** creación de departamentos y trabajadores; asignaciones y cambios de departamento; registro y consulta de productividad; evolución entre dos períodos; conservación del departamento histórico; persistencia tras recargar la página. Las pruebas de integración también automatizan el registro y consulta, pero no miden el tiempo de una persona. **Medición técnica SC-003:** Historial renderizó 500 filas en 113.7 ms en Edge headless; no equivale a una medición de tiempo de tarea humana. **Pendiente para cerrar T083:** cronometrar SC-001, SC-002 y SC-003 con usuario, evaluar SC-004 con usuarios reales (al menos 90%) y registrar evidencias y resultados.
 
-- [ ] T084 Actualizar spec.md y la tabla de responsables de tasks.md cuando el grupo confirme qué integrante realizará cada historia de usuario. La falta de confirmación no debe bloquear las verificaciones técnicas, pero debe quedar documentada antes de la entrega final.
+- [ ] T084 Ratificar en el grupo la propuesta de distribución de responsabilidades documentada en `spec.md` §14.1 y en la tabla de este archivo. La propuesta se basa en commits y aportes documentados; no se considera aprobada por todos hasta su ratificación.
 
 - [x] T085 Revisar la coherencia de Spec Kit (`spec.md`, `plan.md`, `research.md`, `data-model.md`, `quickstart.md`, `contracts/` y `tasks.md`), README e imagen MER, sin alterar funcionalidades.
 
@@ -430,12 +432,13 @@ El incremento 002 se considera finalizado cuando:
 - [x] No se implementaron funcionalidades fuera de alcance.
 - [x] Se ejecutaron y documentaron las pruebas.
 - [x] Se verificó la coherencia final de `spec.md`, `plan.md`, `data-model.md` y `tasks.md`.
-- [ ] Se completaron las validaciones manuales T083, la aprobación T072 y la asignación de responsables T084.
+- [x] Se aprobó el texto de la advertencia y se verificó su presentación (T072).
+- [ ] Se completaron las validaciones manuales T083 y se ratificó la propuesta de responsabilidades T084.
 - [ ] El grupo revisó los cambios antes de integrarlos.
 
 ---
 
-**Nota final:** La implementación técnica, la suite automatizada, T076 (500 registros en Edge aislado) y la compilación están completadas. Permanecen pendientes T072 (aprobación del texto de advertencia por el grupo), T083 (mediciones de usuario SC-001 a SC-003 y evaluación de SC-004), T084 (confirmación de responsables por el grupo) y la revisión final del grupo. T085, T086, T087–T095 y T096–T100 están completadas. No se realizaron commits ni push automáticos.
+**Nota final:** La implementación técnica, la suite automatizada, T072, T076 (500 registros en Edge aislado) y la compilación están completadas. Permanecen pendientes T083 (mediciones de usuario SC-001 a SC-003 y evaluación de SC-004), la ratificación de la propuesta de responsabilidades T084 y la revisión final del grupo. T085, T086, T087–T095 y T096–T100 están completadas. No se realizaron commits ni push automáticos.
 
 ---
 
@@ -477,6 +480,6 @@ El incremento 002 se considera finalizado cuando:
 - Se impedirá eliminar asignaciones que tengan mediciones vinculadas.
 - Un trabajador con documentos de productividad o asignaciones históricas no podrá eliminarse físicamente.
 - Las pruebas se prepararán antes o junto con la implementación correspondiente y se verificará su fallo inicial cuando sea aplicable.
-- La aprobación del texto de advertencia de datos ficticios y la asignación de responsables no bloquearán la implementación técnica, pero seguirán pendientes de confirmación.
+- La aprobación del texto de advertencia de datos ficticios quedó completada (T072). La propuesta de distribución de responsabilidades no bloquea la implementación técnica y sigue pendiente de ratificación por el grupo (T084).
 - Los criterios de éxito SC-001 a SC-004 deberán verificarse mediante mediciones o evaluaciones documentadas.
 - Las modificaciones realizadas con ayuda de OpenCode deben ser revisadas y comprendidas por integrantes del grupo, conforme a la regla de trabajo con IA indicada al inicio de este documento.
