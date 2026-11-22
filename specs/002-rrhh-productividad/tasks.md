@@ -317,7 +317,7 @@ La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T08
 
 - [x] T079 [P] [US6] Verificar que los documentos de productividad no utilicen campos monetarios ni se mezclen con liquidaciones. Comprobar y documentar el tratamiento realizado sobre documentos anteriores y folios inválidos, conservando evidencia de cualquier migración o limpieza autorizada.
 
-- [x] T080 [P] Verificar que el MER original de nueve entidades permanezca sin modificaciones, no se agreguen entidades y exista `specs/001-erp-base-module/mer.png` con PK, FK y cardinalidades.
+- [x] T080 [P] Verificar que el MER original de nueve entidades permanezca sin modificaciones, no se agreguen entidades y exista `specs/001-erp-base-module/mer.png` con PK, FK y cardinalidades. También se generó `specs/002-rrhh-productividad/mer.png` como copia de referencia del incremento, con las mismas 9 entidades y relaciones.
 
 - [x] T081 Ejecutar la suite completa de pruebas unitarias y de integración. Resultado automatizado: 14 archivos y 165 pruebas aprobadas. Además, ejecutar las comprobaciones de linting, formato y análisis estático exigidas por la constitución del proyecto, utilizando las herramientas configuradas o documentando las que falten. Registrar fallos y correcciones.
 

@@ -88,3 +88,27 @@ La aplicación arranca con la configuración de RR. HH. definida en `src/module-
 - `specs/002-rrhh-productividad/quickstart.md`: inicio rápido.
 - `specs/002-rrhh-productividad/contracts/storage.md`: contrato de persistencia local.
 - `specs/002-rrhh-productividad/tasks.md`: tareas y estado de implementación.
+- `specs/002-rrhh-productividad/mer.png`: MER de referencia con las 9 entidades originales.
+
+---
+
+## 6. Escalabilidad
+
+El MVP usa `localStorage`: los datos viven en un solo navegador, no hay servidor, autenticación ni sincronización. Esta decisión es deliberada para la demostración académica, pero limita el crecimiento del módulo. Una evolución futura, fuera del alcance de 002, podría realizarse en cuatro etapas:
+
+1. **Base de datos centralizada:** mover las colecciones de `localStorage` a una base de datos relacional administrada por una API. El contrato actual de almacenamiento (`src/storage.js`) serviría como capa de repositorio; se conservarían las claves lógicas (`entity_id`, `asignacionId`, `id_departamento`) y las validaciones de integridad referencial.
+2. **Autenticación y roles:** incorporar inicio de sesión, sesiones y perfiles para encargado de RR. HH., jefatura de área y dirección. Los tipos de usuario ya descritos en la especificación son hoy solo necesidades de diseño, no controles de acceso implementados.
+3. **Trabajo simultáneo:** agregar control de concurrencia (por ejemplo, versión de registro o `updatedAt`), detección de conflictos y transacciones para el recálculo de metas consolidadas, de modo que dos personas puedan registrar mediciones sin sobrescribirse.
+4. **Respaldos históricos:** definir política de retención, copias programadas, procedimientos de restauración y exportación. Actualmente, si se borran los datos del sitio o falla el navegador, la información no se recupera.
+
+Estas mejoras no están implementadas en el MVP y no deben presentarse como funcionalidades disponibles.
+
+---
+
+## 7. Referencias bibliográficas
+
+- Vite — guía oficial: https://vite.dev/guide/
+- JavaScript — MDN Web Docs: https://developer.mozilla.org/en-US/docs/Web/JavaScript
+- Vitest — documentación oficial: https://vitest.dev/guide/
+- jsdom — documentación del proyecto: https://github.com/jsdom/jsdom
+- Documentación interna del proyecto: `specs/001-erp-base-module/` y `specs/002-rrhh-productividad/`.

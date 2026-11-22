@@ -70,7 +70,7 @@ Las funcionalidades de planilla y liquidaciones permanecen documentadas en el mo
 
 ## 5. Modelo de datos de referencia
 
-El incremento utiliza como referencia el MER existente de 9 entidades, documentado en `specs/001-erp-base-module/data-model.md`.
+El incremento utiliza como referencia el MER existente de 9 entidades, documentado en `specs/001-erp-base-module/data-model.md` y representado gráficamente en `specs/001-erp-base-module/mer.png` y en la copia de referencia `specs/002-rrhh-productividad/mer.png`.
 
 No se modifica el MER ni se agregan nuevas entidades al modelo de referencia.
 
@@ -253,6 +253,12 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 8. **Dado** un trabajador con registros históricos, **cuando** se intenta eliminarlo físicamente, **entonces** el sistema impide la eliminación y permite marcarlo como Inactivo.
 
+9. **Dado** el módulo RR. HH., **cuando** se abre la navegación lateral, **entonces** se muestran las secciones Panel, Trabajadores, Departamentos, Asignaciones, Historial y Evolución, con la sección activa resaltada y sin perder los registros ya cargados.
+
+10. **Dada** la vista Asignaciones, **cuando** se selecciona un trabajador en el filtro, **entonces** el listado muestra solo sus asignaciones; si no hay resultados, se muestra el estado vacío correspondiente.
+
+11. **Dado** un trabajador al que se marca como Inactivo, **cuando** se consulta su información, **entonces** sus asignaciones y mediciones históricas permanecen disponibles y su estado laboral aparece actualizado.
+
 ---
 
 ### Historia de Usuario 4: Visualización de la evolución de productividad (Prioridad: P2)
@@ -355,14 +361,16 @@ Los errores de validación deben comunicarse mediante mensajes claros para el us
 - **FR-001:** El sistema DEBE permitir registrar trabajadores con nombre, código, cargo y fecha de ingreso.
 - **FR-002:** El sistema DEBE permitir editar trabajadores existentes.
 - **FR-003:** El sistema DEBE permitir registrar y editar departamentos.
-- **FR-004:** El sistema DEBE permitir asignar trabajadores a departamentos indicando la fecha de inicio.
+- **FR-004:** El sistema DEBE permitir asignar trabajadores a departamentos indicando la fecha de inicio. La operación se realiza desde la sección **Asignaciones**, accesible desde la barra lateral de navegación del módulo RR. HH. Esa vista DEBE ofrecer un filtro por trabajador para consultar únicamente sus asignaciones históricas y un estado vacío cuando no haya resultados.
 - **FR-005:** El sistema DEBE conservar la asignación anterior al registrar un cambio de departamento.
 - **FR-006:** El sistema DEBE impedir asignaciones con períodos superpuestos.
 - **FR-007:** El sistema DEBE impedir fechas de término anteriores a la fecha de inicio.
 - **FR-008:** El sistema DEBE conservar las asignaciones históricas.
 - **FR-009:** El sistema DEBE mostrar el departamento actual y las asignaciones anteriores.
-- **FR-010:** El sistema NO DEBE eliminar físicamente trabajadores con historial; DEBE permitir marcarlos como Inactivos.
+- **FR-010:** El sistema NO DEBE eliminar físicamente trabajadores con historial; DEBE permitir marcarlos como Inactivos desde el formulario o el listado de trabajadores. Al marcarlos como Inactivos se conservan sus asignaciones y mediciones históricas, y el cambio queda visible en el estado laboral del trabajador.
 - **FR-011:** El sistema NO DEBE eliminar departamentos con relaciones históricas mientras no exista una política de conservación.
+
+La navegación entre secciones (Panel, Trabajadores, Departamentos, Asignaciones, Historial y Evolución) DEBE conservar los registros cargados y resaltar la sección activa. El filtro de la vista Asignaciones y los filtros por trabajador de Historial y Evolución son parte del flujo descrito en FR-004, FR-024 y FR-028; no constituyen funcionalidades nuevas fuera del alcance de 002.
 
 ### Registro de productividad
 

@@ -44,6 +44,8 @@ En ese código se verificaron:
 
 El código base fue restaurado en el árbol de trabajo y las observaciones históricas se confirmaron durante la implementación.
 
+El MER de referencia se conserva en `specs/001-erp-base-module/mer.png` y su copia correspondiente al incremento 002 en `specs/002-rrhh-productividad/mer.png`. Ambas mantienen las 9 entidades originales, sus PK/FK y las cardinalidades 1:N.
+
 ### 2.2. Estructuras implementadas en 002
 
 `Departamento` e `Historial_Departamento` están implementados en 002 con persistencia, validaciones y operaciones propias, sin alterar el MER.

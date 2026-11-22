@@ -151,3 +151,26 @@ Se permiten extensiones aditivas de los archivos existentes del módulo ERP base
 ## 10. Estado de tasks.md
 
 `tasks.md` contiene tareas concretas de implementación y pruebas por etapa. HU5 y HU6 se relacionan con funcionalidades y pruebas existentes; no agregan implementación. La implementación, las pruebas automatizadas, T076, T072, T083 y T084 están completadas. T085 y T086 están completadas; la revisión final del grupo sigue pendiente.
+
+---
+
+## 11. Escalabilidad
+
+El almacenamiento actual es `localStorage`: una sola instancia de navegador, sin servidor, sin autenticación y sin sincronización. El contrato de persistencia aislado en `src/storage.js` permite migrar la solución sin reescribir la lógica de dominio. La evolución prevista, fuera del alcance de 002, comprende:
+
+1. **Base de datos centralizada:** sustituir las claves `erp_base_module:*` por tablas administradas por una API, conservando `entity_id`, `asignacionId` e `id_departamento` como claves de relación y manteniendo las validaciones de integridad referencial.
+2. **Autenticación por roles:** incorporar inicio de sesión, sesiones y permisos para encargado de RR. HH., jefatura de área y dirección. En el MVP estos perfiles solo expresan necesidades de uso; no existe control de acceso.
+3. **Trabajo simultáneo:** agregar versión de registro o `updatedAt`, detección de conflictos y transacciones para el recálculo de metas consolidadas, evitando que dos usuarios sobrescriban mediciones del mismo período.
+4. **Respaldos históricos:** establecer política de retención, copias programadas, restauración verificable y exportación. Hoy no hay respaldo: borrar los datos del navegador implica pérdida irreversible.
+
+Ninguna de estas capacidades se implementa en el incremento 002 ni debe mostrarse como disponible en la interfaz.
+
+---
+
+## 12. Referencias bibliográficas
+
+- Vite — guía oficial: https://vite.dev/guide/
+- JavaScript — MDN Web Docs: https://developer.mozilla.org/en-US/docs/Web/JavaScript
+- Vitest — documentación oficial: https://vitest.dev/guide/
+- jsdom — documentación del proyecto: https://github.com/jsdom/jsdom
+- Documentación interna: `specs/001-erp-base-module/data-model.md` (MER de 9 entidades) y `specs/002-rrhh-productividad/mer.png` (MER de referencia del incremento).
