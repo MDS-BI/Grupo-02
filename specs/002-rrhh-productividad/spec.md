@@ -327,6 +327,37 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 ---
 
+### Historia de Usuario 7: Confidencialidad de licencias médicas y ausencias justificadas (Prioridad: P1)
+
+**Como** encargado de RR. HH. de la cafetería,<br>
+**quiero** registrar y consultar las licencias médicas ficticias del personal con la mínima información necesaria —trabajador, fechas de ausencia, tipo de reposo y estado de tramitación—,<br>
+**para** organizar los turnos y conservar el historial laboral sin tratar diagnósticos, exámenes ni otros datos de salud del trabajador.
+
+**Justificación de prioridad:** La operación de la cafetería necesita saber quién falta y en qué fechas para reorganizar barras, cocina y salón, pero esa información debe limitarse a la ausencia y su tramitación. La normativa SUSESO sobre licencias médicas y subsidios por incapacidad laboral distingue la gestión que realiza el empleador de la información clínica, que solo compete al profesional emisor y a la COMPIN, la C.C.A.F. o la ISAPRE; el empleador debe conocer la ausencia y sus fechas, nunca el diagnóstico. El deber de reserva del empleador sobre información privada del trabajador, reconocido históricamente en el artículo 154 bis del Código del Trabajo, se aplica junto con la Ley 19.628 —vigente hasta el 30-11-2026— y, desde el 01-12-2026, con la Ley 21.719, que restringe el tratamiento de datos de salud obtenidos en el ámbito laboral. El texto vigente de dicho artículo regula el protocolo de prevención del acoso, sin perjuicio de las obligaciones de confidencialidad indicadas. En consecuencia, el registro debe explicar su finalidad, minimizar los datos solicitados y impedir que la información clínica llegue al historial o a la planificación de turnos.
+
+**Prueba independiente:** Registrar un trabajador ficticio con una licencia médica de tres días de reposo total en estado pendiente, consultar su historial y la planificación de turnos, y verificar que aparecen el trabajador, las fechas, el tipo de reposo y el estado de tramitación, y que ni el formulario, ni el historial, ni la planificación contienen diagnóstico, nombre de enfermedad, exámenes, tratamientos ni antecedentes clínicos.
+
+**Responsable:** Consuelo Hidalgo.
+
+**Requisitos relacionados:** FR-010, FR-032, FR-034, FR-035, FR-040, FR-041 y FR-042; reglas de validación, protección de registros y privacidad documentadas en esta especificación.
+
+#### Escenarios de aceptación
+
+1. **Dado** un trabajador ficticio existente, **cuando** se registra una licencia médica con fecha de inicio, fecha de término, tipo de reposo (total o parcial) y estado (pendiente, autorizada, rechazada o finalizada), **entonces** la ausencia queda asociada al trabajador y se muestra en su historial con esas fechas.
+2. **Dado** el formulario de licencia médica, **cuando** se abre para registrar una ausencia, **entonces** no ofrece campos de diagnóstico, enfermedad, exámenes, tratamientos ni antecedentes clínicos, y solo permite los datos necesarios para identificar la ausencia y su tramitación.
+3. **Dado** un encargado que consulta el historial o la planificación de turnos, **cuando** visualiza una licencia médica registrada, **entonces** conoce el trabajador, las fechas, el tipo de reposo y el estado, pero no ve diagnósticos ni información clínica alguna.
+4. **Dado** un trabajador con una licencia médica autorizada que coincide con un turno Mañana o Tarde, **cuando** se consulta la planificación, **entonces** el turno afectado se identifica como ausencia justificada en esas fechas y no se generan mediciones de productividad para ese período.
+5. **Dado** un trabajador con licencia médica pendiente de resolución, **cuando** se consulta su historial, **entonces** el estado pendiente aparece sin presentarse como ausencia autorizada y la información permanece visible solo para el responsable del registro.
+6. **Dado** un trabajador con licencia médica de reposo parcial, **cuando** se planifica el turno, **entonces** solo se registra la reducción de jornada en las fechas indicadas, sin incorporar el motivo clínico ni extender la ausencia a otros días.
+7. **Dado** una licencia médica registrada, **cuando** cambia su estado de pendiente a autorizada o rechazada, **entonces** el historial conserva el registro original y muestra el nuevo estado sin borrar las fechas ni incorporar antecedentes clínicos.
+8. **Dado** un intento de ingresar un diagnóstico o antecedente clínico en observaciones u otro campo libre, **cuando** se intenta guardar, **entonces** el sistema rechaza el registro e informa que solo se registran ausencias y fechas.
+9. **Dado** un trabajador con registros creados antes de esta historia, **cuando** se consulta su historial, **entonces** esos registros continúan siendo válidos y no se les exige información de licencias médicas.
+10. **Dado** un registro de licencia médica con datos ficticios, **cuando** se consulta o se planifica con él, **entonces** la advertencia de uso exclusivo de datos ficticios permanece visible y no se realiza ninguna tramitación real ante COMPIN, C.C.A.F., ISAPRE ni SUSESO.
+11. **Dado** un registro de licencia médica sobre datos ficticios, **cuando** se atiende una solicitud de acceso, rectificación o supresión, **entonces** el sistema permite revisar, corregir o dejar de mostrar ese registro sin incorporar información clínica y sin afectar otras asignaciones ni mediciones del trabajador.
+12. **Dado** un historial con licencias médicas de varios trabajadores ficticios, **cuando** se consulta una vista agregada, **entonces** las ausencias no se comparan entre trabajadores ni se utilizan como indicador de productividad, evaluación o sanción.
+
+---
+
 ## 7. Reglas de validación
 
 | Campo o regla | Validación |
