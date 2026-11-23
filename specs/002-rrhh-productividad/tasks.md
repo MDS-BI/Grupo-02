@@ -1,504 +1,457 @@
+---
 
-# Tareas: Incremento 002 — RR. HH. e Historial de Productividad Laboral
+description: "Task list for feature implementation"
+---
 
-**Entrada:** `spec.md`, `plan.md` y `data-model.md` de `specs/002-rrhh-productividad/`  
-**Prerrequisitos:** Documentación de 002 y recuperación/verificación del módulo base (E0)  
-**Rama de trabajo:** `correccion-specs-002`  
-**Estado:** Las seis historias corresponden a funcionalidades existentes. Suite automatizada aprobada (14 archivos, 165 pruebas), T076 verificada en Edge aislado y T072, T083 y T084 completadas; el grupo confirmó la distribución de responsables. Sigue pendiente la revisión final del grupo.
+# Tasks: 002-rrhh-productividad — RR. HH. e Historial de Productividad Laboral
 
-**Separación de trabajo:** T001–T009 (E0) recuperan y verifican el módulo base del incremento 001; no son funcionalidades nuevas de 002. T010–T070 cubren infraestructura y HU1–HU4. HU5 y HU6 se relacionan con tareas y pruebas ya existentes en las fases 2, 4, 7 y 8. T071–T086 registran las verificaciones, documentación y cierre.
+**Input**: Design documents from `/specs/002-rrhh-productividad/`
 
-**Regla de trabajo con IA:** Se permite utilizar OpenCode para crear, modificar y ejecutar código del proyecto, con supervisión de los integrantes del grupo. Los cambios deben revisarse y probarse antes de considerarse terminados. OpenCode no puede realizar commits, push, merge, eliminar datos existentes ni cambiar de rama sin autorización explícita.
+**Prerequisites**: `plan.md`, `spec.md`, `research.md`, `data-model.md`, `contracts/storage.md`, `quickstart.md`, `.specify/memory/constitution.md`
 
-## Formato de tareas
+**Tests**: Las tareas de prueba se incluyen porque la constitución del proyecto exige cobertura automatizada antes o junto con cada cambio de lógica, y porque `plan.md` define la suite automatizada como criterio de cierre.
 
-Cada tarea utiliza el formato:
+**Organization**: Las tareas se agrupan por historia de usuario para permitir implementación y validación independientes. Las historías P1 se ordenan por dependencia; US4 es P2 y se implementa al final.
 
-`- [x] T001 [P] [US1] Descripción`
+**Rama de trabajo**: `correccion-specs-002` (no crear, cambiar, commitear ni hacer push de ramas sin autorización explícita).
 
-- `[ ]`: tarea pendiente.
-- `[x]`: tarea completada.
-- `T001`: identificador de la tarea.
-- `[P]`: tarea que puede desarrollarse en paralelo si no tiene dependencias pendientes ni conflictos de archivos.
-- `[US1]`: historia de usuario 1.
-- `[US2]`: historia de usuario 2.
-- `[US3]`: historia de usuario 3.
-- `[US4]`: historia de usuario 4.
-- `[US5]`: historia de usuario 5.
-- `[US6]`: historia de usuario 6.
+**Regla de trabajo con IA**: OpenCode puede crear y modificar archivos bajo supervisión del grupo. No realizar commits, push, merge, cambios de rama ni eliminación silenciosa de datos.
+
+## Formato: `[ID] [P?] [Story] Description`
+
+- **[P]**: puede ejecutarse en paralelo si sus dependencias están resueltas y no modifica el mismo archivo que otra tarea concurrente.
+- **[Story]**: etiqueta obligatoria solo en fases de historias de usuario (`[US1]` a `[US7]`).
+- Todas las descripciones incluyen la ruta exacta del archivo que debe modificarse o verificarse.
+
+## Path Conventions
+
+Proyecto único: `index.html`, `src/`, `tests/` en la raíz del repositorio.
 
 ## Responsables
 
-| Historia o área de trabajo | Responsable | Estado |
-|---|---|---|
-| HU1 — Registro de medición de productividad | Bruno Phillipe Cabalin Ferreira | Aprobada por el grupo (T084) |
-| HU2 — Consulta del historial de desempeño | Lucas Omar Soarzo Mancilla | Aprobada por el grupo (T084) |
-| HU3 — Gestión de trabajadores y asignaciones | Consuelo Estefania Hidalgo Salgado | Aprobada por el grupo (T084) |
-| HU4 — Visualización de la evolución | Bastián Ignacio Reinado Bravo | Aprobada por el grupo (T084) |
-| HU5 — Indicadores por cargo y turnos | Daphnne Hidalgo | Aprobada por el grupo (T084) |
-| HU6 — Validación y protección de registros | Emilio Vejar | Aprobada por el grupo (T084) |
-| Especificaciones y documentación | Daphnne Hidalgo Mundaca | Asignación de apoyo aprobada previamente |
-| Implementación, integración y pruebas | Emilio Vejar Bravo | Asignación de apoyo aprobada previamente |
-
-La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T084). Se mantienen las asignaciones de apoyo previamente documentadas.
+| Historia o área | Responsable |
+|---|---|
+| US1 — Registro de medición de productividad | Bruno Phillipe Cabalin Ferreira |
+| US2 — Consulta del historial de desempeño | Lucas Omar Soarzo Mancilla |
+| US3 — Gestión de trabajadores y asignaciones | Consuelo Estefania Hidalgo Salgado |
+| US4 — Visualización de la evolución | Bastián Ignacio Reinado Bravo |
+| US5 — Indicadores por cargo y turnos | Daphnne Hidalgo |
+| US6 — Validación y protección de registros | Emilio Vejar |
+| US7 — Confidencialidad de licencias médicas y ausencias justificadas | Consuelo Hidalgo |
+| Especificaciones y documentación | Daphnne Hidalgo Mundaca |
+| Implementación, integración y pruebas | Emilio Vejar Bravo |
 
 ## Resumen de fases
 
 | Fase | Contenido | Tareas | Cantidad |
 |---|---|---|---|
-| 1 | Recuperación y verificación del módulo base | T001–T009 | 9 |
-| 2 | Infraestructura fundacional | T010–T022 | 13 |
-| 3 | HU3: trabajadores, departamentos y asignaciones | T023–T039 | 17 |
-| 4 | HU1: registro de productividad | T040–T054 | 15 |
-| 5 | HU2: consulta del historial | T055–T062 | 8 |
-| 6 | HU4: visualización de evolución | T063–T070 | 8 |
-| 7 | Pruebas, documentación y cierre | T071–T086 | 16 |
-| 8 | Adaptación registro de productividad — cafetería | T087–T095 | 9 |
-| 9 | Metas consolidadas por departamento y período | T096–T100 | 5 |
-| **Total** | | **T001–T100** | **100** |
+| 1 | Setup | T001–T008 | 8 |
+| 2 | Foundational | T009–T023 | 15 |
+| 3 | US3 — Gestión de trabajadores y asignaciones (P1) | T024–T038 | 15 |
+| 4 | US1 — Registro de medición (P1) | T039–T055 | 17 |
+| 5 | US2 — Consulta del historial (P1) | T056–T064 | 9 |
+| 6 | US5 — Indicadores por cargo y turnos (P1) | T065–T075 | 11 |
+| 7 | US6 — Validación y protección (P1) | T076–T086 | 11 |
+| 8 | US7 — Licencias médicas y ausencias justificadas (P1) | T087–T109 | 23 |
+| 9 | US4 — Visualización de la evolución (P2) | T110–T119 | 10 |
+| 10 | Polish & cross-cutting | T120–T132 | 13 |
+| **Total** | | **T001–T132** | **132** |
 
 ---
 
-## Fase 1: Recuperación y verificación del módulo base (E0)
+## Phase 1: Setup (Shared Infrastructure)
 
-**Propósito:** Recuperar el código base eliminado del árbol de trabajo y verificar las estructuras reales antes de implementar el incremento 002.
+**Purpose**: Confirmar el módulo base, las dependencias y los documentos de diseño antes de tocar lógica de dominio.
 
-**Importante:** Esta fase debe completarse antes de comenzar la implementación.
-
-- [x] T001 Verificar que la rama activa sea `correccion-specs-002` y comprobar el estado de `src/`, `index.html` y `tests/`, sin cambiar de rama ni crear ramas nuevas.
-
-- [x] T002 Identificar en el historial de Git el commit recuperable `a0062c0^` y listar los archivos disponibles de `src/`, `index.html` y `tests/`.
-
-- [x] T003 [P] Restaurar manualmente `index.html` desde el historial de Git, sin sobrescribir la documentación del incremento 002. La carga de la aplicación se verificará después de recuperar también `src/`.
-
-- [x] T004 [P] Restaurar manualmente `src/` desde el historial de Git, incluyendo los archivos y componentes existentes en la versión recuperable.
-
-- [x] T005 [P] Restaurar manualmente `tests/` desde el último commit que contenga las pruebas necesarias y verificar su estructura.
-
-- [x] T006 Verificar `package.json` y los scripts de desarrollo, pruebas y compilación. Instalar dependencias si corresponde.
-
-- [x] T007 Ejecutar la aplicación base y las pruebas existentes después de restaurar `index.html`, `src/` y `tests/`. Registrar los resultados y errores encontrados.
-
-- [x] T008 Verificar las estructuras reales de `Entity`, `Document` y `ModuleConfig`, las claves de `localStorage` y el comportamiento de eliminación en cascada. Comparar los resultados con `data-model.md`.
-
-- [x] T009 Documentar los resultados de la recuperación y actualizar `data-model.md` y `plan.md` si se encuentran diferencias con el código recuperado.
-
-**Punto de control:** El módulo base está recuperado, funciona y sus estructuras principales han sido verificadas.
+- [ ] T001 Verificar que la rama activa sea `correccion-specs-002` y que `index.html`, `src/`, `tests/` y `specs/002-rrhh-productividad/plan.md` estén presentes y sin cambios accidentales.
+- [ ] T002 [P] Confirmar las dependencias y scripts en `package.json` y ejecutar `npm install` para garantizar Vite, Vitest y jsdom disponibles.
+- [ ] T003 [P] Verificar la configuración de Vitest y jsdom en `vitest.config.mjs` y el script `test` en `package.json`.
+- [ ] T004 [P] Revisar las claves y reglas de persistencia en `specs/002-rrhh-productividad/contracts/storage.md` y `specs/002-rrhh-productividad/data-model.md`.
+- [ ] T005 [P] Revisar prioridades, historias y criterios de aceptación en `specs/002-rrhh-productividad/spec.md`, incluida US7.
+- [ ] T006 Verificar el arranque de la aplicación en `index.html`, `src/main.js` y `src/app.js` con `npm run dev`.
+- [ ] T007 [P] Ejecutar la línea base `npm test -- --run` y `npm run build`, registrando resultados en `specs/002-rrhh-productividad/quickstart.md`.
+- [ ] T008 [P] Confirmar que el aviso de datos ficticios en `index.html` y la limitación de autenticación en `README.md` estén visibles antes de cualquier cambio funcional.
 
 ---
 
-## Fase 2: Infraestructura fundacional
+## Phase 2: Foundational (Blocking Prerequisites)
 
-**Propósito:** Preparar almacenamiento, configuración, validaciones y componentes comunes utilizados por las historias de usuario del incremento.
+**Purpose**: Preparar almacenamiento, configuración y validaciones compartidas que bloquean el inicio de todas las historias.
 
-**Dependencia:** Fase 1 completada.
+**Checkpoint**: La base de datos local, la configuración del módulo y el manejo de errores están listos; las historias pueden comenzar.
 
-### Almacenamiento y validaciones
-
-- [x] T010 Extender `src/storage.js` con operaciones para crear, editar, listar, buscar y validar departamentos.
-
-- [x] T011 Implementar en `src/storage.js` la persistencia de departamentos mediante la clave `erp_base_module:departamentos`.
-
-- [x] T012 Extender `src/storage.js` con operaciones para crear, listar por trabajador, cerrar y validar asignaciones de `Historial_Departamento`.
-
-- [x] T013 Implementar en `src/storage.js` la persistencia de asignaciones mediante la clave `erp_base_module:historial_departamentos`.
-
-- [x] T014 Implementar las validaciones compartidas de fechas, superposición, asignación vigente y protección de asignaciones con mediciones históricas vinculadas.
-
-### Configuración del módulo
-
-- [x] T015 Extender `src/module-config.js` con las etiquetas `Trabajador`, `Trabajadores`, `Registro de Productividad` y `Registros de Productividad`.
-
-- [x] T016 Configurar los campos personalizados de trabajador: `cargo`, `fechaIngreso`, `estadoLaboral` y `departamentoId`.
-
-- [x] T017 Configurar los campos personalizados de productividad: `indicador`, `resultado`, `unidad` y `asignacionId`.
-
-- [x] T018 Verificar o extender `src/components/custom-fields.js` para mostrar correctamente los campos personalizados sin romper el comportamiento base.
-
-### Pruebas e integración
-
-- [x] T019 [P] Agregar pruebas unitarias para operaciones de departamentos, historial y validaciones en la estructura de pruebas confirmada durante E0. Preparar las pruebas antes o junto con cada operación, verificar su fallo inicial y luego comprobar que pasan tras implementarla.
-
-- [x] T020 [P] Agregar pruebas unitarias para las etiquetas y los campos personalizados de ModuleConfig. Preparar las pruebas antes o junto con la configuración correspondiente.
-
-- [x] T021 Integrar la configuración del módulo y las nuevas operaciones de almacenamiento con `src/main.js` y `src/app.js`, ajustando las rutas a la estructura real recuperada.
-
-- [x] T022 [US6] Implementar el manejo de errores de localStorage para informar fallos de lectura o escritura y evitar confirmaciones falsas de guardado. Preparar una advertencia provisional de uso exclusivo de datos ficticios; la aprobación del texto definitivo no debe bloquear la infraestructura técnica.
-
-**Punto de control:** El almacenamiento de departamentos y asignaciones funciona, la configuración carga correctamente y las validaciones compartidas están disponibles.
+- [ ] T009 Declarar y confirmar en `src/storage.js` las claves `erp_base_module:entities`, `erp_base_module:documents`, `erp_base_module:departamentos`, `erp_base_module:historial_departamentos` y `erp_base_module:metas_consolidadas`.
+- [ ] T010 Robustecer `readCollection`, `writeCollection` y `StorageError` en `src/storage.js` para informar fallos de lectura/escritura sin confirmaciones falsas.
+- [ ] T011 Implementar en `src/storage.js` las validaciones base de trabajador y la protección de eliminación física cuando existan documentos o asignaciones.
+- [ ] T012 [P] Configurar etiquetas RR. HH. y campos personalizados de trabajador (`cargo`, `fechaIngreso`, `estadoLaboral`, `departamentoId`) en `src/module-config.js`.
+- [ ] T013 [P] Configurar campos personalizados base de productividad (`indicador`, `resultado`, `unidad`, `asignacionId`) en `src/module-config.js`.
+- [ ] T014 [P] Verificar o extender `src/components/custom-fields.js` para renderizar los campos personalizados declarados sin romper el módulo base.
+- [ ] T015 Implementar en `src/storage.js` el CRUD de departamentos con nombre normalizado único y bloqueo de eliminación con relaciones históricas.
+- [ ] T016 Implementar en `src/storage.js` el CRUD de asignaciones con fechas válidas, ausencia de superposición y una sola asignación vigente por trabajador.
+- [ ] T017 Implementar en `src/storage.js` la protección de asignaciones con mediciones vinculadas, rechazando cambios que invaliden el historial.
+- [ ] T018 Implementar en `src/storage.js` la validación y normalización base de documentos de productividad, incluyendo `entity_id`, período y `asignacionId`.
+- [ ] T019 Implementar en `src/storage.js` la generación automática de folio y la inspección segura de documentos previos incompatibles.
+- [ ] T020 Implementar en `src/storage.js` el cálculo y recálculo idempotente de metas y resultados consolidados por departamento y período.
+- [ ] T021 Conectar `boot(RRHH_CONFIG)`, temas y etiquetas en `src/app.js` y `src/main.js`.
+- [ ] T022 Conectar el banner de error de almacenamiento entre `#storage-error` en `index.html` y `src/app.js`.
+- [ ] T023 [P] Ejecutar `tests/unit/storage.test.js`, `tests/unit/rrhh-storage.test.js` y `tests/unit/module-config.test.js` para confirmar que la base no introduce regresiones.
 
 ---
 
-## Fase 3: HU3 — Gestión de trabajadores, departamentos y asignaciones
+## Phase 3: User Story 3 — Gestión de trabajadores y asignaciones (Priority: P1)
 
-**Prioridad:** P1 — MVP
+**Goal**: Registrar y editar personal de barra, cocina y salón; administrar departamentos y conservar asignaciones históricas.
 
-**Objetivo:** Registrar y editar trabajadores y departamentos, administrar asignaciones históricas y conservar el historial cuando un trabajador cambia de departamento.
+**Independent Test**: Crear un trabajador, asignarlo a un departamento, reasignarlo a otro y comprobar que la asignación anterior permanece visible.
 
-**Prueba independiente:** Registrar un trabajador, asignarlo a un departamento, trasladarlo a otro y comprobar que la asignación anterior se conserva.
+### Tests for User Story 3
 
-### Pruebas de HU3
+- [ ] T024 [P] [US3] Agregar pruebas unitarias de campos personalizados de trabajador en `tests/unit/rrhh-storage.test.js`.
+- [ ] T025 [P] [US3] Agregar pruebas unitarias de CRUD y nombre único de departamentos en `tests/unit/rrhh-storage.test.js`.
+- [ ] T026 [P] [US3] Agregar pruebas unitarias de fechas, superposición y cierre de asignaciones en `tests/unit/rrhh-storage.test.js`.
+- [ ] T027 [P] [US3] Agregar pruebas de integración de formularios de trabajador y departamento en `tests/integration/rrhh-workers.test.js`.
+- [ ] T028 [P] [US3] Agregar pruebas de integración de reasignación, historial y bloqueo de eliminación en `tests/integration/rrhh-assignments.test.js`.
 
-- [x] T023 [P] [US3] Agregar pruebas unitarias para crear, editar y validar trabajadores con campos personalizados.
+### Implementation for User Story 3
 
-- [x] T024 [P] [US3] Agregar pruebas unitarias para crear, editar, listar y validar nombres únicos de departamentos.
+- [ ] T029 [P] [US3] Extender `src/components/entity-form.js` con `cargo`, `fechaIngreso`, `estadoLaboral` y `departamentoId`.
+- [ ] T030 [P] [US3] Extender `src/components/entity-list.js` para mostrar departamento actual y estado laboral.
+- [ ] T031 [P] [US3] Crear `src/components/department-form.js` para alta y edición de departamentos.
+- [ ] T032 [P] [US3] Crear `src/components/department-list.js` con estado vacío y bloqueo de eliminación histórica.
+- [ ] T033 [P] [US3] Crear `src/components/assignment-form.js` para registrar asignaciones con fecha de inicio y término opcional.
+- [ ] T034 [P] [US3] Crear `src/components/assignment-list.js` con filtro por trabajador y estado vacío.
+- [ ] T035 [US3] Conectar envíos, filtros y listados de trabajadores, departamentos y asignaciones en `src/app.js`.
+- [ ] T036 [US3] Implementar el cambio de departamento cerrando la asignación anterior y actualizando `departamentoId` en `src/app.js`.
+- [ ] T037 [US3] Implementar marcado como `Inactivo` y bloqueo de eliminación física en `src/app.js`.
+- [ ] T038 [US3] Aplicar estilos en `src/styles.css`, ejecutar la prueba independiente y registrar el resultado en `specs/002-rrhh-productividad/tasks.md`.
 
-- [x] T025 [P] [US3] Agregar pruebas unitarias para asignaciones históricas: fechas válidas, ausencia de superposición, una sola asignación vigente y cierre de la asignación anterior.
-
-- [x] T026 [P] [US3] Agregar pruebas de integración para los formularios de trabajador y departamento.
-
-- [x] T027 [P] [US3] Agregar pruebas de integración para el cambio de departamento, la conservación del historial, el bloqueo de eliminaciones con historial y el rechazo de cambios en asignaciones que invaliden mediciones vinculadas.
-
-### Implementación de HU3
-
-- [x] T028 [P] [US3] Extender `src/components/entity-form.js` para registrar `cargo`, `fechaIngreso`, `estadoLaboral` y `departamentoId`.
-
-- [x] T029 [P] [US3] Extender `src/components/entity-list.js` para mostrar información del trabajador, departamento actual y estado laboral.
-
-- [x] T030 [P] [US3] Crear los componentes de formulario y listado de departamentos. Confirmar sus nombres definitivos después de recuperar el módulo base.
-
-- [x] T031 [P] [US3] Crear los componentes de formulario y listado de asignaciones históricas. Confirmar sus nombres definitivos después de recuperar el módulo base.
-
-- [x] T032 [US3] Conectar el registro y edición de trabajadores con el almacenamiento en `src/app.js`.
-
-- [x] T033 [US3] Conectar el registro y edición de departamentos con el almacenamiento en `src/app.js`.
-
-- [x] T034 [US3] Implementar el cambio de departamento: cerrar la asignación anterior, crear una nueva y actualizar `departamentoId`, conservando los registros históricos.
-
-- [x] T035 [US3] Mostrar mensajes claros para errores de validación de trabajadores, departamentos y asignaciones.
-
-- [x] T036 [US3] Impedir la eliminación física de trabajadores que tengan documentos de productividad o asignaciones históricas, y permitir marcarlos como `Inactivo`. Proteger también la operación de almacenamiento para evitar eliminaciones en cascada.
-
-- [x] T037 [US3] Impedir la eliminación física de departamentos con trabajadores o asignaciones históricas vinculadas.
-
-- [x] T038 [US3] Mostrar el departamento actual y las asignaciones anteriores del trabajador. Bloquear la eliminación de asignaciones que tengan mediciones vinculadas y rechazar modificaciones que dejen registros históricos inválidos.
-
-- [x] T039 [US3] Aplicar estilos, ejecutar las pruebas de HU3 y realizar la prueba manual independiente, registrando el resultado.
-
-**Punto de control:** HU3 permite gestionar trabajadores, departamentos y asignaciones sin perder información histórica.
+**Checkpoint**: US3 es funcional de forma independiente y conserva todo el historial de asignaciones.
 
 ---
 
-## Fase 4: HU1 — Registro de medición de productividad
+## Phase 4: User Story 1 — Registro de medición de productividad (Priority: P1)
 
-**Prioridad:** P1 — MVP
+**Goal**: Guardar mediciones periódicas asociadas al trabajador y a una asignación válida, permitiendo corregir solo el registro seleccionado.
 
-**Objetivo:** Registrar mediciones periódicas de productividad asociadas a una asignación histórica válida, permitiendo corregir registros individuales sin afectar otros períodos.
+**Independent Test**: Registrar una medición válida para un trabajador con asignación, verificar que aparece en almacenamiento y corregirla sin afectar otros períodos.
 
-**Dependencia:** HU3 completada.
+### Tests for User Story 1
 
-**Prueba independiente:** Registrar un trabajador, asignarlo a un departamento y guardar una medición válida. Verificar que una corrección no modifique otras mediciones.
+- [ ] T039 [P] [US1] Agregar pruebas unitarias de período `AAAA-MM`, límites mensuales, períodos futuros y anteriores al ingreso en `tests/unit/rrhh-storage.test.js`.
+- [ ] T040 [P] [US1] Agregar pruebas unitarias de indicador de 3 a 60 caracteres, resultado no negativo y unidad opcional en `tests/unit/rrhh-storage.test.js`.
+- [ ] T041 [P] [US1] Agregar pruebas unitarias de existencia, pertenencia y superposición de asignaciones en `tests/unit/rrhh-storage.test.js`.
+- [ ] T042 [P] [US1] Agregar pruebas unitarias de detección de duplicados y folio entero positivo en `tests/unit/rrhh-storage.test.js`.
+- [ ] T043 [P] [US1] Agregar pruebas de integración del flujo completo de alta y corrección en `tests/integration/rrhh-productivity.test.js`.
 
-### Pruebas de HU1
+### Implementation for User Story 1
 
-- [x] T040 [P] [US1] Agregar pruebas unitarias para validar el período mensual, el primer y último día del mes, el rechazo de períodos futuros y los anteriores al ingreso.
+- [ ] T044 [P] [US1] Extender `src/components/document-form.js` con selección explícita de trabajador y campos de productividad, conservando `entity_id`.
+- [ ] T045 [US1] Convertir el período `AAAA-MM` en `startDate` y `endDate` dentro de `src/components/document-form.js`.
+- [ ] T046 [US1] Implementar selección automática de asignación única y selección explícita cuando haya varias en `src/app.js`.
+- [ ] T047 [US1] Mostrar mensajes de validación claros en `src/components/document-form.js`.
+- [ ] T048 [US1] Conectar `#productivity-duplicate-warning` en `index.html` con la confirmación de duplicados en `src/app.js`.
+- [ ] T049 [US1] Persistir documentos con `asignacionId`, folio y campos personalizados, sin campos monetarios, en `src/storage.js`.
+- [ ] T050 [US1] Bloquear el guardado cuando `inspectDocumentsForRRHH` detecte documentos incompatibles en `src/storage.js`.
+- [ ] T051 [US1] Implementar corrección que actualice solo el registro seleccionado y conserve el folio en `src/storage.js`.
+- [ ] T052 [US1] Invocar el recálculo de metas y resultados consolidados en `addDocument`, `updateDocument` y `deleteDocument` dentro de `src/storage.js`.
+- [ ] T053 [P] [US1] Agregar pruebas unitarias de independencia, idempotencia y ocultamiento de consolidados en `tests/unit/rrhh-storage.test.js`.
+- [ ] T054 [US1] Aplicar estilos del formulario y mensajes en `src/styles.css`.
+- [ ] T055 [US1] Ejecutar la prueba independiente y registrar el resultado en `specs/002-rrhh-productividad/tasks.md`.
 
-- [x] T041 [P] [US1] [US6] Agregar pruebas unitarias para indicador de 3 a 60 caracteres, resultado numérico no negativo y unidad obligatoria.
-
-- [x] T042 [P] [US1] Agregar pruebas unitarias para validar asignaciones: existencia, pertenencia al trabajador, superposición con el período y selección automática o explícita.
-
-- [x] T043 [P] [US1] [US6] Agregar pruebas unitarias para detectar duplicados con advertencia y generar automáticamente un folio entero positivo.
-
-- [x] T044 [P] [US1] Agregar pruebas de integración para seleccionar explícitamente un trabajador, persistir su entity_id, crear una medición con asignacionId válido, folio automático y sin campos monetarios, y comprobar que el registro corresponde al trabajador seleccionado.
-
-- [x] T045 [P] [US1] Agregar pruebas de integración para corregir únicamente el registro seleccionado, conservar su folio y no modificar otros períodos.
-
-### Implementación de HU1
-
-- [x] T046 [P] [US1] Extender src/components/document-form.js con la selección explícita de trabajador y los campos indicador, resultado, unidad y asignacionId. El formulario debe conservar y enviar entity_id del trabajador seleccionado.
-
-- [x] T047 [US1] Implementar la entrada de período `AAAA-MM` y convertirla a `startDate` y `endDate`, correspondientes al primer y último día del mes.
-
-- [x] T048 [US1] Implementar la selección de asignación histórica: automática si existe una sola válida, explícita si existen varias y rechazo si no existe ninguna.
-
-- [x] T049 [US1] [US6] Implementar las validaciones de productividad y mostrar mensajes claros ante datos incorrectos.
-
-- [x] T050 [US1] [US6] Implementar la detección de registros duplicados del mismo trabajador, período e indicador. Mostrar advertencia y permitir continuar con confirmación.
-
-- [x] T051 [US1] Implementar la generación automática de folio entero positivo en `src/storage.js`, utilizando el mayor folio válido más uno.
-
-- [x] T052 [US1] [US6] Antes de guardar registros de productividad en erp_base_module:documents, inspeccionar los documentos existentes e identificar registros no productivos, folios inválidos y posibles incompatibilidades. Definir y aplicar un tratamiento seguro mediante respaldo, migración o limpieza con confirmación, sin eliminar datos silenciosamente. Si no puede garantizarse una operación segura, bloquear el guardado e informar el problema. Después de esta verificación, persistir Document con entity_id, folio, período, campos personalizados y asignacionId, sin utilizar campos monetarios.
-
-- [x] T053 [US1] Implementar la corrección de una medición existente, actualizando únicamente el registro seleccionado, conservando su folio y aplicando nuevamente las validaciones.
-
-- [x] T054 [US1] Aplicar estilos, ejecutar las pruebas de HU1 y realizar la prueba manual independiente, registrando el resultado.
-
-**Punto de control:** HU1 permite registrar y corregir mediciones de productividad sin alterar otros registros.
+**Checkpoint**: US1 permite registrar y corregir mediciones sin alterar otros períodos ni exponer consolidados internos.
 
 ---
 
-## Fase 5: HU2 — Consulta del historial de desempeño
+## Phase 5: User Story 2 — Consulta del historial de desempeño (Priority: P1)
 
-**Prioridad:** P1
+**Goal**: Mostrar cronológicamente las mediciones de un trabajador con el departamento histórico de cada período.
 
-**Objetivo:** Consultar el historial cronológico de productividad de cada trabajador, mostrando el departamento que correspondía a cada medición.
+**Independent Test**: Seleccionar un trabajador con varias mediciones, incluido un cambio de departamento, y verificar orden, departamento por asignación y estado vacío.
 
-**Dependencia:** HU1 completada.
+### Tests for User Story 2
 
-**Prueba independiente:** Seleccionar un trabajador con mediciones de distintos períodos y visualizar los registros ordenados y asociados a sus departamentos históricos correctos.
+- [ ] T056 [P] [US2] Agregar pruebas unitarias de filtrado por trabajador y orden por `startDate` en `tests/unit/rrhh-storage.test.js`.
+- [ ] T057 [P] [US2] Agregar pruebas unitarias de resolución del departamento desde `asignacionId` en `tests/unit/rrhh-storage.test.js`.
+- [ ] T058 [P] [US2] Agregar pruebas de integración de historial, recarga y trabajador sin mediciones en `tests/integration/rrhh-productivity.test.js`.
 
-### Pruebas de HU2
+### Implementation for User Story 2
 
-- [x] T055 [P] [US2] Agregar pruebas unitarias para filtrar registros por trabajador y ordenarlos cronológicamente mediante `startDate`.
+- [ ] T059 [US2] Implementar `createHistoryRow` en `src/components/history-view.js` con período, departamento, indicador, resultado y unidad.
+- [ ] T060 [US2] Implementar `renderHistoryTable` y el mensaje de ausencia de registros en `src/components/history-view.js`.
+- [ ] T061 [US2] Conectar `#history-entity` con `renderHistory()` en `src/app.js`.
+- [ ] T062 [US2] Garantizar que la consulta no modifique documentos históricos en `src/storage.js`.
+- [ ] T063 [US2] Aplicar estilos de tabla y estado vacío en `src/styles.css`.
+- [ ] T064 [US2] Ejecutar la prueba independiente y registrar el resultado en `specs/002-rrhh-productividad/tasks.md`.
 
-- [x] T056 [P] [US2] Agregar pruebas unitarias para obtener el departamento histórico desde `asignacionId` y `Historial_Departamento`.
-
-- [x] T057 [P] [US2] Agregar pruebas de integración para mostrar período, departamento histórico, indicador, resultado y unidad; comprobar que las mediciones persisten después de recargar la aplicación mientras localStorage esté disponible.
-
-- [x] T058 [P] [US2] Agregar pruebas de integración para trabajadores sin mediciones y para conservar el departamento histórico después de una reasignación.
-
-### Implementación de HU2
-
-- [x] T059 [US2] Crear la vista de historial o extender una vista existente, según la estructura recuperada del módulo base.
-
-- [x] T060 [US2] Conectar la selección de trabajador con la consulta de registros y su orden cronológico.
-
-- [x] T061 [US2] Mostrar cada medición con su período `AAAA-MM`, departamento histórico, indicador, resultado y unidad, sin modificar los registros almacenados.
-
-- [x] T062 [US2] Implementar el mensaje de ausencia de mediciones, aplicar estilos, ejecutar pruebas y registrar la validación manual de HU2.
-
-**Punto de control:** HU2 permite consultar el historial completo sin sobrescribir datos anteriores.
+**Checkpoint**: US2 muestra el historial completo sin sobrescribir datos anteriores.
 
 ---
 
-## Fase 6: HU4 — Visualización de la evolución de productividad
+## Phase 6: User Story 5 — Indicadores por cargo y turnos (Priority: P1)
 
-**Prioridad:** P2
+**Goal**: Sugerir indicadores según cargo, registrar turno, meta, evaluación cualitativa, observaciones y oportunidades de mejora.
 
-**Objetivo:** Mostrar la evolución de mediciones comparables de un trabajador mediante tablas o paneles resumidos.
+**Independent Test**: Seleccionar un trabajador con cargo configurado, comprobar la sugerencia de indicadores y guardar una medición con turno y campos nuevos visibles en historial y evolución.
 
-**Dependencia:** HU2 completada.
+### Tests for User Story 5
 
-**Prueba independiente:** Seleccionar un trabajador con mediciones de un mismo indicador y unidad en distintos períodos, y verificar que solo se comparen resultados equivalentes.
+- [ ] T065 [P] [US5] Agregar pruebas unitarias de `INDICADORES_POR_CARGO` e `indicadoresParaCargo` en `tests/unit/module-config.test.js`.
+- [ ] T066 [P] [US5] Agregar pruebas unitarias de validación de turno, meta y evaluaciones 1-5 en `tests/unit/rrhh-storage.test.js`.
+- [ ] T067 [P] [US5] Agregar pruebas de integración de sugerencia y visualización de campos en `tests/integration/rrhh-productivity.test.js`.
 
-### Pruebas de HU4
+### Implementation for User Story 5
 
-- [x] T063 [P] [US4] Agregar pruebas unitarias para filtrar mediciones comparables por trabajador, indicador y unidad, ordenadas por período.
+- [ ] T068 [US5] Definir `INDICADORES_POR_CARGO` e `indicadoresParaCargo` en `src/module-config.js`.
+- [ ] T069 [US5] Declarar los campos personalizados `turno`, `meta`, cuatro evaluaciones, `observaciones` y `oportunidadesMejora` en `src/module-config.js`.
+- [ ] T070 [US5] Agregar los controles de los campos nuevos dentro de `#productivity-fields` en `index.html`.
+- [ ] T071 [US5] Recolectar, limpiar y validar los campos nuevos en `src/components/document-form.js`.
+- [ ] T072 [US5] Implementar `suggestIndicatorsForEntity` en `src/app.js`.
+- [ ] T073 [US5] Normalizar y validar los campos nuevos, conservando registros anteriores, en `src/storage.js`.
+- [ ] T074 [US5] Mostrar turno, meta, evaluaciones, observaciones y oportunidades en `src/components/history-view.js`, `src/components/evolution-view.js`, `src/components/document-list.js` y `src/components/dashboard.js`.
+- [ ] T075 [US5] Aplicar estilos en `src/styles.css` y registrar la prueba independiente en `specs/002-rrhh-productividad/tasks.md`.
 
-- [x] T064 [P] [US4] Agregar pruebas de integración para la vista de evolución, la exclusión de indicadores o unidades diferentes y el mensaje de datos insuficientes.
-
-### Implementación de HU4
-
-- [x] T065 [US4] Crear una vista de evolución o extender la vista de historial existente, según la estructura real del módulo base.
-
-- [x] T066 [US4] Conectar la selección de trabajador, indicador y unidad con la consulta de evolución.
-
-- [x] T067 [US4] Mostrar una tabla cronológica con período, indicador, resultado, unidad y departamento histórico.
-
-- [x] T068 [US4] Mostrar la evolución exclusivamente entre mediciones del mismo indicador y la misma unidad, evitando comparaciones entre valores no equivalentes.
-
-- [x] T069 [US4] Implementar el mensaje de datos insuficientes. No calcular puntuaciones únicas de productividad ni emitir juicios automáticos de desempeño.
-
-- [x] T070 [US4] Aplicar estilos, ejecutar las pruebas de HU4 y realizar la prueba manual independiente, registrando los resultados.
-
-**Punto de control:** HU4 permite visualizar la evolución de mediciones comparables sin generar evaluaciones automáticas.
+**Checkpoint**: US5 conserva el contexto de cargo y turno en registro, historial y evolución.
 
 ---
 
-## Fase 7: Pruebas, documentación y cierre
+## Phase 7: User Story 6 — Validación y protección de registros (Priority: P1)
 
-**Propósito:** Verificar requisitos transversales, revisar la documentación y comprobar el funcionamiento completo del incremento 002.
+**Goal**: Rechazar datos inválidos, advertir duplicados, bloquear documentos incompatibles e informar fallos de almacenamiento sin pérdida silenciosa.
 
-- [x] T071 [P] Actualizar `README.md` con el alcance de 002, uso de datos ficticios, almacenamiento local, ausencia de autenticación y conservación de la documentación de planilla.
+**Independent Test**: Intentar guardar un registro inválido, un duplicado confirmado, un documento incompatible y un fallo simulado de `localStorage`, verificando mensajes claros y ausencia de confirmación falsa.
 
-- [x] T072 [P] Confirmar con el grupo el texto definitivo de la advertencia de uso exclusivo de datos ficticios, actualizarlo si corresponde y verificar que se muestre correctamente. El grupo aprobó el texto y se verificó su presentación.
+### Tests for User Story 6
 
-- [x] T073 [P] Verificar el renderizado seguro del contenido ingresado por el usuario, evitando la ejecución de scripts desde campos de texto.
+- [ ] T076 [P] [US6] Agregar pruebas unitarias de datos inválidos, duplicados y documentos incompatibles en `tests/unit/rrhh-storage.test.js`.
+- [ ] T077 [P] [US6] Agregar pruebas unitarias de fallo de lectura y escritura de `localStorage` en `tests/unit/rrhh-storage.test.js`.
+- [ ] T078 [P] [US6] Agregar pruebas de integración de renderizado seguro y mensajes de error en `tests/integration/rrhh-productivity.test.js`.
 
-- [x] T074 [P] [US6] Verificar el comportamiento ante `localStorage` lleno, bloqueado o no disponible, sin mostrar confirmaciones falsas de guardado.
+### Implementation for User Story 6
 
-- [x] T075 [P] Verificar que la aplicación no presente autenticación, roles ni control de acceso como funcionalidades implementadas.
+- [ ] T079 [US6] Centralizar los mensajes de validación de productividad en `src/storage.js`.
+- [ ] T080 [US6] Mostrar errores de validación y almacenamiento en `src/app.js` y `#storage-error` de `index.html`.
+- [ ] T081 [US6] Bloquear guardados incompatibles detectados por `inspectDocumentsForRRHH` en `src/storage.js`.
+- [ ] T082 [US6] Evitar confirmaciones de éxito cuando falle `writeCollection` en `src/app.js`.
+- [ ] T083 [US6] Asegurar escape de contenido ingresado en `src/components/history-view.js`, `src/components/evolution-view.js` y `src/components/document-list.js`.
+- [ ] T084 [US6] Verificar que `#data-warning` en `index.html` permanezca visible durante errores y flujos de guardado.
+- [ ] T085 [US6] Aplicar estilos de errores y advertencias en `src/styles.css`.
+- [ ] T086 [US6] Ejecutar la matriz de validación y registrar el resultado en `specs/002-rrhh-productividad/tasks.md`.
 
-- [x] T076 [P] Verificar el rendimiento y la usabilidad del módulo con al menos 500 registros de productividad. En Edge headless y perfil temporal aislado se cargaron exactamente 500 mediciones ficticias: Historial renderizó 500 filas en 113.7 ms; Evolución, 500 filas en 113.5 ms; navegación por cuatro vistas, 145.4 ms. Sin errores de JavaScript ni mensajes de error de interfaz; perfil temporal eliminado. Esta prueba técnica no sustituye SC-004 con usuarios reales.
-
-- [x] T077 [P] Verificar accesibilidad básica de formularios y vistas: etiquetas, navegación por teclado y estructura semántica.
-
-- [x] T078 [P] Verificar el diseño responsivo de formularios, listados, historial y evolución.
-
-- [x] T079 [P] [US6] Verificar que los documentos de productividad no utilicen campos monetarios ni se mezclen con liquidaciones. Comprobar y documentar el tratamiento realizado sobre documentos anteriores y folios inválidos, conservando evidencia de cualquier migración o limpieza autorizada.
-
-- [x] T080 [P] Verificar que el MER original de nueve entidades permanezca sin modificaciones, no se agreguen entidades y exista `specs/001-erp-base-module/mer.png` con PK, FK y cardinalidades. También se generó `specs/002-rrhh-productividad/mer.png` como copia de referencia del incremento, con las mismas 9 entidades y relaciones.
-
-- [x] T081 Ejecutar la suite completa de pruebas unitarias y de integración. Resultado automatizado: 14 archivos y 165 pruebas aprobadas. Además, ejecutar las comprobaciones de linting, formato y análisis estático exigidas por la constitución del proyecto, utilizando las herramientas configuradas o documentando las que falten. Registrar fallos y correcciones.
-
-- [x] T082 Ejecutar la compilación de producción y comprobar que se completa sin errores. Registrar el resultado junto con el estado de las comprobaciones de calidad de código.
-
-- [x] T083 Completada — Aprobada: prueba manual de extremo a extremo HU3 → HU1 → HU2 → HU4 con datos ficticios. **Resultados manuales reportados por el grupo:** creación de departamentos y trabajadores; asignaciones y cambios de departamento; registro y consulta de productividad; evolución entre dos períodos; conservación del departamento histórico; persistencia tras recargar la página. SC-001, SC-002 y SC-003 se probaron manualmente; las funciones respondieron rápidamente y no se reportaron fallos. Para SC-004, los 6 integrantes completaron las tareas de registro y consulta sin ayuda (6/6, 100%); criterio aprobado. La medición técnica de renderizado de 500 filas en Edge también queda registrada como referencia.
-
-- [x] T084 Completada — Aprobada por el grupo. Distribución confirmada: HU1 Bruno Cabalin; HU2 Lucas Soarzo; HU3 Consuelo Hidalgo; HU4 Bastián Reinado; HU5 Daphnne Hidalgo; HU6 Emilio Vejar.
-
-- [x] T085 Revisar la coherencia de Spec Kit (`spec.md`, `plan.md`, `research.md`, `data-model.md`, `quickstart.md`, `contracts/` y `tasks.md`), README e imagen MER, sin alterar funcionalidades.
-
-- [x] T086 Preparar el resumen final de cambios para revisión del grupo, manteniendo el trabajo en `correccion-specs-002`, sin commits ni push automáticos por parte de OpenCode.
-
-**Punto de control:** HU1–HU4 están integradas y probadas manualmente; HU5 y HU6 se relacionan con funcionalidades y tareas existentes.
+**Checkpoint**: US6 impide guardados incorrectos y informa cualquier fallo sin eliminar datos.
 
 ---
 
-## Dependencias y orden de ejecución
+## Phase 8: User Story 7 — Confidencialidad de licencias médicas y ausencias justificadas (Priority: P1)
 
-### Dependencias entre fases
+**Goal**: Registrar y consultar ausencias justificadas ficticias con trabajador, fechas, tipo de reposo y estado de tramitación, sin diagnósticos ni información clínica.
 
-1. **Fase 1:** Recuperación y verificación del código base. Es prerrequisito de todo.
-2. **Fase 2:** Infraestructura fundacional. Depende de la Fase 1.
-3. **Fase 3 — HU3:** Depende de la Fase 2.
-4. **Fase 4 — HU1:** Depende de HU3.
-5. **Fase 5 — HU2:** Depende de HU1.
-6. **Fase 6 — HU4:** Depende de HU2.
-7. **Fase 7:** Revisión final de HU1–HU4 y de las funcionalidades existentes vinculadas a HU5 y HU6.
+**Independent Test**: Registrar una licencia médica ficticia de tres días en reposo total y estado pendiente, consultar historial y planificación de turnos, y verificar que aparecen solo trabajador, fechas, tipo de reposo y estado, sin diagnóstico, enfermedad, exámenes, tratamientos ni antecedentes clínicos.
 
-### Tareas paralelizables
+**Restricción MVP**: No existe autenticación real. El filtro por responsable del registro es una ayuda local de demostración y debe documentarse como tal en `README.md`; no debe presentarse como control de acceso.
 
-Las tareas marcadas con `[P]` pueden desarrollarse en paralelo únicamente cuando:
+### Tests for User Story 7
 
-- Sus dependencias previas están resueltas.
-- No modifican simultáneamente el mismo archivo.
-- No generan conflictos de integración.
-- Los integrantes coordinan sus cambios antes de integrarlos.
+- [ ] T087 [P] [US7] Agregar pruebas unitarias de validación de fechas, tipo de reposo y estados en `tests/unit/medical-leave-storage.test.js`.
+- [ ] T088 [P] [US7] Agregar pruebas unitarias de rechazo de términos clínicos y compatibilidad con registros anteriores en `tests/unit/medical-leave-storage.test.js`.
+- [ ] T089 [P] [US7] Agregar pruebas de integración de formulario, listado y cambio de estado en `tests/integration/medical-leave.test.js`.
+- [ ] T090 [P] [US7] Agregar pruebas de integración de planificación de turnos, ausencia autorizada y ausencia de datos clínicos en `tests/integration/shift-planning.test.js`.
 
-Las operaciones que modifican `src/storage.js` deben coordinarse y no editarse simultáneamente sin una estrategia acordada.
+### Implementation for User Story 7
 
-Las tareas de restauración T003, T004 y T005 también pueden prepararse por separado, pero las pruebas de ejecución deben realizarse después de completar la recuperación del código necesario.
+- [ ] T091 [US7] Documentar en `specs/002-rrhh-productividad/data-model.md` el registro de ausencia con `entity_id`, fechas, `tipoReposo`, `estadoTramitacion`, historial de estados y `responsableLocal`, sin agregar entidades al MER.
+- [ ] T092 [US7] Documentar la clave `erp_base_module:licencias_medicas` y su contrato en `specs/002-rrhh-productividad/contracts/storage.md`.
+- [ ] T093 [US7] Agregar `LICENSES_KEY` y las funciones `loadMedicalLeaves`/`saveMedicalLeaves` en `src/storage.js`.
+- [ ] T094 [US7] Implementar `validateMedicalLeave` y `normalizeMedicalLeave` en `src/storage.js` con enums `total|parcial` y `pendiente|autorizada|rechazada|finalizada`.
+- [ ] T095 [US7] Implementar un validador de texto clínico en `src/storage.js` y aplicarlo a campos libres de licencias y a `observaciones`/`oportunidadesMejora`.
+- [ ] T096 [US7] Implementar `addMedicalLeave`, `updateMedicalLeaveStatus` y supresión local en `src/storage.js`, conservando el registro original y el historial de estados sin afectar asignaciones ni mediciones.
+- [ ] T097 [US7] Implementar `getMedicalLeavesForEntity`, `getOverlappingMedicalLeaves` e `isEntityOnAuthorizedLeave` en `src/storage.js`.
+- [ ] T098 [US7] Impedir en `validateProductivityDocument` de `src/storage.js` la creación de mediciones que se superpongan con una licencia autorizada.
+- [ ] T099 [US7] Incluir `LICENSES_KEY` en `clearAll()` de `src/storage.js` sin eliminar otros datos automáticamente.
+- [ ] T100 [US7] Agregar etiquetas de licencias, ausencias y planificación en `src/module-config.js`.
+- [ ] T101 [US7] Agregar botones `#nav-medical-leaves` y `#nav-shift-planning` y vistas `#view-medical-leaves` y `#view-shift-planning` en `index.html`.
+- [ ] T102 [US7] Agregar en `index.html` solo los campos trabajador, fechas, tipo de reposo, estado y responsable local, sin campos de diagnóstico, enfermedad, exámenes, tratamientos ni antecedentes.
+- [ ] T103 [US7] Crear `src/components/medical-leave-form.js` para registrar y corregir ausencias con datos mínimos.
+- [ ] T104 [US7] Crear `src/components/medical-leave-list.js` para consultar historial, estados y filtro local por responsable sin comparar trabajadores.
+- [ ] T105 [US7] Crear `src/components/shift-planning-view.js` para marcar turnos Mañana/Tarde como ausencia justificada y reflejar reposo parcial solo en las fechas indicadas.
+- [ ] T106 [US7] Registrar los módulos `medical-leaves` y `shift-planning` en `MODULES`/`VIEWS` y conectar eventos y renderizados en `src/app.js`.
+- [ ] T107 [US7] Mostrar marcadores de ausencia justificada, sin información clínica, en `src/components/history-view.js` y `src/components/evolution-view.js`.
+- [ ] T108 [US7] Documentar en `README.md` que el responsable local no es autenticación, que no se tramita ante COMPIN, C.C.A.F., ISAPRE ni SUSESO y que solo se usan datos ficticios.
+- [ ] T109 [US7] Aplicar estilos en `src/styles.css`, mantener `#data-warning` visible y registrar la prueba independiente en `specs/002-rrhh-productividad/tasks.md`.
 
-### Orden recomendado de implementación
-
-1. Recuperar y verificar el módulo base.
-2. Implementar el almacenamiento y la configuración compartidos.
-3. Implementar HU3: trabajadores, departamentos y asignaciones.
-4. Implementar HU1: registro y corrección de productividad.
-5. Validar el flujo mínimo de trabajador → asignación → medición.
-6. Implementar HU2: historial cronológico.
-7. Implementar HU4: evolución de productividad.
-8. Completar pruebas, documentación y revisión final.
-
-### Reglas de avance
-
-- No comenzar a implementar 002 antes de recuperar y verificar el código base.
-- Escribir y ejecutar las pruebas correspondientes antes de completar cada funcionalidad, cuando sea viable.
-- No marcar tareas como completadas sin verificación.
-- No agregar funcionalidades fuera del alcance de `spec.md`.
-- Mantener la documentación alineada con el código implementado.
+**Checkpoint**: US7 conserva la confidencialidad de la información clínica y mantiene las ausencias fuera de indicadores de productividad.
 
 ---
 
-## Trazabilidad con requisitos
+## Phase 9: User Story 4 — Visualización de la evolución de productividad (Priority: P2)
 
-| Requisitos | Fases y tareas |
-|---|---|
-| FR-001 a FR-011 | Fase 3: T023–T039 |
-| FR-012 a FR-023 | Fase 4: T040–T054 |
-| FR-024 a FR-027 | Fase 5: T055–T062 |
-| FR-028 a FR-031 | Fase 6: T063–T070 |
-| FR-032 a FR-035 | Fases 2 y 7 |
-| HU1 | Fase 4 |
-| HU2 | Fase 5 |
-| HU3 | Fase 3 |
-| HU4 | Fase 6 |
-| HU5 | Fase 8: T087–T094 |
-| HU6 | Fases 2, 4 y 7: T022, T040–T043, T049–T052, T074 y T079 |
+**Goal**: Mostrar la evolución de mediciones comparables del mismo indicador y unidad, sin puntuaciones únicas ni juicios automáticos.
 
----
+**Independent Test**: Seleccionar un trabajador con dos mediciones del mismo indicador y unidad en períodos distintos y una medición de otro indicador; verificar que solo se comparen las dos primeras y que se informen datos insuficientes cuando corresponda.
 
-## Restricciones de alcance
+### Tests for User Story 4
 
-El incremento 002 no debe implementar:
+- [ ] T110 [P] [US4] Agregar pruebas unitarias de filtrado por indicador y unidad en `tests/unit/rrhh-storage.test.js`.
+- [ ] T111 [P] [US4] Agregar pruebas de integración de evolución, mensajes y exclusión de comparaciones inválidas en `tests/integration/rrhh-productivity.test.js`.
 
-- Planilla, remuneraciones, contratos ni liquidaciones.
-- Comparaciones de productividad entre trabajadores o departamentos.
-- Catálogo avanzado de indicadores y fórmulas.
-- Puntuación única automática de productividad.
-- Autenticación, inicio de sesión, roles o control de acceso.
-- Auditoría de modificaciones.
-- Exportación, respaldo central o sincronización multiusuario.
-- Backend o base de datos remota.
-- Tratamiento de datos reales de trabajadores.
-- Entidades nuevas en el MER.
-- Gráficos, contadores, búsquedas o filtros adicionales que no estén exigidos en `spec.md`.
+### Implementation for User Story 4
 
-La colección `erp_base_module:documents` se utilizará exclusivamente para productividad durante 002, después de verificar y tratar posibles datos anteriores.
+- [ ] T112 [US4] Implementar `getComparableMeasurements` en `src/storage.js` ordenando por período.
+- [ ] T113 [US4] Implementar `createEvolutionRow` en `src/components/evolution-view.js`.
+- [ ] T114 [US4] Implementar `renderEvolutionTable` y mensajes de datos insuficientes en `src/components/evolution-view.js`.
+- [ ] T115 [US4] Conectar `#evolution-entity`, `#evolution-indicator` y `#evolution-unit` con `renderEvolution()` en `src/app.js`.
+- [ ] T116 [US4] Mostrar departamento histórico, turno y meta en `src/components/evolution-view.js`.
+- [ ] T117 [US4] Verificar que `src/components/evolution-view.js` no calcule puntuaciones únicas ni emita juicios de desempeño.
+- [ ] T118 [US4] Aplicar estilos de tabla y mensajes en `src/styles.css`.
+- [ ] T119 [US4] Ejecutar la prueba independiente y registrar el resultado en `specs/002-rrhh-productividad/tasks.md`.
+
+**Checkpoint**: US4 permite analizar tendencias comparables sin inducir evaluaciones automáticas.
 
 ---
 
-## Criterios de finalización
+## Phase 10: Polish & Cross-Cutting Concerns
 
-El incremento 002 se considera finalizado cuando:
+**Purpose**: Cerrar calidad, documentación, seguridad, rendimiento y verificación completa.
 
-- [x] Se recuperó y verificó el módulo base.
-- [x] Se conservó el MER original de nueve entidades.
-- [x] Se reutilizó `Entity` para trabajadores.
-- [x] Se reutilizó `Document` para productividad.
-- [x] Se implementaron `Departamento` e `Historial_Departamento`.
-- [x] HU1–HU4 funcionan con validación automatizada.
-- [x] HU5 y HU6 describen funcionalidades implementadas y trazadas a tareas y pruebas existentes.
-- [x] Las mediciones están asociadas a asignaciones históricas válidas.
-- [x] Los cambios de departamento no destruyen el historial anterior.
-- [x] Las correcciones de productividad no modifican registros distintos del seleccionado.
-- [x] Se aplican las validaciones definidas en `spec.md`.
-- [x] Se manejan correctamente los errores de almacenamiento.
-- [x] Se utilizan exclusivamente datos ficticios.
-- [x] No se implementaron funcionalidades fuera de alcance.
-- [x] Se ejecutaron y documentaron las pruebas.
-- [x] Se verificó la coherencia final de `spec.md`, `plan.md`, `data-model.md` y `tasks.md`.
-- [x] Se aprobó el texto de la advertencia y se verificó su presentación (T072).
-- [x] T083 se completó y aprobó conforme a los criterios establecidos.
-- [x] Se confirmó la distribución de responsables para las seis historias (T084).
-- [ ] El grupo revisó los cambios antes de integrarlos.
+- [ ] T120 [P] Actualizar `README.md` con el alcance de US1–US7, almacenamiento local, datos ficticios y ausencia de autenticación.
+- [ ] T121 [P] Verificar el texto del aviso de datos ficticios en `index.html` según caso límite 21 de `specs/002-rrhh-productividad/spec.md`.
+- [ ] T122 [P] Auditar escape de contenido en todos los archivos de `src/components/` y corregir entradas sin sanitizar.
+- [ ] T123 [P] Auditar `StorageError`, `#storage-error` y ausencia de confirmaciones falsas en `src/storage.js` y `src/app.js`.
+- [ ] T124 Verificar que `index.html` y `README.md` no presenten autenticación, roles ni control de acceso como funcionalidades implementadas.
+- [ ] T125 [P] Configurar linting, formato y análisis estático en `package.json`, `.eslintrc.cjs` y `.prettierrc.json`, o documentar la desviación en `specs/002-rrhh-productividad/plan.md` si no se agregan dependencias.
+- [ ] T126 Ejecutar los comandos de lint, formato y análisis configurados en `package.json` y corregir los hallazgos que afecten corrección o mantenibilidad.
+- [ ] T127 [P] Validar rendimiento con al menos 500 registros ficticios en Historial, Evolución y navegación, registrando tiempos en `specs/002-rrhh-productividad/tasks.md`.
+- [ ] T128 [P] Verificar accesibilidad y diseño responsivo de formularios, tablas y estados vacíos en `index.html` y `src/styles.css`.
+- [ ] T129 Actualizar `specs/002-rrhh-productividad/plan.md` para reflejar siete historias, dependencias y estado real de US7.
+- [ ] T130 Actualizar `specs/002-rrhh-productividad/quickstart.md` con el flujo de licencias médicas y los comandos `npm run dev` y `npm test -- --run`.
+- [ ] T131 Revisar coherencia entre `specs/002-rrhh-productividad/spec.md`, `plan.md`, `data-model.md`, `research.md`, `contracts/storage.md`, `quickstart.md` y `tasks.md`.
+- [ ] T132 Ejecutar `npm test -- --run` y `npm run build`, registrar resultados finales en `specs/002-rrhh-productividad/tasks.md` y dejar la revisión del grupo pendiente sin commits automáticos.
 
 ---
 
-**Nota final:** La implementación técnica, la suite automatizada, T072, T076 (500 registros en Edge aislado), T083, T084 y la compilación están completadas. HU5 y HU6 corresponden a funcionalidades vinculadas con tareas y pruebas existentes. Sigue pendiente la revisión final del grupo. T085, T086, T087–T095 y T096–T100 están completadas. No se realizaron commits ni push automáticos.
+## Dependencies & Execution Order
+
+### Phase Dependencies
+
+- **Setup (Phase 1)**: sin dependencias.
+- **Foundational (Phase 2)**: depende de Setup; bloquea todas las historias.
+- **User Stories (Phases 3–9)**: dependen de Foundational.
+- **Polish (Phase 10)**: depende de todas las historias incluidas en el alcance.
+
+### User Story Dependencies
+
+- **US3 (P1)**: comienza después de Foundational; habilita los datos de trabajador, departamento y asignación.
+- **US1 (P1)**: depende de US3 para asignaciones válidas, aunque puede implementarse con datos sembrados si US3 avanza en paralelo.
+- **US2 (P1)**: depende de US1 para tener mediciones que consultar.
+- **US5 (P1)**: puede avanzar en paralelo con US2 una vez cerrado el esquema de documentos de US1.
+- **US6 (P1)**: transversal; sus validaciones deben integrarse antes de cerrar US1, US5 y US7.
+- **US7 (P1)**: puede avanzar en paralelo con US5 y US6; su almacenamiento es propio y no usa entidades nuevas del MER.
+- **US4 (P2)**: depende de US1, US2 y US5.
+
+### Within Each User Story
+
+1. Ejecutar primero las tareas de pruebas marcadas `[P]`.
+2. Implementar modelos y persistencia.
+3. Implementar componentes y vistas.
+4. Conectar eventos en `src/app.js`.
+5. Aplicar estilos y registrar la prueba independiente.
+
+### Parallel Opportunities
+
+- 50 tareas están marcadas `[P]`.
+- Setup: T002–T005, T007 y T008 pueden ejecutarse en paralelo.
+- Foundational: T012–T014 y T023 pueden ejecutarse en paralelo; las tareas que editan `src/storage.js` deben coordinarse.
+- US3: T024–T034 pueden distribuirse en paralelo siempre que no editen el mismo archivo.
+- US1: T039–T044 y T053 son paralelizables.
+- US2: T056–T058 son paralelizables.
+- US5: T065–T067 son paralelizables.
+- US6: T076–T078 son paralelizables.
+- US7: T087–T090 son paralelizables.
+- US4: T110–T111 son paralelizables.
+- Polish: T120–T123, T125, T127 y T128 son paralelizables.
 
 ---
 
-## Fase 8: Adaptación de registro de productividad — cafetería
+## Parallel Examples by User Story
 
-**Propósito:** Adaptar el registro de actividad/productividad existente para el contexto de una cafetería, incorporando selección automática de indicadores por cargo, identificación de turnos, metas y resultados, evaluación cualitativa y observaciones/oportunidades de mejora, manteniendo la estética y arquitectura actuales.
+```text
+# US3
+Task: T024 worker custom field tests in tests/unit/rrhh-storage.test.js
+Task: T025 department tests in tests/unit/rrhh-storage.test.js
+Task: T026 assignment tests in tests/unit/rrhh-storage.test.js
+Task: T029 extend src/components/entity-form.js
+Task: T031 create src/components/department-form.js
+Task: T033 create src/components/assignment-form.js
 
-- [x] T087 [US5] Configurar `INDICADORES_POR_CARGO` y función `indicadoresParaCargo` en `module-config.js` para sugerir indicadores según el cargo del trabajador (Barista, Cajero, Mesero, Cocinero, Encargado).
-- [x] T088 [US5] Agregar campos personalizados de documento: `turno`, `meta`, `evaluacionCalidad`, `evaluacionResponsabilidad`, `evaluacionCumplimiento`, `evaluacionColaboracion`, `observaciones`, `oportunidadesMejora` en `module-config.js`.
-- [x] T089 [US5] Agregar elementos HTML para turno, meta, evaluaciones cualitativas, observaciones y oportunidades de mejora en `index.html` dentro de `#productivity-fields`.
-- [x] T090 [US5] Actualizar `document-form.js` para recolectar, mostrar y limpiar los nuevos campos, y mostrar errores de validación.
-- [x] T091 [US5] Implementar sugerencia automática de indicadores según cargo en `app.js` (`suggestIndicatorsForEntity`) al seleccionar un trabajador.
-- [x] T092 [US5] [US6] Actualizar `storage.js` con validaciones y normalización de los nuevos campos (turno, meta, evaluaciones 1-5, observaciones, oportunidades).
-- [x] T093 [US5] Actualizar `history-view.js`, `evolution-view.js`, `document-list.js` y `dashboard.js` para mostrar los nuevos campos en historial, evolución, lista y dashboard.
-- [x] T094 [US5] [US6] Agregar pruebas unitarias para los nuevos campos en `tests/unit/rrhh-storage.test.js`.
-- [x] T095 Actualizar documentación: `spec.md`, `data-model.md`, `tasks.md` y `plan.md` con los nuevos requisitos, campos y validaciones.
+# US1
+Task: T039 period tests in tests/unit/rrhh-storage.test.js
+Task: T040 indicator/result/unit tests in tests/unit/rrhh-storage.test.js
+Task: T041 assignment selection tests in tests/unit/rrhh-storage.test.js
+Task: T042 duplicate/folio tests in tests/unit/rrhh-storage.test.js
+Task: T044 extend src/components/document-form.js
 
-**Trazabilidad de HU5 y HU6 con tareas y pruebas existentes:** HU5 se relaciona con T087–T094; T094 corresponde a las pruebas unitarias existentes de campos de productividad, incluidos turno y validación. HU6 se relaciona con T022, T040–T043, T049–T052, T074 y T079; las comprobaciones existentes cubren validaciones, duplicados, documentos incompatibles y errores de almacenamiento, además de la suite general T081. No se agregan tareas de implementación ni pruebas nuevas.
+# US2
+Task: T056 filter/sort tests in tests/unit/rrhh-storage.test.js
+Task: T057 historical department tests in tests/unit/rrhh-storage.test.js
+Task: T058 integration tests in tests/integration/rrhh-productivity.test.js
+
+# US5
+Task: T065 config tests in tests/unit/module-config.test.js
+Task: T066 field validation tests in tests/unit/rrhh-storage.test.js
+Task: T067 integration tests in tests/integration/rrhh-productivity.test.js
+
+# US6
+Task: T076 invalid/duplicate/incompatible tests in tests/unit/rrhh-storage.test.js
+Task: T077 storage failure tests in tests/unit/rrhh-storage.test.js
+Task: T078 safe rendering tests in tests/integration/rrhh-productivity.test.js
+
+# US7
+Task: T087 leave validation tests in tests/unit/medical-leave-storage.test.js
+Task: T088 clinical-text and legacy tests in tests/unit/medical-leave-storage.test.js
+Task: T089 form/list integration tests in tests/integration/medical-leave.test.js
+Task: T090 planning integration tests in tests/integration/shift-planning.test.js
+
+# US4
+Task: T110 comparable filtering tests in tests/unit/rrhh-storage.test.js
+Task: T111 evolution integration tests in tests/integration/rrhh-productivity.test.js
+```
 
 ---
 
-## Fase 9: Metas consolidadas por departamento y período
+## Implementation Strategy
 
-**Propósito:** Implementar el cálculo, consolidación y almacenamiento interno de la suma de metas esperadas agrupadas por departamento y período mensual, con recálculo automático ante creación, modificación o eliminación de registros de productividad.
+### MVP First
 
-- [x] T096 Agregar clave `METAS_CONSOLIDADAS_KEY` y funciones `loadMetasConsolidadas`/`saveMetasConsolidadas` en `storage.js`.
-- [x] T097 Implementar función `calcularMetasConsolidadas` que agrupe documentos por departamento+período y sume las metas.
-- [x] T098 Llamar a `calcularMetasConsolidadas` automáticamente en `addDocument`, `updateDocument`, `deleteDocument` y `deleteDocumentsForEntity`.
-- [x] T099 Agregar pruebas unitarias para metas consolidadas en `tests/unit/rrhh-storage.test.js` (14 pruebas).
-- [x] T100 Actualizar documentación: `spec.md` (requisitos FR-043 a FR-048, casos límite 26-33), `data-model.md` (sección 4.6), `tasks.md` (Fase 9).
+1. Completar Phase 1 y Phase 2.
+2. Implementar US3 para disponer de trabajadores y asignaciones.
+3. Implementar US1 y validar el flujo trabajador → asignación → medición.
+4. Detenerse y ejecutar la prueba independiente de US1 antes de continuar.
+
+### Incremental Delivery
+
+1. Setup + Foundational.
+2. US3 → validación independiente.
+3. US1 → validación independiente.
+4. US2 y US5 → validación independiente.
+5. US6 como compuerta de calidad transversal.
+6. US7 → validación de privacidad y ausencias.
+7. US4 → validación de evolución comparable.
+8. Polish con suite completa y compilación.
+
+### Parallel Team Strategy
+
+- Un integrante puede tomar US3 y otro US7 porque sus componentes son distintos; las ediciones en `src/storage.js` deben coordinarse.
+- Otro integrante puede preparar pruebas de US1, US2, US5, US6 y US4 en paralelo.
+- La integración en `src/app.js` debe hacerse de forma secuencial para evitar conflictos de eventos.
 
 ---
 
-## Aclaraciones posteriores al análisis de Spec Kit
+## Notes
 
-- Se permiten extensiones aditivas de los archivos existentes del ERP base siempre que se mantengan sus contratos y compatibilidad.
-- No se modificará el MER original de nueve entidades.
-- Antes de reutilizar la colección de documentos se revisarán los datos anteriores y los folios inválidos, sin eliminaciones silenciosas.
-- Se verificará la persistencia de las mediciones después de recargar la aplicación.
-- Se ejecutarán las comprobaciones de calidad exigidas por la constitución: linting, formato y análisis estático.
-- Se impedirá eliminar asignaciones que tengan mediciones vinculadas.
-- Un trabajador con documentos de productividad o asignaciones históricas no podrá eliminarse físicamente.
-- Las pruebas se prepararán antes o junto con la implementación correspondiente y se verificará su fallo inicial cuando sea aplicable.
-- La aprobación del texto de advertencia de datos ficticios (T072) y la distribución de responsables para HU1–HU6 confirmada por el grupo (T084) están completadas.
-- Los criterios de éxito SC-001 a SC-004 deberán verificarse mediante mediciones o evaluaciones documentadas.
-- Las modificaciones realizadas con ayuda de OpenCode deben ser revisadas y comprendidas por integrantes del grupo, conforme a la regla de trabajo con IA indicada al inicio de este documento.
-
-
------
-
-## Pendientes – Historia de Usuario 7
-
-- [ ] Actualizar tasks.md con las tareas necesarias para implementar la HU7: confidencialidad de licencias médicas y ausencias justificadas.
-- [ ] Definir las tareas de registro, consulta, privacidad y validación de licencias médicas ficticias.
-- [ ] Verificar que la implementación no almacene ni exponga diagnósticos ni antecedentes clínicos.
+- No crear entidades nuevas en el MER de nueve entidades; `Departamento` e `Historial_Departamento` son extensiones documentadas.
+- No implementar backend, autenticación, roles, control de acceso, auditoría, exportación ni sincronización.
+- No comparar productividad entre trabajadores o departamentos ni calcular una puntuación única automática.
+- No registrar información real ni datos clínicos; todas las demostraciones usan datos ficticios.
+- `#data-warning` debe permanecer visible en todos los flujos.
+- Los consolidados `erp_base_module:metas_consolidadas` son internos y no deben mostrarse en la interfaz.
+- `[P]` significa archivos distintos y dependencias resueltas; no editar simultáneamente el mismo archivo.
+- Cada checkpoint debe validarse antes de avanzar a la siguiente historia.
