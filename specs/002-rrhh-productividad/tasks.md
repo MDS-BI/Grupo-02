@@ -493,3 +493,12 @@ El incremento 002 se considera finalizado cuando:
 - La aprobación del texto de advertencia de datos ficticios (T072) y la distribución de responsables para HU1–HU6 confirmada por el grupo (T084) están completadas.
 - Los criterios de éxito SC-001 a SC-004 deberán verificarse mediante mediciones o evaluaciones documentadas.
 - Las modificaciones realizadas con ayuda de OpenCode deben ser revisadas y comprendidas por integrantes del grupo, conforme a la regla de trabajo con IA indicada al inicio de este documento.
+
+
+-----
+
+## Pendientes – Historia de Usuario 7
+
+- [ ] Actualizar tasks.md con las tareas necesarias para implementar la HU7: confidencialidad de licencias médicas y ausencias justificadas.
+- [ ] Definir las tareas de registro, consulta, privacidad y validación de licencias médicas ficticias.
+- [ ] Verificar que la implementación no almacene ni exponga diagnósticos ni antecedentes clínicos.
