@@ -13,7 +13,7 @@ import { clearEntityForm, startEntityEdit, collectEntityPayload, showEntityError
 import { createEntityItem } from './components/entity-list.js';
 import { clearDocumentForm, startDocumentEdit, collectDocumentPayload, showDocumentErrors } from './components/document-form.js';
 import { folioLabel } from './components/document-list.js';
-import { renderLogo, applyShellLabels, setActiveModule } from './components/shell.js';
+import { renderLogo, setupSidebarToggle, applyShellLabels, setActiveModule } from './components/shell.js';
 import { renderDashboard } from './components/dashboard.js';
 import { setupSearchBar, renderSearchResults } from './components/search-bar.js';
 import { clearDepartmentForm, startDepartmentEdit, collectDepartmentPayload, showDepartmentErrors } from './components/department-form.js';
@@ -856,6 +856,7 @@ export function initApp(resolved){
   setActiveConfig(resolved.config);
   applyTheme(resolved.config);
   renderLogo(qs('logo-mark'));
+  setupSidebarToggle(qs('logo-mark'));
   applyLabels(resolved.config);
   wireEvents();
   clearEntityForm();

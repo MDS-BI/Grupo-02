@@ -96,7 +96,10 @@ p { margin: 0 0 12px; }
   grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
   grid-template-rows: var(--topbar-h) minmax(0, 1fr);
   min-height: 100vh;
+  transition: grid-template-columns 240ms ease;
 }
+
+.workspace.is-collapsed { --sidebar-w: 76px; }
 
 .topbar {
   grid-column: 1 / -1;
@@ -120,7 +123,23 @@ p { margin: 0 0 12px; }
 
 .brand-name { color: var(--navy); font-size: 1rem; }
 
-.logo-mark { display: inline-flex; }
+.logo-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.logo-mark:hover { background: color-mix(in srgb, var(--cafe-beige) 12%, transparent); }
+.logo-mark:active { transform: scale(0.96); }
 .logo-mark .cafe-logo { display: block; width: 36px; height: 36px; flex-shrink: 0; }
 
 .sidebar {
@@ -128,14 +147,16 @@ p { margin: 0 0 12px; }
   color: var(--sidebar-text);
   padding: 18px 12px;
   border-right: 1px solid color-mix(in srgb, var(--cafe-beige) 12%, transparent);
+  transition: padding 240ms ease;
 }
 
 .side-nav {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  margin-top: 18px;
   position: sticky;
-  top: 18px;
+  top: 74px;
 }
 
 .nav-module {
@@ -152,10 +173,19 @@ p { margin: 0 0 12px; }
   font-weight: 500;
   text-align: left;
   cursor: pointer;
-  transition: background 140ms ease, color 140ms ease, box-shadow 140ms ease;
+  transition: background 140ms ease, color 140ms ease, box-shadow 140ms ease, gap 220ms ease, padding 220ms ease;
 }
 
 .nav-module svg { flex-shrink: 0; }
+
+.nav-label {
+  max-width: 170px;
+  opacity: 1;
+  visibility: visible;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: opacity 160ms ease, max-width 220ms ease, visibility 160ms ease;
+}
 .nav-module:hover { background: color-mix(in srgb, var(--cafe-beige) 14%, transparent); color: #ffffff; }
 
 .nav-module:focus-visible,
@@ -202,7 +232,7 @@ textarea:focus-visible {
   font-weight: 500;
   text-align: left;
   cursor: pointer;
-  transition: background 140ms ease, color 140ms ease;
+  transition: background 140ms ease, color 140ms ease, gap 220ms ease, padding 220ms ease;
 }
 
 .nav-sub svg { flex-shrink: 0; }
@@ -212,6 +242,31 @@ textarea:focus-visible {
   background: color-mix(in srgb, var(--cafe-beige) 18%, transparent);
   color: #ffffff;
   font-weight: 600;
+}
+
+.workspace.is-collapsed .sidebar {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.workspace.is-collapsed .nav-module,
+.workspace.is-collapsed .nav-sub {
+  justify-content: center;
+  gap: 0;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.workspace.is-collapsed .nav-label {
+  max-width: 0;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.workspace.is-collapsed .sub-nav {
+  margin-left: 0;
+  padding-left: 0;
+  border-left-color: transparent;
 }
 
 .content {

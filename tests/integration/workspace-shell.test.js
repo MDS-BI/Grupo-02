@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { JSDOM } from 'jsdom';
-import { DEFAULT_CONFIG, normalizeConfig } from '../../src/module-config.js';
+import { DEFAULT_CONFIG, RRHH_CONFIG, normalizeConfig } from '../../src/module-config.js';
 import { addEntity, addDocument, loadEntities, loadDocuments } from '../../src/storage.js';
 
 const html = fs.readFileSync(fileURLToPath(new URL('../../index.html', import.meta.url)), 'utf8');
@@ -39,7 +39,7 @@ async function bootWith(configOverride){
 }
 
 describe('User Story 13 - branded ERP workspace shell', () => {
-  it('shows a top bar with the cafe logo and the module name on every screen', async () => {
+  it('shows the cafe logo and the module name on every screen', async () => {
     await bootWith(brandedConfig);
     expect(qs('logo-mark').querySelector('.cafe-logo')).not.toBeNull();
     expect(qs('brand-name').textContent).toBe('Sales Suite');
@@ -58,6 +58,39 @@ describe('User Story 13 - branded ERP workspace shell', () => {
     const logo = qs('logo-mark').querySelector('.cafe-logo');
     expect(logo).not.toBeNull();
     expect(logo.getAttribute('src')).toBe('cafeteria-logo.svg');
+  });
+
+  it('toggles the sidebar from the logo button and keeps navigation working', async () => {
+    await bootWith(brandedConfig);
+    const workspace = document.querySelector('.workspace');
+    const toggle = qs('logo-mark');
+
+    expect(toggle.tagName).toBe('BUTTON');
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    expect(toggle.getAttribute('aria-controls')).toBe('side-nav');
+    expect(document.querySelectorAll('[aria-controls="side-nav"]').length).toBe(1);
+
+    toggle.click();
+    expect(workspace.classList.contains('is-collapsed')).toBe(true);
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+
+    document.querySelectorAll('.nav-module:not([hidden])').forEach(btn => {
+      btn.click();
+      expect(qs(`view-${btn.dataset.module}`).hidden).toBe(false);
+    });
+
+    toggle.click();
+    expect(workspace.classList.contains('is-collapsed')).toBe(false);
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+  });
+
+  it('keeps every RRHH section reachable while the sidebar is collapsed', async () => {
+    await bootWith(RRHH_CONFIG);
+    qs('logo-mark').click();
+    document.querySelectorAll('.nav-module:not([hidden])').forEach(btn => {
+      btn.click();
+      expect(qs(`view-${btn.dataset.module}`).hidden).toBe(false);
+    });
   });
 
   it('offers sidebar module buttons using configured terminology', async () => {

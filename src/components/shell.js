@@ -11,6 +11,20 @@ export function renderLogo(container){
   container.innerHTML = '<img class="cafe-logo" src="cafeteria-logo.svg" width="36" height="36" alt="" />';
 }
 
+export function setupSidebarToggle(button){
+  if(!button) return;
+  const workspace = button.closest('.workspace');
+  if(!workspace) return;
+  button.setAttribute('aria-controls', 'side-nav');
+  button.setAttribute('aria-expanded', 'true');
+  button.setAttribute('aria-label', 'Contraer menú');
+  button.onclick = () => {
+    const collapsed = workspace.classList.toggle('is-collapsed');
+    button.setAttribute('aria-expanded', String(!collapsed));
+    button.setAttribute('aria-label', collapsed ? 'Expandir menú' : 'Contraer menú');
+  };
+}
+
 export function applyShellLabels(){
   const labels = {
     'nav-dashboard-label': 'Panel',
