@@ -754,9 +754,10 @@ tbody tr:last-child td { border-bottom: none; }
    Gráfico de líneas del Panel
    ========================================================================== */
 .chart-title-container {
-  display: flex;
+  position: relative;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  max-width: 100%;
 }
 
 .chart-title-select {
@@ -768,13 +769,35 @@ tbody tr:last-child td { border-bottom: none; }
   border: none;
   outline: none;
   cursor: pointer;
-  padding: 4px 20px 4px 0;
+  padding: 4px 26px 4px 0;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
 }
 
+.chart-title-chevron {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  color: var(--navy);
+  pointer-events: none;
+}
+
+.chart-title-chevron svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+
 .chart-title-select:hover {
+  color: var(--accent-dark);
+}
+
+.chart-title-container:hover .chart-title-chevron {
   color: var(--accent-dark);
 }
 
@@ -827,6 +850,10 @@ tbody tr:last-child td { border-bottom: none; }
 
 /* Ajuste responsivo para el gráfico de líneas */
 @media (max-width: 700px) {
+  .chart-title-container {
+    width: 100%;
+  }
+
   .chart-title-select {
     min-width: auto;
     width: 100%;
