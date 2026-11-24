@@ -6,7 +6,7 @@ export function clearDepartmentForm(){
   qs('department-descripcion').value = '';
   clearDepartmentErrors();
   qs('department-cancel-edit').hidden = true;
-  qs('department-submit-button').textContent = 'Guardar Departamento';
+  qs('department-submit-button').textContent = 'Guardar área de trabajo';
 }
 
 export function clearDepartmentErrors(){
@@ -22,7 +22,7 @@ export function startDepartmentEdit(department){
   qs('department-descripcion').value = department.descripcion || '';
   clearDepartmentErrors();
   qs('department-cancel-edit').hidden = false;
-  qs('department-submit-button').textContent = 'Actualizar Departamento';
+  qs('department-submit-button').textContent = 'Actualizar área de trabajo';
 }
 
 export function collectDepartmentPayload(){

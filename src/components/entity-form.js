@@ -1,8 +1,29 @@
 import { renderCustomFields, collectCustomFields, showCustomFieldErrors, clearCustomFieldErrors } from './custom-fields.js';
 import { loadDepartments } from '../storage.js';
 import { isRRHHMode } from '../module-config.js';
+import {
+  PHONE_CODES, phoneCodeLabel, phoneCodeForDial, phoneDialForCode,
+  defaultPhoneDial, splitPhone, formatPhone
+} from '../phone-codes.js';
 
 function qs(id){ return document.getElementById(id); }
+
+function populatePhonePrefixes(){
+  const select = qs('phonePrefix');
+  if(!select || select.options.length > 0) return;
+  PHONE_CODES.forEach(entry => {
+    const option = document.createElement('option');
+    option.value = entry.code;
+    option.textContent = phoneCodeLabel(entry);
+    select.appendChild(option);
+  });
+}
+
+function selectPhonePrefix(dial){
+  populatePhonePrefixes();
+  const select = qs('phonePrefix');
+  if(select) select.value = phoneCodeForDial(dial);
+}
 
 export function refreshEntityCustomFields(values = {}){
   renderCustomFields(qs('entity-custom-fields'), 'entity', values, {
@@ -21,6 +42,7 @@ export function clearEntityForm(){
   qs('taxId').value = '';
   qs('email').value = '';
   qs('phone').value = '';
+  selectPhonePrefix(defaultPhoneDial());
   qs('address').value = '';
   qs('category').value = '';
   qs('description').value = '';
@@ -45,7 +67,9 @@ export function startEntityEdit(entity){
   qs('code').value = entity.code || '';
   qs('taxId').value = entity.taxId || '';
   qs('email').value = entity.email || '';
-  qs('phone').value = entity.phone || '';
+  const phoneParts = splitPhone(entity.phone);
+  selectPhonePrefix(phoneParts.dial);
+  qs('phone').value = phoneParts.number;
   qs('address').value = entity.address || '';
   qs('category').value = entity.category || '';
   qs('description').value = entity.description || '';
@@ -63,7 +87,7 @@ export function collectEntityPayload(){
     code: qs('code').value,
     taxId: qs('taxId').value,
     email: qs('email').value,
-    phone: qs('phone').value,
+    phone: formatPhone(phoneDialForCode(qs('phonePrefix')?.value), qs('phone').value),
     address: qs('address').value,
     category: qs('category').value,
     description: qs('description').value,

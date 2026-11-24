@@ -596,6 +596,23 @@ form > div { margin-bottom: 12px; }
   gap: 12px;
 }
 
+.phone-field {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.phone-field select {
+  width: auto;
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.phone-field input {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
 label {
   display: block;
   font-weight: 600;

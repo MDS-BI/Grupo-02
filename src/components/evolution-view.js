@@ -18,7 +18,7 @@ export function renderEvolutionTable(bodyEl, messageEl, measurements){
   if(!measurements || measurements.length === 0){
     if(messageEl){
       messageEl.hidden = false;
-      messageEl.textContent = 'No hay datos suficientes para visualizar la evolución de este indicador y unidad.';
+      messageEl.textContent = 'No hay datos suficientes para visualizar la evolución del desempeño de este indicador y unidad.';
     }
     return false;
   }
@@ -26,7 +26,7 @@ export function renderEvolutionTable(bodyEl, messageEl, measurements){
     messageEl.hidden = measurements.length >= 2;
     messageEl.textContent = measurements.length >= 2
       ? ''
-      : 'Solo existe una medición comparable; se requiere más de una para observar una evolución.';
+      : 'Solo existe una evaluación comparable; se requiere más de una para observar la evolución del desempeño.';
   }
   for(const measurement of measurements) bodyEl.appendChild(createEvolutionRow(measurement));
   return true;

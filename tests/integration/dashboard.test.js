@@ -49,10 +49,10 @@ describe('User Story 3 - home dashboard with quick actions and record stats', ()
 
   it('shows at least four quick-action buttons covering key ERP tasks', async () => {
     await bootWith(undefined);
-    expect(qs('action-new-entity-title').textContent).toBe('Nueva Entidad');
-    expect(qs('action-new-document-title').textContent).toBe('Nuevo Documento');
-    expect(qs('action-open-entities-title').textContent).toBe('Entidades');
-    expect(qs('action-find-title').textContent).toBe('Buscar registros');
+    expect(qs('action-new-entity-title').textContent).toBe('Nuevo personal');
+    expect(qs('action-new-document-title').textContent).toBe('Nueva evaluación');
+    expect(qs('action-open-entities-title').textContent).toBe('Personal');
+    expect(qs('action-find-title').textContent).toBe('Buscar evaluaciones');
   });
 
   it('uses configured terminology on quick actions and stat cards', async () => {

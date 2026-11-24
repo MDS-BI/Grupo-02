@@ -83,7 +83,7 @@ describe('Reorganización de navegación - módulo Trabajadores', () => {
     const subButtons = [qs('nav-entities-add'), qs('nav-entities-edit')];
     expect(subButtons.every(btn => btn.querySelector('svg'))).toBe(true);
     expect(qs('nav-entities-add-label').textContent).toBe('Agregar');
-    expect(qs('nav-entities-edit-label').textContent).toBe('Editar o eliminar trabajador');
+    expect(qs('nav-entities-edit-label').textContent).toBe('Editar o eliminar personal');
 
     qs('nav-entities-edit').click();
     expect(qs('nav-entities-add').classList.contains('active')).toBe(false);
@@ -107,7 +107,7 @@ describe('Reorganización de navegación - módulo Trabajadores', () => {
 
   it('B: la subpestaña Agregar registró trabajadores con el encabezado y campos correctos', () => {
     qs('nav-entities').click();
-    expect(qs('entity-form-heading').textContent).toBe('Agregar trabajador');
+    expect(qs('entity-form-heading').textContent).toBe('Agregar personal');
 
     const worker = createWorker();
     expect(worker).toBeTruthy();
@@ -175,7 +175,7 @@ describe('Reorganización de navegación - módulo Trabajadores', () => {
     selectWorkerForEdit(withHistory);
     qs('delete-entity').click();
     expect(loadEntities()).toHaveLength(1);
-    expect(qs('error-edit-entity').textContent).toMatch(/históricos|Inactivo/i);
+    expect(qs('error-edit-entity').textContent).toMatch(/históricas|Inactivo/i);
   });
 
   it('E: marcar como inactivo conserva el registro, su historial y se refleja en el Panel', () => {

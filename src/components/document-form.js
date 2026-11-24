@@ -97,8 +97,8 @@ export function clearDocumentForm(){
   }
   qs('document-cancel-edit').hidden = true;
   qs('document-submit-button').textContent = isRRHHMode()
-    ? 'Guardar Registro de Productividad'
-    : 'Guardar Documento';
+    ? 'Guardar evaluación de desempeño'
+    : 'Guardar evaluación';
 }
 
 const DOCUMENT_ERROR_FIELDS = ['entityId', 'folio', 'startDate', 'endDate', 'quantity', 'subtotal', 'discount', 'taxAmount', 'totalAmount', 'status', 'period'];
@@ -140,7 +140,7 @@ export function startDocumentEdit(doc){
     qs('document-custom-fields').innerHTML = '';
     qs('document-custom-fields').hidden = true;
     qs('document-status-control').innerHTML = '';
-    qs('document-submit-button').textContent = 'Actualizar Registro de Productividad';
+    qs('document-submit-button').textContent = 'Actualizar evaluación de desempeño';
   } else {
     renderCustomFields(qs('document-custom-fields'), 'document', doc);
     qs('series').value = doc.series || '';
@@ -156,7 +156,7 @@ export function startDocumentEdit(doc){
     qs('docPaymentTerms').value = doc.paymentTerms || '';
     renderStatusControl(doc.status);
     setStatusValue(doc.status);
-    qs('document-submit-button').textContent = 'Actualizar Documento';
+    qs('document-submit-button').textContent = 'Actualizar evaluación';
   }
   clearDocumentErrors();
   qs('document-cancel-edit').hidden = false;

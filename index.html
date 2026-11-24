@@ -3,62 +3,62 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Módulo Base ERP</title>
+    <title>Cafetería Gestión de personal y evaluaciones</title>
   </head>
   <body>
     <div id="config-errors" class="config-error" role="alert" hidden></div>
     <div id="storage-error" class="config-error" role="alert" hidden></div>
     <div id="data-warning" class="data-warning" role="note" hidden>
-      Advertencia: utiliza exclusivamente datos ficticios. Esta demostración almacena la información en este navegador y no cuenta con autenticación ni respaldo.
+      Advertencia: usa solo datos ficticios. Esta demostración guarda la información en este navegador y no cuenta con autenticación ni respaldo.
     </div>
 
     <div class="workspace">
       <header class="topbar">
         <div class="brand">
           <span id="logo-mark" class="logo-mark" aria-hidden="true"></span>
-          <span id="brand-name" class="brand-name">Módulo Base ERP</span>
+          <span id="brand-name" class="brand-name">Cafetería Gestión de personal y evaluaciones</span>
         </div>
       </header>
 
       <aside class="sidebar">
-        <nav class="side-nav" aria-label="Módulos">
+        <nav class="side-nav" aria-label="Módulos de la cafetería">
           <button type="button" class="nav-module active" data-module="dashboard" id="nav-dashboard" aria-current="page">
             <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="6" height="6" rx="1"></rect><rect x="11" y="3" width="6" height="6" rx="1"></rect><rect x="3" y="11" width="6" height="6" rx="1"></rect><rect x="11" y="11" width="6" height="6" rx="1"></rect></svg>
             <span class="nav-label" id="nav-dashboard-label">Panel</span>
           </button>
           <button type="button" class="nav-module" data-module="entities" id="nav-entities">
             <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2.5 3.5 6v8L10 17.5 16.5 14V6L10 2.5z"></path><path d="M3.5 6 10 9.5 16.5 6"></path><path d="M10 9.5v8"></path></svg>
-            <span class="nav-label" id="nav-entities-label">Entidades</span>
+            <span class="nav-label" id="nav-entities-label">Personal</span>
           </button>
-          <div class="sub-nav" id="entities-sub-nav" aria-label="Subpestañas de Trabajadores" hidden>
+          <div class="sub-nav" id="entities-sub-nav" aria-label="Subpestañas de personal" hidden>
             <button type="button" class="nav-sub active" data-entity-tab="add" id="nav-entities-add" aria-current="true" aria-controls="entity-panel-add">
               <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="10" r="7"></circle><path d="M10 6.5v7"></path><path d="M6.5 10h7"></path></svg>
               <span class="nav-label" id="nav-entities-add-label">Agregar</span>
             </button>
             <button type="button" class="nav-sub" data-entity-tab="edit" id="nav-entities-edit" aria-controls="entity-panel-edit">
               <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 16 1-4 8-8 3 3-8 8-4 1z"></path><path d="m13 5 2 2"></path></svg>
-              <span class="nav-label" id="nav-entities-edit-label">Editar o eliminar trabajador</span>
+              <span class="nav-label" id="nav-entities-edit-label">Editar o eliminar personal</span>
             </button>
           </div>
           <button type="button" class="nav-module" data-module="documents" id="nav-documents">
             <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 2.5h6l4 4v11h-10z"></path><path d="M11.5 2.5v4h4"></path><path d="M8 10h5"></path><path d="M8 13h5"></path></svg>
-            <span class="nav-label" id="nav-documents-label">Documentos</span>
+            <span class="nav-label" id="nav-documents-label">Evaluaciones</span>
           </button>
           <button type="button" class="rrhh-nav" data-module="departments" id="nav-departments" hidden>
             <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17V7l7-4 7 4v10"></path><path d="M7 17v-5h6v5"></path></svg>
-            <span class="nav-label" id="nav-departments-label">Departamentos</span>
+            <span class="nav-label" id="nav-departments-label">Áreas de trabajo</span>
           </button>
           <button type="button" class="rrhh-nav" data-module="assignments" id="nav-assignments" hidden>
             <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h12"></path><path d="m12 6 4 4-4 4"></path><circle cx="4" cy="10" r="2"></circle></svg>
-            <span class="nav-label" id="nav-assignments-label">Asignaciones</span>
+            <span class="nav-label" id="nav-assignments-label">Asignaciones de área</span>
           </button>
           <button type="button" class="rrhh-nav" data-module="history" id="nav-history" hidden>
             <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="10" r="7"></circle><path d="M10 6v4l3 2"></path></svg>
-            <span class="nav-label" id="nav-history-label">Historial</span>
+            <span class="nav-label" id="nav-history-label">Historial de evaluaciones</span>
           </button>
           <button type="button" class="rrhh-nav" data-module="evolution" id="nav-evolution" hidden>
             <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 16h14"></path><path d="m4 13 4-4 3 2 5-6"></path></svg>
-            <span class="nav-label" id="nav-evolution-label">Evolución</span>
+            <span class="nav-label" id="nav-evolution-label">Evolución del desempeño</span>
           </button>
           <button type="button" class="nav-module" data-module="search" id="nav-search">
             <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="5"></circle><path d="m12.8 12.8 4.2 4.2"></path></svg>
@@ -75,41 +75,41 @@
           <div class="stat-grid">
             <div class="stat-card">
               <span class="stat-value" id="stat-entities">0</span>
-              <span class="stat-label" id="stat-entities-label">Entidades</span>
+              <span class="stat-label" id="stat-entities-label">Personal</span>
             </div>
             <div class="stat-card">
               <span class="stat-value" id="stat-documents">0</span>
-              <span class="stat-label" id="stat-documents-label">Documentos</span>
+              <span class="stat-label" id="stat-documents-label">Evaluaciones</span>
             </div>
           </div>
 
           <h2 id="quick-actions-heading">Acciones rápidas</h2>
           <div class="action-grid">
             <button type="button" class="action-card" id="action-new-entity">
-              <strong id="action-new-entity-title">Nueva Entidad</strong>
-              <span class="muted" id="action-new-entity-sub">Crear un registro de entidad</span>
+              <strong id="action-new-entity-title">Nuevo personal</strong>
+              <span class="muted" id="action-new-entity-sub">Ingresar personal al sistema</span>
             </button>
             <button type="button" class="action-card" id="action-new-document">
-              <strong id="action-new-document-title">Nuevo Documento</strong>
-              <span class="muted" id="action-new-document-sub">Registrar un registro de documento</span>
+              <strong id="action-new-document-title">Nueva evaluación</strong>
+              <span class="muted" id="action-new-document-sub">Registrar una evaluación</span>
             </button>
             <button type="button" class="action-card" id="action-open-entities">
-              <strong id="action-open-entities-title">Entidades</strong>
-              <span class="muted" id="action-open-entities-sub">Abrir la gestión de entidades</span>
+              <strong id="action-open-entities-title">Personal</strong>
+              <span class="muted" id="action-open-entities-sub">Abrir la gestión de personal</span>
             </button>
             <button type="button" class="action-card" id="action-find">
-              <strong id="action-find-title">Buscar registros</strong>
-              <span class="muted" id="action-find-sub">Buscar entidades</span>
+              <strong id="action-find-title">Buscar evaluaciones</strong>
+              <span class="muted" id="action-find-sub">Buscar personal</span>
             </button>
           </div>
         </section>
 
         <section id="view-entities" aria-labelledby="entities-view-heading" hidden>
-          <h1 id="entities-view-heading">Entidades</h1>
+          <h1 id="entities-view-heading">Personal</h1>
 
           <div class="entity-panel" id="entity-panel-add">
             <section class="card entity-form-card" id="entity-form-card" aria-labelledby="entity-form-heading">
-              <h2 id="entity-form-heading">Agregar trabajador</h2>
+              <h2 id="entity-form-heading">Agregar personal</h2>
               <form id="entity-form">
                 <input type="hidden" id="entity-id" />
                 <div>
@@ -133,7 +133,10 @@
                 </div>
                 <div>
                   <label for="phone">Teléfono</label>
-                  <input id="phone" name="phone" />
+                  <div class="phone-field">
+                    <select id="phonePrefix" name="phonePrefix" aria-label="Prefijo telefónico"></select>
+                    <input id="phone" name="phone" inputmode="tel" placeholder="Número sin prefijo" />
+                  </div>
                 </div>
                 <div>
                   <label for="address">Dirección</label>
@@ -172,14 +175,14 @@
 
           <div class="entity-panel" id="entity-panel-edit" hidden>
             <section class="card" aria-labelledby="edit-entity-heading">
-              <h2 id="edit-entity-heading">Editar o eliminar la entidad</h2>
-              <div>
-                <label for="edit-entity" id="edit-entity-label">Selecciona una entidad</label>
+            <h2 id="edit-entity-heading">Editar o eliminar el personal</h2>
+            <div>
+              <label for="edit-entity" id="edit-entity-label">Selecciona personal</label>
                 <select id="edit-entity"></select>
                 <div class="error" id="error-edit-entity" aria-live="polite"></div>
               </div>
               <div class="form-actions">
-                <button type="button" id="delete-entity" class="danger">Eliminar la entidad seleccionada</button>
+                <button type="button" id="delete-entity" class="danger">Eliminar el personal seleccionado</button>
                 <button type="button" id="deactivate-entity" class="secondary" hidden>Marcar como Inactivo</button>
               </div>
             </section>
@@ -188,15 +191,15 @@
         </section>
 
         <section id="view-documents" aria-labelledby="documents-view-heading" hidden>
-          <h1 id="documents-view-heading">Documentos</h1>
+          <h1 id="documents-view-heading">Evaluaciones</h1>
 
           <section class="card" aria-labelledby="document-form-heading">
-            <h2 id="document-form-heading">Agregar / Editar Documento</h2>
+            <h2 id="document-form-heading">Agregar / Editar evaluación</h2>
             <form id="document-form">
               <input type="hidden" id="document-id" />
               <input type="hidden" id="document-entity-id" />
               <div>
-                <label for="document-entity" id="document-entity-label">Entidad *</label>
+                <label for="document-entity" id="document-entity-label">Personal *</label>
                 <select id="document-entity" name="document-entity"></select>
                 <div class="error" id="error-document-entity" aria-live="polite"></div>
               </div>
@@ -207,7 +210,7 @@
                   <div class="error" id="error-period" aria-live="polite"></div>
                 </div>
                 <div>
-                  <label for="cf-indicador">Indicador *</label>
+                  <label for="cf-indicador">Indicador de desempeño *</label>
                   <input id="cf-indicador" name="cf-indicador" />
                   <div class="error" id="error-cf-indicador" aria-live="polite"></div>
                 </div>
@@ -219,7 +222,7 @@
                   </div>
                 </div>
                 <div>
-                  <label for="cf-asignacionId">Asignación de departamento *</label>
+                  <label for="cf-asignacionId">Asignación de área *</label>
                   <select id="cf-asignacionId" name="cf-asignacionId"></select>
                   <div class="error" id="error-cf-asignacionId" aria-live="polite"></div>
                 </div>
@@ -338,30 +341,30 @@
               <div id="document-status-control"></div>
               <div id="document-custom-fields"></div>
               <div class="form-actions">
-                <button type="submit" id="document-submit-button" class="primary">Guardar Documento</button>
+                <button type="submit" id="document-submit-button" class="primary">Guardar evaluación</button>
                 <button type="button" id="document-cancel-edit" class="secondary" hidden>Cancelar edición</button>
               </div>
             </form>
           </section>
 
           <section class="card" aria-labelledby="edit-document-heading">
-            <h2 id="edit-document-heading">Editar o eliminar el documento</h2>
+            <h2 id="edit-document-heading">Editar o eliminar la evaluación</h2>
             <div>
-              <label for="edit-document">Selecciona un documento</label>
+              <label for="edit-document">Selecciona una evaluación</label>
               <select id="edit-document"></select>
               <div class="error" id="error-edit-document" aria-live="polite"></div>
             </div>
             <div class="form-actions">
-              <button type="button" id="delete-document" class="danger">Eliminar el documento seleccionado</button>
+              <button type="button" id="delete-document" class="danger">Eliminar la evaluación seleccionada</button>
             </div>
           </section>
         </section>
 
         <section id="view-departments" aria-labelledby="departments-view-heading" hidden>
-          <h1 id="departments-view-heading">Departamentos</h1>
+          <h1 id="departments-view-heading">Áreas de trabajo</h1>
 
           <section class="card" aria-labelledby="department-form-heading">
-            <h2 id="department-form-heading">Agregar / Editar Departamento</h2>
+            <h2 id="department-form-heading">Agregar / Editar área de trabajo</h2>
             <form id="department-form">
               <input type="hidden" id="department-id" />
               <div>
@@ -375,45 +378,45 @@
                 <div class="error" id="error-department-descripcion" aria-live="polite"></div>
               </div>
               <div class="form-actions">
-                <button type="submit" id="department-submit-button" class="primary">Guardar Departamento</button>
+                <button type="submit" id="department-submit-button" class="primary">Guardar área de trabajo</button>
                 <button type="button" id="department-cancel-edit" class="secondary" hidden>Cancelar edición</button>
               </div>
             </form>
           </section>
 
           <section class="card" aria-labelledby="edit-department-heading">
-            <h2 id="edit-department-heading">Editar o eliminar departamento</h2>
+            <h2 id="edit-department-heading">Editar o eliminar área de trabajo</h2>
             <div>
-              <label for="edit-department">Selecciona un departamento</label>
+              <label for="edit-department">Selecciona un área de trabajo</label>
               <select id="edit-department"></select>
               <div class="error" id="error-edit-department" aria-live="polite"></div>
             </div>
             <div class="form-actions">
-              <button type="button" id="delete-department" class="danger">Eliminar el departamento seleccionado</button>
+              <button type="button" id="delete-department" class="danger">Eliminar el área de trabajo seleccionada</button>
             </div>
           </section>
 
           <section class="card" aria-labelledby="department-list-heading">
-            <h2 id="department-list-heading">Departamentos registrados</h2>
-            <div id="department-empty" class="empty" hidden>No hay departamentos registrados.</div>
+            <h2 id="department-list-heading">Áreas de trabajo registradas</h2>
+            <div id="department-empty" class="empty" hidden>No hay áreas de trabajo registradas.</div>
             <ul id="department-list"></ul>
           </section>
         </section>
 
         <section id="view-assignments" aria-labelledby="assignments-view-heading" hidden>
-          <h1 id="assignments-view-heading">Asignaciones de Departamento</h1>
+          <h1 id="assignments-view-heading">Asignaciones de área</h1>
 
           <section class="card" aria-labelledby="assignment-form-heading">
-            <h2 id="assignment-form-heading">Registrar / Editar Asignación</h2>
+            <h2 id="assignment-form-heading">Registrar / Editar asignación de área</h2>
             <form id="assignment-form">
               <input type="hidden" id="assignment-id" />
               <div>
-                <label for="assignment-entity">Trabajador *</label>
+                <label for="assignment-entity">Personal *</label>
                 <select id="assignment-entity" name="assignment-entity"></select>
                 <div class="error" id="error-assignment-entity" aria-live="polite"></div>
               </div>
               <div>
-                <label for="assignment-department">Departamento *</label>
+                <label for="assignment-department">Área de trabajo *</label>
                 <select id="assignment-department" name="assignment-department"></select>
                 <div class="error" id="error-assignment-department" aria-live="polite"></div>
               </div>
@@ -432,51 +435,51 @@
               <div>
                 <label class="inline-check">
                   <input id="assignment-close-previous" name="assignment-close-previous" type="checkbox" checked />
-                  Cerrar la asignación vigente automáticamente al cambiar de departamento
+                  Cerrar la asignación vigente automáticamente al cambiar de área de trabajo
                 </label>
               </div>
               <div class="form-actions">
-                <button type="submit" id="assignment-submit-button" class="primary">Registrar Asignación</button>
+                <button type="submit" id="assignment-submit-button" class="primary">Registrar asignación de área</button>
                 <button type="button" id="assignment-cancel-edit" class="secondary" hidden>Cancelar edición</button>
               </div>
             </form>
           </section>
 
           <section class="card" aria-labelledby="edit-assignment-heading">
-            <h2 id="edit-assignment-heading">Editar o eliminar asignación</h2>
+            <h2 id="edit-assignment-heading">Editar o eliminar asignación de área</h2>
             <div>
-              <label for="edit-assignment">Selecciona una asignación</label>
+              <label for="edit-assignment">Selecciona una asignación de área</label>
               <select id="edit-assignment"></select>
               <div class="error" id="error-edit-assignment" aria-live="polite"></div>
             </div>
             <div class="form-actions">
-              <button type="button" id="delete-assignment" class="danger">Eliminar la asignación seleccionada</button>
+              <button type="button" id="delete-assignment" class="danger">Eliminar la asignación de área seleccionada</button>
             </div>
           </section>
 
           <section class="card" aria-labelledby="assignment-list-heading">
-            <h2 id="assignment-list-heading">Historial de asignaciones</h2>
+            <h2 id="assignment-list-heading">Historial de asignaciones de área</h2>
             <div>
-              <label for="assignment-entity-filter">Filtrar por trabajador</label>
+              <label for="assignment-entity-filter">Filtrar por personal</label>
               <select id="assignment-entity-filter"></select>
             </div>
-            <div id="assignment-empty" class="empty" hidden>No hay asignaciones registradas para el trabajador.</div>
+            <div id="assignment-empty" class="empty" hidden>No hay asignaciones de área registradas para el personal.</div>
             <ul id="assignment-list"></ul>
           </section>
         </section>
 
         <section id="view-history" aria-labelledby="history-view-heading" hidden>
-          <h1 id="history-view-heading">Historial de Productividad</h1>
+          <h1 id="history-view-heading">Historial de evaluaciones de desempeño</h1>
           <section class="card" aria-labelledby="history-filter-heading">
-            <h2 id="history-filter-heading">Selecciona un trabajador</h2>
-            <select id="history-entity" aria-label="Trabajador para consultar historial"></select>
+            <h2 id="history-filter-heading">Selecciona personal</h2>
+            <select id="history-entity" aria-label="Personal del que se consultará el historial"></select>
           </section>
           <section class="card" aria-labelledby="history-table-heading">
-            <h2 id="history-table-heading">Mediciones registradas</h2>
-            <div id="history-empty" class="empty" hidden>Este trabajador aún no tiene mediciones de productividad.</div>
+            <h2 id="history-table-heading">Evaluaciones registradas</h2>
+            <div id="history-empty" class="empty" hidden>El personal seleccionado aún no tiene evaluaciones de desempeño.</div>
             <div class="table-wrap">
               <table>
-                <thead><tr><th>Período</th><th>Departamento</th><th>Indicador</th><th>Resultado</th><th>Unidad</th><th>Turno</th><th>Meta</th><th>Evaluación</th></tr></thead>
+                <thead><tr><th>Período</th><th>Área de trabajo</th><th>Indicador de desempeño</th><th>Resultado</th><th>Unidad</th><th>Turno</th><th>Meta</th><th>Evaluación</th></tr></thead>
                 <tbody id="history-body"></tbody>
               </table>
             </div>
@@ -484,16 +487,16 @@
         </section>
 
         <section id="view-evolution" aria-labelledby="evolution-view-heading" hidden>
-          <h1 id="evolution-view-heading">Evolución de Productividad</h1>
+          <h1 id="evolution-view-heading">Evolución del desempeño</h1>
           <section class="card" aria-labelledby="evolution-filter-heading">
-            <h2 id="evolution-filter-heading">Filtra mediciones comparables</h2>
+            <h2 id="evolution-filter-heading">Filtra evaluaciones comparables</h2>
             <div>
-              <label for="evolution-entity">Trabajador</label>
+              <label for="evolution-entity">Personal</label>
               <select id="evolution-entity"></select>
             </div>
             <div class="field-row">
               <div>
-                <label for="evolution-indicator">Indicador</label>
+                <label for="evolution-indicator">Indicador de desempeño</label>
                 <select id="evolution-indicator"></select>
               </div>
               <div>
@@ -504,10 +507,10 @@
           </section>
           <section class="card" aria-labelledby="evolution-table-heading">
             <h2 id="evolution-table-heading">Resultados comparables</h2>
-            <div id="evolution-message" class="empty" hidden>No hay datos suficientes para visualizar la evolución.</div>
+            <div id="evolution-message" class="empty" hidden>No hay datos suficientes para visualizar la evolución del desempeño.</div>
             <div class="table-wrap">
               <table>
-                <thead><tr><th>Período</th><th>Indicador</th><th>Resultado</th><th>Unidad</th><th>Departamento</th><th>Turno</th><th>Meta</th></tr></thead>
+                <thead><tr><th>Período</th><th>Indicador de desempeño</th><th>Resultado</th><th>Unidad</th><th>Área de trabajo</th><th>Turno</th><th>Meta</th></tr></thead>
                 <tbody id="evolution-body"></tbody>
               </table>
             </div>
@@ -515,11 +518,11 @@
         </section>
 
         <section id="view-search" aria-labelledby="search-view-heading" hidden>
-          <h1 id="search-view-heading">Buscar Entidades</h1>
+          <h1 id="search-view-heading">Buscar personal</h1>
 
           <section class="card" aria-labelledby="search-heading">
-            <h2 id="search-heading">Buscar una entidad</h2>
-            <input id="search-input" name="search-input" placeholder="Buscar por nombre, código, categoría..." aria-label="Buscar entidades" />
+            <h2 id="search-heading">Buscar una persona del personal</h2>
+            <input id="search-input" name="search-input" placeholder="Buscar por nombre, código o categoría..." aria-label="Buscar personal" />
           </section>
 
           <section class="card" aria-labelledby="results-heading">

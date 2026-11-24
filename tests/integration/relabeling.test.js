@@ -33,17 +33,17 @@ async function bootWith(configOverride){
 }
 
 describe('User Story 6 - relabel screens from configuration', () => {
-  it('shows default Entidad/Documento terms everywhere when no mappings are provided', async () => {
+  it('shows default cafe terms everywhere when no mappings are provided', async () => {
     await bootWith(undefined);
-    expect(qs('brand-name').textContent).toBe('Módulo Base ERP');
-    expect(qs('nav-entities-label').textContent).toBe('Entidades');
-    expect(qs('nav-documents-label').textContent).toBe('Documentos');
-    expect(qs('action-new-entity-title').textContent).toBe('Nueva Entidad');
+    expect(qs('brand-name').textContent).toBe('Cafetería Gestión de personal y evaluaciones');
+    expect(qs('nav-entities-label').textContent).toBe('Personal');
+    expect(qs('nav-documents-label').textContent).toBe('Evaluaciones');
+    expect(qs('action-new-entity-title').textContent).toBe('Nuevo personal');
     qs('nav-entities').click();
-    expect(qs('entity-form-heading').textContent).toBe('Agregar / Editar Entidad');
-    expect(qs('delete-entity').textContent).toBe('Eliminar la entidad seleccionada');
+    expect(qs('entity-form-heading').textContent).toBe('Agregar / Editar Personal');
+    expect(qs('delete-entity').textContent).toBe('Eliminar el personal seleccionado');
     qs('nav-search').click();
-    expect(qs('search-view-heading').textContent).toBe('Buscar Entidades');
+    expect(qs('search-view-heading').textContent).toBe('Buscar Personal');
   });
 
   it('uses configured terms on every screen without altering navigation behavior', async () => {

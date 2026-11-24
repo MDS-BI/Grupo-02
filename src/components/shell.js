@@ -1,4 +1,4 @@
-import { getConfig } from '../module-config.js';
+import { getConfig, labelFor } from '../module-config.js';
 
 function escapeHtml(s){ return String(s ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 
@@ -17,8 +17,8 @@ export function renderLogo(container){
 export function applyShellLabels(){
   const labels = {
     'nav-dashboard-label': 'Panel',
-    'nav-entities-label': getConfig().labels.entities,
-    'nav-documents-label': getConfig().labels.documents,
+    'nav-entities-label': labelFor('entities'),
+    'nav-documents-label': labelFor('documents'),
     'nav-search-label': 'Búsqueda'
   };
   Object.entries(labels).forEach(([id, text]) => {

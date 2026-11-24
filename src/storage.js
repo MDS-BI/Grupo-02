@@ -1,4 +1,4 @@
-import { getConfig, isRRHHMode } from './module-config.js';
+import { getConfig, isRRHHMode, labelFor } from './module-config.js';
 
 export const ENTITIES_KEY = 'erp_base_module:entities';
 export const DOCUMENTS_KEY = 'erp_base_module:documents';
@@ -168,11 +168,11 @@ function pickCustomFields(target, data){
 // ---------------------------------------------------------------------------
 
 export function loadEntities(){
-  return readCollection(ENTITIES_KEY, 'los trabajadores');
+  return readCollection(ENTITIES_KEY, 'el personal');
 }
 
 export function saveEntities(entities){
-  return writeCollection(ENTITIES_KEY, 'los trabajadores', entities);
+  return writeCollection(ENTITIES_KEY, 'el personal', entities);
 }
 
 export function validateEntity({name, code, email, targetDate, creditLimit, ...rest}){
@@ -189,7 +189,7 @@ export function validateEntity({name, code, email, targetDate, creditLimit, ...r
   if(isRRHHMode() && !isEmpty(rest.departamentoId)){
     const departments = loadDepartments();
     if(!departments.some(d => d.id_departamento === rest.departamentoId)){
-      errors.departamentoId = 'El departamento seleccionado no existe';
+      errors.departamentoId = 'El área de trabajo seleccionada no existe';
     }
   }
   return { valid: Object.keys(errors).length === 0, errors };
@@ -224,7 +224,7 @@ export function addEntity(payload){
 export function updateEntity(id, updates){
   const list = loadEntities();
   const idx = list.findIndex(e => e.id === id);
-  if(idx === -1) throw new Error('Entidad no encontrada');
+  if(idx === -1) throw new Error('Personal no encontrado');
   const merged = { ...list[idx], ...updates };
   list[idx] = {
     ...list[idx],
@@ -256,10 +256,10 @@ export function entityHasDocuments(entityId){
 
 export function canDeleteEntity(id){
   const entity = loadEntities().find(e => e.id === id);
-  if(!entity) return { allowed: false, reason: 'Trabajador no encontrado' };
+  if(!entity) return { allowed: false, reason: 'Personal no encontrado' };
   if(isRRHHMode()){
     if(entityHasDocuments(entity.entity_id) || entityHasHistory(entity.entity_id)){
-      return { allowed: false, reason: 'El trabajador tiene registros históricos. Márcalo como Inactivo en lugar de eliminarlo.' };
+      return { allowed: false, reason: 'El personal tiene evaluaciones históricas. Márcalo como Inactivo en lugar de eliminarlo.' };
     }
   }
   return { allowed: true };
@@ -295,23 +295,23 @@ export function searchEntities(term){
 // ---------------------------------------------------------------------------
 
 export function loadDepartments(){
-  return readCollection(DEPARTMENTS_KEY, 'los departamentos');
+  return readCollection(DEPARTMENTS_KEY, 'las áreas de trabajo');
 }
 
 export function saveDepartments(departments){
-  return writeCollection(DEPARTMENTS_KEY, 'los departamentos', departments);
+  return writeCollection(DEPARTMENTS_KEY, 'las áreas de trabajo', departments);
 }
 
 export function validateDepartment(payload = {}, currentId){
   const errors = {};
   const nombre = normalizeText(payload.nombre);
   if(!nombre){
-    errors.nombre = 'El nombre del departamento es obligatorio';
+    errors.nombre = 'El nombre del área de trabajo es obligatorio';
   } else {
     const duplicated = loadDepartments().some(d =>
       d.id_departamento !== currentId && normalizeKey(d.nombre) === normalizeKey(nombre)
     );
-    if(duplicated) errors.nombre = 'Ya existe un departamento con ese nombre';
+    if(duplicated) errors.nombre = 'Ya existe un área de trabajo con ese nombre';
   }
   return { valid: Object.keys(errors).length === 0, errors };
 }
@@ -336,7 +336,7 @@ export function addDepartment(payload = {}){
 export function updateDepartment(id, updates = {}){
   const list = loadDepartments();
   const idx = list.findIndex(d => d.id_departamento === id);
-  if(idx === -1) throw new Error('Departamento no encontrado');
+  if(idx === -1) throw new Error('Área de trabajo no encontrada');
   const merged = { ...list[idx], ...updates };
   const check = validateDepartment(merged, id);
   if(!check.valid) throw new Error(Object.values(check.errors)[0]);
@@ -352,10 +352,10 @@ export function updateDepartment(id, updates = {}){
 
 export function canDeleteDepartment(id){
   if(loadDepartmentHistory().some(h => h.id_departamento === id)){
-    return { allowed: false, reason: 'El departamento tiene asignaciones históricas y no puede eliminarse.' };
+    return { allowed: false, reason: 'El área de trabajo tiene asignaciones históricas y no puede eliminarse.' };
   }
   if(loadEntities().some(e => e.departamentoId === id)){
-    return { allowed: false, reason: 'El departamento tiene trabajadores asignados y no puede eliminarse.' };
+    return { allowed: false, reason: 'El área de trabajo tiene personal asignado y no puede eliminarse.' };
   }
   return { allowed: true };
 }
@@ -391,11 +391,11 @@ function normalizeAssignment(payload = {}){
 }
 
 export function loadDepartmentHistory(){
-  return readCollection(HISTORY_KEY, 'el historial de departamentos');
+  return readCollection(HISTORY_KEY, 'el historial de áreas de trabajo');
 }
 
 export function saveDepartmentHistory(history){
-  return writeCollection(HISTORY_KEY, 'el historial de departamentos', history);
+  return writeCollection(HISTORY_KEY, 'el historial de áreas de trabajo', history);
 }
 
 export const loadHistorialDepartamentos = loadDepartmentHistory;
@@ -412,9 +412,9 @@ export function validateDepartmentAssignment(payload = {}, currentId){
   const departments = loadDepartments();
   const entity = entities.find(e => e.entity_id === normalized.entity_id);
 
-  if(!normalized.entity_id || !entity) errors.entity_id = 'Selecciona un trabajador válido';
+  if(!normalized.entity_id || !entity) errors.entity_id = 'Selecciona personal válido';
   if(!normalized.id_departamento || !departments.some(d => d.id_departamento === normalized.id_departamento)){
-    errors.id_departamento = 'Selecciona un departamento válido';
+    errors.id_departamento = 'Selecciona un área de trabajo válida';
   }
   if(!normalized.fecha_inicio){
     errors.fecha_inicio = 'La fecha de inicio es obligatoria';
@@ -433,24 +433,24 @@ export function validateDepartmentAssignment(payload = {}, currentId){
     );
     for(const other of others){
       if(intervalsOverlap(normalized.fecha_inicio, normalized.fecha_fin, other.fecha_inicio, other.fecha_fin)){
-        errors.fecha_inicio = 'La asignación se superpone con otro período del mismo trabajador';
+        errors.fecha_inicio = 'La asignación se superpone con otro período del mismo personal';
         break;
       }
     }
     if(!normalized.fecha_fin && others.some(h => !h.fecha_fin)){
-      errors.fecha_fin = 'Solo puede existir una asignación vigente por trabajador';
+      errors.fecha_fin = 'Solo puede existir una asignación vigente por personal';
     }
   }
 
   if(currentId){
     const linked = linkedDocumentsForAssignment(currentId);
     if(linked.some(d => d.entity_id !== normalized.entity_id)){
-      errors.entity_id = 'No se puede cambiar el trabajador de una asignación con mediciones vinculadas';
+      errors.entity_id = 'No se puede cambiar el personal de una asignación con evaluaciones vinculadas';
     }
     if(!errors.fecha_inicio && !errors.fecha_fin && isValidDate(normalized.fecha_inicio)){
       const end = normalized.fecha_fin || OPEN_END;
       if(linked.some(d => d.startDate < normalized.fecha_inicio || (d.endDate || OPEN_END) > end)){
-        errors.fecha_fin = 'Las fechas dejarían mediciones históricas fuera de la asignación';
+        errors.fecha_fin = 'Las fechas dejarían evaluaciones históricas fuera de la asignación';
       }
     }
   }
@@ -481,7 +481,7 @@ export function addDepartmentAssignment(payload = {}){
 export function updateDepartmentAssignment(id, updates = {}){
   const history = loadDepartmentHistory();
   const idx = history.findIndex(h => h.id_historial === id);
-  if(idx === -1) throw new Error('Asignación no encontrada');
+  if(idx === -1) throw new Error('Asignación de área no encontrada');
   const merged = normalizeAssignment({ ...history[idx], ...updates });
   const check = validateDepartmentAssignment(merged, id);
   if(!check.valid) throw new Error(Object.values(check.errors)[0]);
@@ -503,7 +503,7 @@ export function closeDepartmentAssignment(id, fechaFin){
 
 export function canDeleteDepartmentAssignment(id){
   if(linkedDocumentsForAssignment(id).length > 0){
-    return { allowed: false, reason: 'La asignación tiene mediciones de productividad vinculadas y no puede eliminarse.' };
+    return { allowed: false, reason: 'La asignación de área tiene evaluaciones de desempeño vinculadas y no puede eliminarse.' };
   }
   return { allowed: true };
 }
@@ -547,9 +547,9 @@ export function getDepartmentForAssignment(assignmentId){
 export function changeDepartment(entityId, departmentId, startDate, options = {}){
   if(!isValidDate(startDate)) throw new Error('La fecha de inicio debe ser válida (YYYY-MM-DD)');
   const entity = loadEntities().find(e => e.entity_id === entityId);
-  if(!entity) throw new Error('Trabajador no encontrado');
+  if(!entity) throw new Error('Personal no encontrado');
   if(!loadDepartments().some(d => d.id_departamento === departmentId)){
-    throw new Error('El departamento seleccionado no existe');
+    throw new Error('El área de trabajo seleccionada no existe');
   }
   const current = getCurrentAssignment(entityId);
   if(current){
@@ -562,7 +562,7 @@ export function changeDepartment(entityId, departmentId, startDate, options = {}
     }
     const linked = linkedDocumentsForAssignment(current.id_historial);
     if(linked.some(d => d.startDate > previousEnd || d.endDate > previousEnd)){
-      throw new Error('No se puede cerrar la asignación anterior porque tiene mediciones posteriores a la nueva fecha');
+      throw new Error('No se puede cerrar la asignación anterior porque tiene evaluaciones posteriores a la nueva fecha');
     }
     updateDepartmentAssignment(current.id_historial, { fecha_fin: previousEnd });
   }
@@ -595,11 +595,11 @@ export const assignWorkerToDepartment = changeDepartment;
 // ---------------------------------------------------------------------------
 
 export function loadDocuments(){
-  return readCollection(DOCUMENTS_KEY, 'los registros de productividad');
+  return readCollection(DOCUMENTS_KEY, 'las evaluaciones de desempeño');
 }
 
 export function saveDocuments(documents){
-  return writeCollection(DOCUMENTS_KEY, 'los registros de productividad', documents);
+  return writeCollection(DOCUMENTS_KEY, 'las evaluaciones de desempeño', documents);
 }
 
 function isProductivityRecord(document_){
@@ -635,7 +635,7 @@ export function validateProductivityDocument(payload = {}){
   const errors = {};
   const entityId = payload.entityId || payload.entity_id || '';
   const entity = loadEntities().find(e => e.entity_id === entityId);
-  if(!entityId || !entity) errors.entityId = 'Selecciona un trabajador válido';
+  if(!entityId || !entity) errors.entityId = 'Selecciona personal válido';
 
   const { period, bounds } = resolveProductivityPeriod(payload);
   if(!period || !bounds){
@@ -652,15 +652,15 @@ export function validateProductivityDocument(payload = {}){
     }
     const ingreso = entity && entity.fechaIngreso;
     if(isValidDate(ingreso) && period < ingreso.slice(0, 7)){
-      errors.period = 'El período no puede ser anterior a la fecha de ingreso del trabajador';
+      errors.period = 'El período no puede ser anterior a la fecha de ingreso del personal';
     }
   }
 
   const indicador = normalizeText(payload.indicador);
   if(!indicador){
-    errors.indicador = 'El indicador es obligatorio';
+    errors.indicador = 'El indicador de desempeño es obligatorio';
   } else if(indicador.length < 3 || indicador.length > 60){
-    errors.indicador = 'El indicador debe tener entre 3 y 60 caracteres';
+    errors.indicador = 'El indicador de desempeño debe tener entre 3 y 60 caracteres';
   }
 
   if(isEmpty(payload.resultado)){
@@ -716,14 +716,14 @@ export function validateProductivityDocument(payload = {}){
     if(!asignacionId){
       const candidates = entityId ? getAssignmentsOverlapping(entityId, bounds.startDate, bounds.endDate) : [];
       errors.asignacionId = candidates.length > 1
-        ? 'Selecciona la asignación de departamento correspondiente al período'
-        : 'El trabajador no tiene una asignación de departamento válida para el período';
+        ? 'Selecciona la asignación de área correspondiente al período'
+        : 'El personal no tiene una asignación de área válida para el período';
     } else {
       const assignment = loadDepartmentHistory().find(h => h.id_historial === asignacionId);
       if(!assignment){
-        errors.asignacionId = 'La asignación de departamento no existe';
+        errors.asignacionId = 'La asignación de área no existe';
       } else if(assignment.entity_id !== entityId){
-        errors.asignacionId = 'La asignación no pertenece al trabajador seleccionado';
+        errors.asignacionId = 'La asignación no pertenece al personal seleccionado';
       } else if(!intervalsOverlap(bounds.startDate, bounds.endDate, assignment.fecha_inicio, assignment.fecha_fin)){
         errors.asignacionId = 'La asignación no corresponde al período indicado';
       }
@@ -768,7 +768,7 @@ export function validateDocument(payload, currentStatus){
   const errors = {};
   const entities = loadEntities();
   if(!entityId || !entities.some(e => e.entity_id === entityId)){
-    errors.entityId = 'Selecciona una entidad para el documento';
+    errors.entityId = `Selecciona ${labelFor('entity').toLowerCase()} para ${labelFor('document').toLowerCase()}`;
   }
   if(isEmpty(folio)){ errors.folio = 'El folio es obligatorio'; }
   else {
@@ -826,7 +826,7 @@ export function addDocument(payload){
   if(isRRHHMode()){
     const inspection = inspectDocumentsForRRHH();
     if(!inspection.compatible){
-      throw new Error(`La colección de documentos contiene ${inspection.legacy.length} registro(s) incompatible(s) con productividad. Respalda o migra esos datos antes de continuar.`);
+      throw new Error(`La colección de evaluaciones contiene ${inspection.legacy.length} registro(s) incompatible(s) con el desempeño. Respalda o migra esos datos antes de continuar.`);
     }
     const check = validateProductivityDocument(payload);
     if(!check.valid) throw new Error(Object.values(check.errors)[0]);
@@ -884,7 +884,7 @@ export function addDocument(payload){
 export function updateDocument(id, updates){
   const list = loadDocuments();
   const idx = list.findIndex(d => d.id === id);
-  if(idx === -1) throw new Error('Documento no encontrado');
+  if(idx === -1) throw new Error('Evaluación no encontrada');
   const prev = list[idx];
 
   if(isRRHHMode()){
@@ -1050,7 +1050,7 @@ export function getProductivityHistory(entityId){
     .map(d => ({
       ...d,
       period: getDocumentPeriod(d),
-      departamento: getDepartmentForDocument(d)?.nombre || 'Sin departamento'
+      departamento: getDepartmentForDocument(d)?.nombre || 'Sin área de trabajo'
     }));
 }
 

@@ -9,9 +9,9 @@ export function createAssignmentItem(assignment, departmentName, measurementCoun
   const end = assignment.fecha_fin || (assignment.fecha_inicio > today ? 'programada' : 'vigente');
   const period = `${assignment.fecha_inicio} → ${end}`;
   const info = document.createElement('div');
-  info.innerHTML = `<strong>${escapeHtml(departmentName || 'Departamento desconocido')}</strong>` +
+  info.innerHTML = `<strong>${escapeHtml(departmentName || 'Área de trabajo desconocida')}</strong>` +
     `<div class="muted">${escapeHtml(period)}</div>` +
-    (measurementCount > 0 ? `<div class="muted">${measurementCount} medición(es) vinculada(s)</div>` : '');
+    (measurementCount > 0 ? `<div class="muted">${measurementCount} evaluación(es) vinculada(s)</div>` : '');
   li.appendChild(info);
   return li;
 }

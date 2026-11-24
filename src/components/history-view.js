@@ -25,7 +25,7 @@ export function renderHistoryTable(bodyEl, emptyEl, measurements){
   if(!measurements || measurements.length === 0){
     if(emptyEl){
       emptyEl.hidden = false;
-      emptyEl.textContent = 'Este trabajador aún no tiene mediciones de productividad.';
+      emptyEl.textContent = 'El personal seleccionado aún no tiene evaluaciones de desempeño.';
     }
     return false;
   }

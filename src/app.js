@@ -1,4 +1,4 @@
-import { loadModuleConfig, normalizeConfig, setActiveConfig, labelFor, isRRHHMode, indicadoresParaCargo } from './module-config.js';
+import { loadModuleConfig, normalizeConfig, setActiveConfig, getConfig, labelFor, isRRHHMode, indicadoresParaCargo } from './module-config.js';
 import {
   loadEntities, addEntity, updateEntity, deleteEntity, validateEntity, searchEntities, canDeleteEntity,
   loadDocuments, addDocument, updateDocument, deleteDocument, validateDocument, findDuplicateProductivity,
@@ -169,7 +169,7 @@ function populateDocumentEntitySelect(){
   const select = qs('document-entity');
   const prev = select.value;
   const entities = loadEntities();
-  setOptions(select, entities.map(e => ({ value: e.entity_id, label: e.name })), prev, isRRHHMode() ? '-- Selecciona un trabajador --' : undefined);
+  setOptions(select, entities.map(e => ({ value: e.entity_id, label: e.name })), prev, isRRHHMode() ? '-- Selecciona personal --' : undefined);
 }
 
 function populateEditEntitySelect(){
@@ -186,8 +186,8 @@ function populateEditDocumentSelect(){
   const options = loadDocuments().map(d => {
     const entity = entities.find(e => e.entity_id === d.entity_id);
     const label = isRRHHMode()
-      ? `${entity ? entity.name : 'Trabajador desconocido'} · ${getDocumentPeriod(d) || ''} · ${d.indicador || ''}`
-      : `${entity ? entity.name : 'Entidad desconocida'} · ${folioLabel(d)} · ${d.startDate} → ${d.endDate}`;
+      ? `${entity ? entity.name : 'Personal no identificado'} · ${getDocumentPeriod(d) || ''} · ${d.indicador || ''}`
+      : `${entity ? entity.name : 'Personal no identificado'} · ${folioLabel(d)} · ${d.startDate} → ${d.endDate}`;
     return { value: d.id, label };
   });
   setOptions(select, options, prev, `-- Selecciona ${articulo(labelFor('document'))} ${labelFor('document').toLowerCase()} --`);
@@ -196,7 +196,7 @@ function populateEditDocumentSelect(){
 function populateEditDepartmentSelect(){
   const select = qs('edit-department');
   const prev = select?.value;
-  setOptions(select, loadDepartments().map(d => ({ value: d.id_departamento, label: d.nombre })), prev, '-- Selecciona un departamento --');
+  setOptions(select, loadDepartments().map(d => ({ value: d.id_departamento, label: d.nombre })), prev, '-- Selecciona un área de trabajo --');
 }
 
 function assignmentEndLabel(assignment){
@@ -208,13 +208,13 @@ function assignmentEndLabel(assignment){
 function assignmentLabel(assignment){
   const department = loadDepartments().find(d => d.id_departamento === assignment.id_departamento);
   const entity = loadEntities().find(e => e.entity_id === assignment.entity_id);
-  return `${entity ? entity.name : 'Trabajador'} · ${department ? department.nombre : 'Departamento'} · ${assignment.fecha_inicio} → ${assignmentEndLabel(assignment)}`;
+  return `${entity ? entity.name : 'Personal'} · ${department ? department.nombre : 'Área de trabajo'} · ${assignment.fecha_inicio} → ${assignmentEndLabel(assignment)}`;
 }
 
 function populateEditAssignmentSelect(){
   const select = qs('edit-assignment');
   const prev = select?.value;
-  setOptions(select, loadDepartmentHistory().map(a => ({ value: a.id_historial, label: assignmentLabel(a) })), prev, '-- Selecciona una asignación --');
+  setOptions(select, loadDepartmentHistory().map(a => ({ value: a.id_historial, label: assignmentLabel(a) })), prev, '-- Selecciona una asignación de área --');
 }
 
 function populateAssignmentSelects(){
@@ -224,9 +224,9 @@ function populateAssignmentSelects(){
   const departmentPrev = qs('assignment-department')?.value;
   const filterPrev = qs('assignment-entity-filter')?.value;
 
-  setOptions(qs('assignment-entity'), entities.map(e => ({ value: e.entity_id, label: e.name })), entityPrev, '-- Selecciona un trabajador --');
-  setOptions(qs('assignment-department'), departments.map(d => ({ value: d.id_departamento, label: d.nombre })), departmentPrev, '-- Selecciona un departamento --');
-  setOptions(qs('assignment-entity-filter'), entities.map(e => ({ value: e.entity_id, label: e.name })), filterPrev, 'Todos los trabajadores');
+  setOptions(qs('assignment-entity'), entities.map(e => ({ value: e.entity_id, label: e.name })), entityPrev, '-- Selecciona personal --');
+  setOptions(qs('assignment-department'), departments.map(d => ({ value: d.id_departamento, label: d.nombre })), departmentPrev, '-- Selecciona un área de trabajo --');
+  setOptions(qs('assignment-entity-filter'), entities.map(e => ({ value: e.entity_id, label: e.name })), filterPrev, 'Todo el personal');
   populateEditAssignmentSelect();
 }
 
@@ -252,7 +252,7 @@ function refreshAssignments(){
   renderAssignmentList(
     qs('assignment-list'),
     assignments,
-    a => loadDepartments().find(d => d.id_departamento === a.id_departamento)?.nombre || 'Departamento desconocido',
+    a => loadDepartments().find(d => d.id_departamento === a.id_departamento)?.nombre || 'Área de trabajo desconocida',
     a => loadDocuments().filter(d => d.asignacionId === a.id_historial).length
   );
   const empty = qs('assignment-empty');
@@ -325,7 +325,7 @@ function handleDeleteSelectedEntity(){
 
 function handleDeactivateSelectedEntity(){
   const id = qs('edit-entity').value;
-  if(!id){ qs('error-edit-entity').textContent = 'Selecciona un trabajador para marcarlo como Inactivo.'; return; }
+  if(!id){ qs('error-edit-entity').textContent = 'Selecciona personal para marcarlo como Inactivo.'; return; }
   try{
     updateEntity(id, { estadoLaboral: 'Inactivo' });
     qs('error-edit-entity').textContent = '';
@@ -408,7 +408,7 @@ function showDuplicateWarning(payload, id){
   }
   if(warning){
     warning.hidden = false;
-    warning.textContent = 'Ya existe una medición del mismo trabajador, período e indicador. Puedes guardarla nuevamente si lo confirmas.';
+    warning.textContent = 'Ya existe una evaluación del mismo personal, período e indicador de desempeño. Puedes guardarla nuevamente si lo confirmas.';
   }
   return true;
 }
@@ -425,7 +425,7 @@ function handleDocumentSubmit(ev){
     if(!valid) return;
     if(hasDuplicate){
       const proceed = typeof confirm === 'function'
-        ? confirm('Ya existe una medición del mismo trabajador, período e indicador. ¿Deseas guardar otra?')
+        ? confirm('Ya existe una evaluación del mismo personal, período e indicador de desempeño. ¿Deseas guardar otra?')
         : true;
       if(!proceed) return;
     }
@@ -470,7 +470,7 @@ function populateProductivityAssignments(preferredAssignmentId){
   select.innerHTML = '';
   const blank = document.createElement('option');
   blank.value = '';
-  blank.textContent = '-- Selecciona una asignación --';
+  blank.textContent = '-- Selecciona una asignación de área --';
   select.appendChild(blank);
   if(!entityId || !bounds) return;
   const assignments = getAssignmentsOverlapping(entityId, bounds.startDate, bounds.endDate);
@@ -478,7 +478,7 @@ function populateProductivityAssignments(preferredAssignmentId){
     const department = loadDepartments().find(d => d.id_departamento === assignment.id_departamento);
     const opt = document.createElement('option');
     opt.value = assignment.id_historial;
-    opt.textContent = `${department ? department.nombre : 'Departamento'} · ${assignment.fecha_inicio} → ${assignmentEndLabel(assignment)}`;
+    opt.textContent = `${department ? department.nombre : 'Área de trabajo'} · ${assignment.fecha_inicio} → ${assignmentEndLabel(assignment)}`;
     select.appendChild(opt);
   }
   if(assignments.length === 1){
@@ -489,7 +489,7 @@ function populateProductivityAssignments(preferredAssignmentId){
   const error = qs('error-cf-asignacionId');
   if(error){
     error.textContent = assignments.length === 0
-      ? 'El trabajador no tiene una asignación de departamento para este período.'
+      ? 'El personal no tiene una asignación de área para este período.'
       : '';
   }
 }
@@ -542,8 +542,8 @@ function onEditDepartmentChange(){
 
 function handleDeleteSelectedDepartment(){
   const id = qs('edit-department').value;
-  if(!id){ qs('error-edit-department').textContent = 'Selecciona un departamento para eliminar.'; return; }
-  if(!confirm('¿Eliminar el departamento seleccionado?')) return;
+  if(!id){ qs('error-edit-department').textContent = 'Selecciona un área de trabajo para eliminar.'; return; }
+  if(!confirm('¿Eliminar el área de trabajo seleccionada?')) return;
   try{
     deleteDepartment(id);
     qs('error-edit-department').textContent = '';
@@ -614,8 +614,8 @@ function onEditAssignmentChange(){
 
 function handleDeleteSelectedAssignment(){
   const id = qs('edit-assignment').value;
-  if(!id){ qs('error-edit-assignment').textContent = 'Selecciona una asignación para eliminar.'; return; }
-  if(!confirm('¿Eliminar la asignación seleccionada?')) return;
+  if(!id){ qs('error-edit-assignment').textContent = 'Selecciona una asignación de área para eliminar.'; return; }
+  if(!confirm('¿Eliminar la asignación de área seleccionada?')) return;
   try{
     deleteDepartmentAssignment(id);
     qs('error-edit-assignment').textContent = '';
@@ -630,7 +630,7 @@ function handleDeleteSelectedAssignment(){
 function populateHistoryEntitySelect(){
   const select = qs('history-entity');
   const prev = select?.value;
-  setOptions(select, loadEntities().map(e => ({ value: e.entity_id, label: e.name })), prev, '-- Selecciona un trabajador --');
+  setOptions(select, loadEntities().map(e => ({ value: e.entity_id, label: e.name })), prev, '-- Selecciona personal --');
 }
 
 function renderHistory(){
@@ -639,14 +639,14 @@ function renderHistory(){
   renderHistoryTable(qs('history-body'), qs('history-empty'), measurements);
   if(!entityId && qs('history-empty')){
     qs('history-empty').hidden = false;
-    qs('history-empty').textContent = 'Selecciona un trabajador para consultar su historial.';
+    qs('history-empty').textContent = 'Selecciona personal para consultar su historial de evaluaciones.';
   }
 }
 
 function populateEvolutionEntitySelect(){
   const select = qs('evolution-entity');
   const prev = select?.value;
-  setOptions(select, loadEntities().map(e => ({ value: e.entity_id, label: e.name })), prev, '-- Selecciona un trabajador --');
+  setOptions(select, loadEntities().map(e => ({ value: e.entity_id, label: e.name })), prev, '-- Selecciona personal --');
 }
 
 function populateEvolutionFilters(){
@@ -656,7 +656,7 @@ function populateEvolutionFilters(){
   const indicatorPrev = indicatorSelect?.value;
   const unitPrev = unitSelect?.value;
   const indicators = entityId ? getIndicatorsForEntity(entityId) : [];
-  setOptions(indicatorSelect, indicators.map(i => ({ value: i, label: i })), indicatorPrev, '-- Indicador --');
+  setOptions(indicatorSelect, indicators.map(i => ({ value: i, label: i })), indicatorPrev, '-- Indicador de desempeño --');
   const units = entityId ? getUnitsForEntity(entityId, indicatorSelect?.value || '') : [];
   setOptions(unitSelect, units.map(u => ({ value: u, label: u })), unitPrev, '-- Unidad --');
   if(units.length === 1) unitSelect.value = units[0];
@@ -672,15 +672,18 @@ function renderEvolution(){
   renderEvolutionTable(qs('evolution-body'), qs('evolution-message'), measurements);
   if(!entityId && qs('evolution-message')){
     qs('evolution-message').hidden = false;
-    qs('evolution-message').textContent = 'Selecciona un trabajador para visualizar su evolución.';
+    qs('evolution-message').textContent = 'Selecciona personal para visualizar la evolución del desempeño.';
   }
 }
 
 function applyLabels(config){
-  const entity = config.labels.entity;
-  const entities = config.labels.entities;
-  const document_ = config.labels.document;
-  const documents = config.labels.documents;
+  const entity = labelFor('entity');
+  const entities = labelFor('entities');
+  const document_ = labelFor('document');
+  const documents = labelFor('documents');
+  const configuredLabels = getConfig().labels;
+  const entityText = configuredLabels.entity === entity ? entity : entity.toLowerCase();
+  const documentText = configuredLabels.document === document_ ? document_ : document_.toLowerCase();
   const femEntity = esFemenina(entity);
   const femDocument = esFemenina(document_);
   const rrhh = isRRHHMode();
@@ -693,15 +696,15 @@ function applyLabels(config){
   const dashboardSubtitle = qs('dashboard-subtitle');
   if(dashboardHeading) dashboardHeading.textContent = config.moduleName;
   if(dashboardSubtitle) dashboardSubtitle.textContent = rrhh
-    ? `Gestiona ${entities.toLowerCase()}, departamentos y ${documents.toLowerCase()} en un solo lugar.`
-    : `Gestiona tus ${entities.toLowerCase()} y ${documents.toLowerCase()} en un solo lugar.`;
-  qs('action-new-entity-title').textContent = `${femEntity ? 'Nueva' : 'Nuevo'} ${entity}`;
-  qs('action-new-entity-sub').textContent = `Crear un registro de ${entity.toLowerCase()}`;
-  qs('action-new-document-title').textContent = `${femDocument ? 'Nueva' : 'Nuevo'} ${document_}`;
-  qs('action-new-document-sub').textContent = `Registrar un registro de ${document_.toLowerCase()}`;
+    ? `Gestiona ${entities.toLowerCase()}, áreas de trabajo y ${documents.toLowerCase()} en un solo lugar.`
+    : `Gestiona tu ${entities.toLowerCase()} y tus ${documents.toLowerCase()} en un solo lugar.`;
+  qs('action-new-entity-title').textContent = `${femEntity ? 'Nueva' : 'Nuevo'} ${entityText}`;
+  qs('action-new-entity-sub').textContent = `Ingresar ${entity.toLowerCase()} al sistema`;
+  qs('action-new-document-title').textContent = `${femDocument ? 'Nueva' : 'Nuevo'} ${documentText}`;
+  qs('action-new-document-sub').textContent = `Registrar ${document_.toLowerCase()}`;
   qs('action-open-entities-title').textContent = entities;
   qs('action-open-entities-sub').textContent = `Abrir la gestión de ${entities.toLowerCase()}`;
-  qs('action-find-title').textContent = 'Buscar registros';
+  qs('action-find-title').textContent = `Buscar ${documents.toLowerCase()}`;
   qs('action-find-sub').textContent = `Buscar ${entities.toLowerCase()}`;
 
   qs('entities-view-heading').textContent = entities;
@@ -717,7 +720,7 @@ function applyLabels(config){
   qs('edit-document-heading').textContent = `Editar o eliminar ${articulo(document_)} ${document_.toLowerCase()}`;
   qs('search-view-heading').textContent = `Buscar ${entities}`;
   qs('search-heading').textContent = `Buscar ${articulo(entity)} ${entity.toLowerCase()}`;
-  qs('search-input').placeholder = rrhh ? 'Buscar por nombre, código, cargo, departamento...' : 'Buscar por nombre, código, categoría...';
+  qs('search-input').placeholder = rrhh ? 'Buscar por nombre, código, cargo o área de trabajo...' : 'Buscar por nombre, código o categoría...';
   qs('search-input').setAttribute('aria-label', `Buscar ${entities.toLowerCase()}`);
   qs('search-empty').textContent = 'Sin coincidencias para tu búsqueda.';
   qs('delete-entity').textContent = `Eliminar ${articulo(entity)} ${entity.toLowerCase()} ${seleccionada(entity)}`;
@@ -742,16 +745,16 @@ function applyLabels(config){
     if(!inspection.compatible){
       const banner = qs('storage-error');
       if(banner){
-        banner.textContent = `Hay ${inspection.legacy.length} documento(s) incompatible(s) con productividad en el almacenamiento local. Respalda o migra esos datos antes de guardar nuevos registros.`;
+        banner.textContent = `Hay ${inspection.legacy.length} evaluación(es) incompatible(s) con el desempeño en el almacenamiento local. Respalda o migra esos datos antes de guardar nuevas evaluaciones.`;
         banner.hidden = false;
       }
     }
   }
 
-  qs('departments-view-heading').textContent = 'Departamentos';
-  qs('assignments-view-heading').textContent = 'Asignaciones de Departamento';
-  qs('history-view-heading').textContent = 'Historial de Productividad';
-  qs('evolution-view-heading').textContent = 'Evolución de Productividad';
+  qs('departments-view-heading').textContent = 'Áreas de trabajo';
+  qs('assignments-view-heading').textContent = 'Asignaciones de área';
+  qs('history-view-heading').textContent = 'Historial de evaluaciones de desempeño';
+  qs('evolution-view-heading').textContent = 'Evolución del desempeño';
   qs('deactivate-entity').textContent = 'Marcar como Inactivo';
 }
 

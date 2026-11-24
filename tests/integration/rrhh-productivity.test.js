@@ -76,8 +76,8 @@ describe('Incremento 002 - RR. HH. y productividad', () => {
     expect(document.querySelectorAll('.nav-module').length).toBe(8);
     expect(qs('nav-departments').hidden).toBe(false);
     expect(qs('nav-history').hidden).toBe(false);
-    expect(qs('nav-entities-label').textContent).toBe('Trabajadores');
-    expect(qs('nav-documents-label').textContent).toBe('Registros de Productividad');
+    expect(qs('nav-entities-label').textContent).toBe('Personal');
+    expect(qs('nav-documents-label').textContent).toBe('Evaluaciones de desempeño');
     expect(qs('data-warning').hidden).toBe(false);
     expect(qs('productivity-fields').hidden).toBe(false);
     expect(qs('creditLimit').closest('[data-base-entity]').hidden).toBe(true);
@@ -153,7 +153,7 @@ describe('Incremento 002 - RR. HH. y productividad', () => {
     fire('edit-entity');
     qs('delete-entity').click();
     expect(loadEntities().length).toBe(1);
-    expect(qs('error-edit-entity').textContent).toContain('históricos');
+    expect(qs('error-edit-entity').textContent).toContain('históricas');
 
     qs('deactivate-entity').click();
     expect(loadEntities()[0].estadoLaboral).toBe('Inactivo');

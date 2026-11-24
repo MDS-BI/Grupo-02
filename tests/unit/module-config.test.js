@@ -111,7 +111,7 @@ describe('module-config', () => {
     expect(labelFor('entity')).toBe('Cliente');
     expect(labelFor('documents')).toBe('Pedidos de Venta');
     setActiveConfig(null);
-    expect(labelFor('entity')).toBe('Entidad');
+    expect(labelFor('entity')).toBe('Personal');
   });
 
   it('supports all declared field types', () => {

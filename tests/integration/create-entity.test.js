@@ -61,7 +61,7 @@ describe('User Story 1 - create and organize entities', () => {
     const saved = loadEntities()[0];
     expect(saved.taxId).toBe('RFC800101AB1');
     expect(saved.email).toBe('ventas@acme.mx');
-    expect(saved.phone).toBe('555-1234');
+    expect(saved.phone).toBe('+56 555-1234');
     expect(saved.address).toBe('Av. Reforma 100');
     expect(saved.creditLimit).toBe(50000);
     expect(saved.paymentTerms).toBe('neto 30');

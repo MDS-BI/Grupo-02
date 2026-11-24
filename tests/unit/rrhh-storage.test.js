@@ -129,8 +129,8 @@ describe('departamentos y asignaciones', () => {
   it('rechaza cambios de asignación que dejan mediciones fuera del período', () => {
     const { worker, assignment } = seed();
     addDocument(productivity());
-    expect(() => updateDepartmentAssignment(assignment.id_historial, { fecha_fin: '2026-02-28' })).toThrow(/mediciones/);
-    expect(() => deleteDepartmentAssignment(assignment.id_historial)).toThrow(/mediciones/);
+    expect(() => updateDepartmentAssignment(assignment.id_historial, { fecha_fin: '2026-02-28' })).toThrow(/evaluaciones/);
+    expect(() => deleteDepartmentAssignment(assignment.id_historial)).toThrow(/evaluaciones/);
   });
 });
 
@@ -194,7 +194,7 @@ describe('productividad', () => {
   it('bloquea eliminaciones de trabajadores con historial', () => {
     const { worker } = seed();
     addDocument(productivity());
-    expect(() => deleteEntity(worker.id)).toThrow(/históricos/);
+    expect(() => deleteEntity(worker.id)).toThrow(/históricas/);
   });
 
   it('bloquea guardar productividad si existen documentos incompatibles', () => {

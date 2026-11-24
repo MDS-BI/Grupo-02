@@ -108,6 +108,6 @@ describe('User Story 10 - add a document to an entity', () => {
     qs('endDate').value = '2026-08-05';
     qs('document-form').dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true }));
     expect(loadDocuments().length).toBe(0);
-    expect(qs('error-document-entity').textContent).toContain('entidad');
+    expect(qs('error-document-entity').textContent).toContain('personal');
   });
 });

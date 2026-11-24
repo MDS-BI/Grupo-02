@@ -22,7 +22,7 @@ function chevron(){
 
 function instructionMessage(){
   return [...document.querySelectorAll('#dashboard-chart p')]
-    .find(p => p.textContent.includes('Seleccione un departamento para visualizar'));
+    .find(p => p.textContent.includes('Seleccione un área de trabajo para visualizar'));
 }
 
 function selectedLabel(){
@@ -68,7 +68,7 @@ describe('Panel line chart - selector y leyenda', () => {
   it('A: sin selección muestra el placeholder, la flecha completa y sin mensaje inferior', () => {
     const select = chartSelect();
     expect(select.value).toBe('');
-    expect(select.options[0].textContent).toBe('Seleccione departamento');
+    expect(select.options[0].textContent).toBe('Seleccione un área de trabajo');
     expect(chartSelect().closest('.chart-title-container')).not.toBeNull();
 
     const icon = chevron();

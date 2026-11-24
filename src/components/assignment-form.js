@@ -12,7 +12,7 @@ export function clearAssignmentForm(){
   if(close) close.checked = true;
   clearAssignmentErrors();
   qs('assignment-cancel-edit').hidden = true;
-  qs('assignment-submit-button').textContent = 'Registrar Asignación';
+  qs('assignment-submit-button').textContent = 'Registrar asignación de área';
 }
 
 export function clearAssignmentErrors(){
@@ -32,7 +32,7 @@ export function startAssignmentEdit(assignment){
   if(close) close.checked = false;
   clearAssignmentErrors();
   qs('assignment-cancel-edit').hidden = false;
-  qs('assignment-submit-button').textContent = 'Actualizar Asignación';
+  qs('assignment-submit-button').textContent = 'Actualizar asignación de área';
 }
 
 export function collectAssignmentPayload(){

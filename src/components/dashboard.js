@@ -1,4 +1,4 @@
-import { getConfig, isRRHHMode } from '../module-config.js';
+import { getConfig, labelFor, isRRHHMode } from '../module-config.js';
 import {
   loadEntities,
   loadDocuments,
@@ -147,7 +147,7 @@ function recentRecords(documents, entities, limit = 5){
         item.entity_id === document_.entity_id || item.id === document_.entity_id
       );
       return {
-        worker: entity ? entity.name : 'Trabajador desconocido',
+        worker: entity ? entity.name : 'Personal no identificado',
         indicator: document_.indicador || '',
         result: document_.resultado,
         unit: document_.unidad || '',
@@ -229,22 +229,22 @@ function ensureLayout(view){
   const shell = element('div', 'dashboard-shell');
 
   const kpiSection = element('section', 'dashboard-section');
-  kpiSection.appendChild(element('h2', 'section-title', 'Indicadores clave'));
+  kpiSection.appendChild(element('h2', 'section-title', 'Indicadores clave de desempeño'));
   const existingIcons = ['users', 'file'];
   statGrid.querySelectorAll('.stat-card').forEach((card, index) => {
     if(!card.querySelector('.stat-icon')) card.prepend(icon(existingIcons[index] || 'layers', 'stat-icon'));
   });
   statGrid.append(
-    statCard('stat-active', 'stat-active-label', 'Trabajadores activos', 'activity'),
-    statCard('stat-departments', 'stat-departments-label', 'Departamentos', 'layers'),
-    statCard('stat-assignments', 'stat-assignments-label', 'Asignaciones vigentes', 'calendar')
+    statCard('stat-active', 'stat-active-label', 'Personal activo', 'activity'),
+    statCard('stat-departments', 'stat-departments-label', 'Áreas de trabajo', 'layers'),
+    statCard('stat-assignments', 'stat-assignments-label', 'Asignaciones de área vigentes', 'calendar')
   );
   kpiSection.appendChild(statGrid);
 
   const panels = element('div', 'dashboard-panels');
   panels.append(
     createChartPanel(),
-    panel('dashboard-activity', 'Actividad reciente', 'Últimos 5 registros', 'file')
+    panel('dashboard-activity', 'Actividad reciente', 'Últimas 5 evaluaciones', 'file')
   );
 
   const actionSection = element('section', 'dashboard-section');
@@ -266,7 +266,7 @@ function renderLineChart(months, metaSeries, resultSeries, departmentName){
   if(!titleSelect){
     const titleContainer = element('div', 'chart-title-container');
     titleSelect = element('select', 'chart-title-select');
-    titleSelect.innerHTML = '<option value="">Seleccione departamento</option>';
+    titleSelect.innerHTML = '<option value="">Seleccione un área de trabajo</option>';
     const departments = loadDepartments();
     departments.forEach(d=>{
       const opt = document.createElement('option');
@@ -427,7 +427,7 @@ function renderRecentActivity(records){
   container.replaceChildren();
 
   if(records.length === 0){
-    container.appendChild(element('p', 'empty', 'Aún no hay registros de productividad recientes.'));
+    container.appendChild(element('p', 'empty', 'Aún no hay evaluaciones de desempeño recientes.'));
     return;
   }
 
@@ -447,7 +447,7 @@ function renderRecentActivity(records){
     const turnoText = record.turno ? ` | Turno: ${record.turno}` : '';
     const metaText = record.meta !== null ? ` | Meta: ${formatResult(record.meta)}` : '';
     meta.append(
-      element('span', 'activity-indicator', record.indicator || 'Sin indicador'),
+      element('span', 'activity-indicator', record.indicator || 'Sin indicador de desempeño'),
       element('span', 'activity-result', resultText + turnoText + metaText)
     );
     body.append(top, meta);
@@ -466,21 +466,19 @@ export function recordCounts(){
 
 export function renderDashboard(){
   const counts = recordCounts();
-  const config = getConfig();
-  const labels = config.labels;
   const view = document.getElementById('view-dashboard');
   ensureLayout(view);
 
   setText('stat-entities', String(counts.entities));
   setText('stat-documents', String(counts.documents));
-  setText('stat-entities-label', labels.entities);
-  setText('stat-documents-label', labels.documents);
+  setText('stat-entities-label', labelFor('entities'));
+  setText('stat-documents-label', labelFor('documents'));
   setText('stat-active', String(activeWorkerCount(loadEntities())));
-  setText('stat-active-label', isRRHHMode() ? 'Trabajadores activos' : 'Registros activos');
+  setText('stat-active-label', isRRHHMode() ? 'Personal activo' : 'Evaluaciones registradas');
   setText('stat-departments', String(loadDepartments().length));
-  setText('stat-departments-label', 'Departamentos');
+  setText('stat-departments-label', 'Áreas de trabajo');
   setText('stat-assignments', String(currentAssignmentCount()));
-  setText('stat-assignments-label', 'Asignaciones vigentes');
+  setText('stat-assignments-label', 'Asignaciones de área vigentes');
 
   // Recargar selección del departamento guardada
   if(!selectedDepartmentId){

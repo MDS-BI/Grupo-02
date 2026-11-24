@@ -24,7 +24,7 @@ export const userConfig = null;
 // conservar el comportamiento del módulo base cuando se ejecutan sus pruebas o
 // se arranca la aplicación sin una configuración explícita.
 export const RRHH_CONFIG = Object.freeze({
-  moduleName: 'RR. HH. e Historial de Productividad',
+  moduleName: 'Cafetería Gestión de personal y evaluaciones',
   labels: Object.freeze({
     entity: 'Trabajador',
     entities: 'Trabajadores',
@@ -35,11 +35,11 @@ export const RRHH_CONFIG = Object.freeze({
     { target: 'entity', key: 'cargo', label: 'Cargo', type: 'text', required: true },
     { target: 'entity', key: 'fechaIngreso', label: 'Fecha de ingreso', type: 'date', required: true },
     { target: 'entity', key: 'estadoLaboral', label: 'Estado laboral', type: 'select', required: true, options: Object.freeze(['Activo', 'Inactivo']) },
-    { target: 'entity', key: 'departamentoId', label: 'Departamento', type: 'text', required: false, optionsSource: 'departments' },
-    { target: 'document', key: 'indicador', label: 'Indicador', type: 'text', required: true },
+    { target: 'entity', key: 'departamentoId', label: 'Área de trabajo', type: 'text', required: false, optionsSource: 'departments' },
+    { target: 'document', key: 'indicador', label: 'Indicador de desempeño', type: 'text', required: true },
     { target: 'document', key: 'resultado', label: 'Resultado obtenido', type: 'number', required: true },
     { target: 'document', key: 'unidad', label: 'Unidad', type: 'text', required: true },
-    { target: 'document', key: 'asignacionId', label: 'Asignación de departamento', type: 'text', required: true, optionsSource: 'assignments' },
+    { target: 'document', key: 'asignacionId', label: 'Asignación de área', type: 'text', required: true, optionsSource: 'assignments' },
     { target: 'document', key: 'turno', label: 'Turno', type: 'select', required: true, options: Object.freeze(['Mañana', 'Tarde']) },
     { target: 'document', key: 'meta', label: 'Meta esperada', type: 'number', required: true },
     { target: 'document', key: 'evaluacionCalidad', label: 'Calidad (1-5)', type: 'number', required: true },
@@ -101,7 +101,7 @@ export function indicadoresParaCargo(cargo){
 // ---------------------------------------------------------------------------
 
 export const DEFAULT_CONFIG = Object.freeze({
-  moduleName: 'Módulo Base ERP',
+  moduleName: 'Cafetería Gestión de personal y evaluaciones',
   labels: Object.freeze({
     entity: 'Entidad',
     entities: 'Entidades',
@@ -239,8 +239,20 @@ export function isRRHHMode(){
     && activeConfig.customFields.some(f => f.target === 'entity' && f.key === 'fechaIngreso');
 }
 
+const DISPLAY_LABELS = Object.freeze({
+  'Trabajador': 'Personal',
+  'Trabajadores': 'Personal',
+  'Entidad': 'Personal',
+  'Entidades': 'Personal',
+  'Registro de Productividad': 'Evaluación de desempeño',
+  'Registros de Productividad': 'Evaluaciones de desempeño',
+  'Documento': 'Evaluación',
+  'Documentos': 'Evaluaciones'
+});
+
 export function labelFor(kind){
-  return activeConfig.labels[kind] || DEFAULT_CONFIG.labels[kind];
+  const label = activeConfig.labels[kind] || DEFAULT_CONFIG.labels[kind];
+  return DISPLAY_LABELS[label] || label;
 }
 
 export async function loadModuleConfig(){

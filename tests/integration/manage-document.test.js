@@ -53,7 +53,7 @@ describe('User Story 10 - manage documents (edit, delete, cascade)', () => {
     expect(qs('document-id').value).toBe(doc.id);
     expect(qs('series').value).toBe('FAC');
     expect(qs('folio').value).toBe('1001');
-    expect(qs('document-submit-button').textContent).toBe('Actualizar Documento');
+    expect(qs('document-submit-button').textContent).toBe('Actualizar evaluación');
 
     qs('folio').value = '1002';
     qs('document-form').dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true }));
