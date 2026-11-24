@@ -121,7 +121,7 @@ p { margin: 0 0 12px; }
 .brand-name { color: var(--navy); font-size: 1rem; }
 
 .logo-mark { display: inline-flex; }
-.logo-mark svg { display: block; border-radius: 9px; box-shadow: 0 5px 12px color-mix(in srgb, var(--accent) 28%, transparent); }
+.logo-mark .cafe-logo { display: block; width: 36px; height: 36px; flex-shrink: 0; }
 
 .sidebar {
   background: linear-gradient(180deg, var(--cafe-cacao) 0%, color-mix(in srgb, var(--cafe-cacao) 88%, var(--cafe-terracota)) 100%);

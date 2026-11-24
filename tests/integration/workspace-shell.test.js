@@ -39,24 +39,25 @@ async function bootWith(configOverride){
 }
 
 describe('User Story 13 - branded ERP workspace shell', () => {
-  it('shows a top bar with a derived SVG logo and the module name on every screen', async () => {
+  it('shows a top bar with the cafe logo and the module name on every screen', async () => {
     await bootWith(brandedConfig);
-    expect(qs('logo-mark').querySelector('svg')).not.toBeNull();
+    expect(qs('logo-mark').querySelector('.cafe-logo')).not.toBeNull();
     expect(qs('brand-name').textContent).toBe('Sales Suite');
 
     qs('nav-entities').click();
-    expect(qs('logo-mark').querySelector('svg')).not.toBeNull();
+    expect(qs('logo-mark').querySelector('.cafe-logo')).not.toBeNull();
 
     qs('nav-documents').click();
     qs('nav-search').click();
-    expect(qs('logo-mark').querySelector('svg')).not.toBeNull();
+    expect(qs('logo-mark').querySelector('.cafe-logo')).not.toBeNull();
     expect(document.querySelector('.topbar .brand')).not.toBeNull();
   });
 
-  it('derives the monogram letters from the module name', async () => {
+  it('uses the shared coffee cup logo regardless of the module name', async () => {
     await bootWith(brandedConfig);
-    const text = qs('logo-mark').querySelector('svg text').textContent;
-    expect(text).toBe('SS');
+    const logo = qs('logo-mark').querySelector('.cafe-logo');
+    expect(logo).not.toBeNull();
+    expect(logo.getAttribute('src')).toBe('cafeteria-logo.svg');
   });
 
   it('offers sidebar module buttons using configured terminology', async () => {

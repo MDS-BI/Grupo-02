@@ -86,8 +86,10 @@ describe('User Story 6 - relabel screens from configuration', () => {
     expect(qs('view-dashboard').hidden).toBe(false);
   });
 
-  it('derives the logo monogram from the configured module name', async () => {
+  it('renders the cafe logo with any configured module name', async () => {
     await bootWith({ moduleName: 'Warehouse Pro' });
-    expect(qs('logo-mark').querySelector('svg text').textContent).toBe('WP');
+    const logo = qs('logo-mark').querySelector('.cafe-logo');
+    expect(logo).not.toBeNull();
+    expect(logo.getAttribute('src')).toBe('cafeteria-logo.svg');
   });
 });
