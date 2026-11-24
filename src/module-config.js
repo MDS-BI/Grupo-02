@@ -16,7 +16,7 @@
 //     statuses: ['cotización', 'pedido', 'facturado'],
 //     transitions: { cotización: ['pedido'], pedido: ['facturado'], facturado: [] }
 //   },
-//   theme: { accentColor: '#0f62fe' }
+//   theme: { accentColor: '#84592B' }
 // }
 export const userConfig = null;
 
@@ -50,7 +50,7 @@ export const RRHH_CONFIG = Object.freeze({
     { target: 'document', key: 'oportunidadesMejora', label: 'Oportunidades de mejora', type: 'text', required: false }
   ]),
   statusLifecycle: null,
-  theme: Object.freeze({ accentColor: '#0f766e' })
+  theme: Object.freeze({ accentColor: '#84592B' })
 });
 
 // Indicadores de productividad sugeridos por cargo, para el contexto de cafetería.
@@ -110,7 +110,7 @@ export const DEFAULT_CONFIG = Object.freeze({
   }),
   customFields: Object.freeze([]),
   statusLifecycle: null,
-  theme: Object.freeze({ accentColor: '#2563eb' })
+  theme: Object.freeze({ accentColor: '#84592B' })
 });
 
 export const FIELD_TYPES = ['text', 'number', 'date', 'select'];

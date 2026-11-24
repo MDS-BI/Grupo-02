@@ -320,7 +320,7 @@ function renderLineChart(months, metaSeries, resultSeries, departmentName){
   }).join(' ');
   metaLine.setAttribute('points', metaPoints);
   metaLine.setAttribute('fill', 'none');
-  metaLine.setAttribute('stroke', '#0f766e');
+  metaLine.setAttribute('stroke', '#9D9167');
   metaLine.setAttribute('stroke-width', '2.5');
   group.appendChild(metaLine);
 
@@ -333,7 +333,7 @@ function renderLineChart(months, metaSeries, resultSeries, departmentName){
   }).join(' ');
   resultLine.setAttribute('points', resultPoints);
   resultLine.setAttribute('fill', 'none');
-  resultLine.setAttribute('stroke', '#2563eb');
+  resultLine.setAttribute('stroke', '#84592B');
   resultLine.setAttribute('stroke-width', '2.5');
   group.appendChild(resultLine);
 
@@ -345,7 +345,7 @@ function renderLineChart(months, metaSeries, resultSeries, departmentName){
     circle.setAttribute('cx', x);
     circle.setAttribute('cy', y);
     circle.setAttribute('r', '4');
-    circle.setAttribute('fill', '#0f766e');
+    circle.setAttribute('fill', '#9D9167');
     circle.setAttribute('stroke', '#ffffff');
     circle.setAttribute('stroke-width', '2');
     circle.setAttribute('class', 'chart-point');
@@ -363,7 +363,7 @@ function renderLineChart(months, metaSeries, resultSeries, departmentName){
     circle.setAttribute('cx', x);
     circle.setAttribute('cy', y);
     circle.setAttribute('r', '4');
-    circle.setAttribute('fill', '#2563eb');
+    circle.setAttribute('fill', '#84592B');
     circle.setAttribute('stroke', '#ffffff');
     circle.setAttribute('stroke-width', '2');
     circle.setAttribute('class', 'chart-point');
@@ -381,7 +381,7 @@ function renderLineChart(months, metaSeries, resultSeries, departmentName){
     label.setAttribute('y', height + 25);
     label.setAttribute('text-anchor', 'middle');
     label.setAttribute('font-size', '11');
-    label.setAttribute('fill', '#64748b');
+    label.setAttribute('fill', '#442D1C');
     label.textContent = monthsShort[i] || '';
     group.appendChild(label);
   });
@@ -395,7 +395,7 @@ function renderLineChart(months, metaSeries, resultSeries, departmentName){
     label.setAttribute('y', y + 4);
     label.setAttribute('text-anchor', 'end');
     label.setAttribute('font-size', '10');
-    label.setAttribute('fill', '#64748b');
+    label.setAttribute('fill', '#442D1C');
     label.textContent = value;
     group.appendChild(label);
   }
@@ -413,9 +413,9 @@ function renderLineChart(months, metaSeries, resultSeries, departmentName){
   // Leyenda
   const legend = element('div', 'chart-legend');
   const metaItem = element('div', 'legend-item');
-  metaItem.innerHTML = `<span class="legend-color" style="background:#0f766e"></span><span class="legend-label">Meta esperada</span>`;
+  metaItem.innerHTML = `<span class="legend-color" style="background:#9D9167"></span><span class="legend-label">Meta esperada</span>`;
   const resultItem = element('div', 'legend-item');
-  resultItem.innerHTML = `<span class="legend-color" style="background:#2563eb"></span><span class="legend-label">Resultado</span>`;
+  resultItem.innerHTML = `<span class="legend-color" style="background:#84592B"></span><span class="legend-label">Resultado</span>`;
   legend.appendChild(metaItem);
   legend.appendChild(resultItem);
   container.appendChild(legend);

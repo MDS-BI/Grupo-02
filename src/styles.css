@@ -2,27 +2,33 @@
    Design tokens
    ========================================================================== */
 :root {
-  --accent: #2563eb;
-  --accent-dark: color-mix(in srgb, var(--accent) 78%, #071426);
-  --accent-soft: color-mix(in srgb, var(--accent) 11%, #ffffff);
-  --accent-line: color-mix(in srgb, var(--accent) 30%, #ffffff);
-  --bg: #f2f4f8;
+  --cafe-beige: #E8D1A7;
+  --cafe-caramelo: #84592B;
+  --cafe-oliva: #9D9167;
+  --cafe-terracota: #743014;
+  --cafe-cacao: #442D1C;
+
+  --accent: var(--cafe-caramelo);
+  --accent-dark: var(--cafe-terracota);
+  --accent-soft: color-mix(in srgb, var(--cafe-beige) 55%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--cafe-caramelo) 32%, #ffffff);
+  --bg: color-mix(in srgb, var(--cafe-beige) 42%, #ffffff);
   --surface: #ffffff;
-  --surface-alt: #f8fafc;
-  --border: #dde3ec;
-  --border-strong: #c9d2e0;
-  --text: #17233b;
-  --muted: #64748b;
-  --danger: #c0392b;
-  --navy: #101b30;
-  --teal: #0f766e;
-  --sidebar-bg: #101b30;
-  --sidebar-text: #c6d3ea;
+  --surface-alt: color-mix(in srgb, var(--cafe-beige) 26%, #ffffff);
+  --border: color-mix(in srgb, var(--cafe-caramelo) 18%, #ffffff);
+  --border-strong: color-mix(in srgb, var(--cafe-caramelo) 34%, #ffffff);
+  --text: var(--cafe-cacao);
+  --muted: color-mix(in srgb, var(--cafe-oliva) 68%, var(--cafe-cacao));
+  --danger: var(--cafe-terracota);
+  --navy: var(--cafe-cacao);
+  --teal: var(--cafe-oliva);
+  --sidebar-bg: var(--cafe-cacao);
+  --sidebar-text: color-mix(in srgb, var(--cafe-beige) 72%, var(--cafe-cacao));
   --radius: 10px;
   --radius-lg: 16px;
-  --shadow: 0 1px 2px rgba(16, 27, 48, 0.05), 0 2px 8px rgba(16, 27, 48, 0.05);
-  --shadow-md: 0 6px 18px rgba(16, 27, 48, 0.09);
-  --shadow-lg: 0 14px 34px rgba(16, 27, 48, 0.12);
+  --shadow: 0 1px 2px rgba(68, 45, 28, 0.06), 0 2px 8px rgba(68, 45, 28, 0.05);
+  --shadow-md: 0 6px 18px rgba(68, 45, 28, 0.10);
+  --shadow-lg: 0 14px 34px rgba(68, 45, 28, 0.14);
   --topbar-h: 66px;
   --sidebar-w: 240px;
 }
@@ -51,9 +57,9 @@ p { margin: 0 0 12px; }
 .error { color: var(--danger); font-size: 0.85em; margin-top: 4px; min-height: 1em; }
 
 .config-error {
-  background: #fdecea;
-  color: var(--danger);
-  border: 1px solid #f5c6cb;
+  background: color-mix(in srgb, var(--cafe-beige) 58%, #ffffff);
+  color: var(--cafe-terracota);
+  border: 1px solid color-mix(in srgb, var(--cafe-terracota) 24%, #ffffff);
   border-left: 4px solid var(--danger);
   border-radius: var(--radius);
   padding: 10px 14px;
@@ -62,10 +68,10 @@ p { margin: 0 0 12px; }
 }
 
 .data-warning {
-  background: #fff8e6;
-  color: #7a4b00;
-  border: 1px solid #f1d18a;
-  border-left: 4px solid #d99a25;
+  background: color-mix(in srgb, var(--cafe-beige) 52%, #ffffff);
+  color: var(--cafe-caramelo);
+  border: 1px solid color-mix(in srgb, var(--cafe-caramelo) 30%, #ffffff);
+  border-left: 4px solid var(--cafe-caramelo);
   border-radius: var(--radius);
   padding: 10px 18px;
   margin: 12px 16px 0;
@@ -73,9 +79,9 @@ p { margin: 0 0 12px; }
 }
 
 .warning {
-  background: #fff8e6;
-  color: #7a4b00;
-  border: 1px solid #f1d18a;
+  background: color-mix(in srgb, var(--cafe-beige) 52%, #ffffff);
+  color: var(--cafe-caramelo);
+  border: 1px solid color-mix(in srgb, var(--cafe-caramelo) 30%, #ffffff);
   border-radius: 8px;
   padding: 9px 11px;
   margin-top: 10px;
@@ -118,10 +124,10 @@ p { margin: 0 0 12px; }
 .logo-mark svg { display: block; border-radius: 9px; box-shadow: 0 5px 12px color-mix(in srgb, var(--accent) 28%, transparent); }
 
 .sidebar {
-  background: linear-gradient(180deg, #101b30 0%, #14233d 100%);
+  background: linear-gradient(180deg, var(--cafe-cacao) 0%, color-mix(in srgb, var(--cafe-cacao) 88%, var(--cafe-terracota)) 100%);
   color: var(--sidebar-text);
   padding: 18px 12px;
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  border-right: 1px solid color-mix(in srgb, var(--cafe-beige) 12%, transparent);
 }
 
 .side-nav {
@@ -150,7 +156,7 @@ p { margin: 0 0 12px; }
 }
 
 .nav-module svg { flex-shrink: 0; }
-.nav-module:hover { background: rgba(255, 255, 255, 0.09); color: #ffffff; }
+.nav-module:hover { background: color-mix(in srgb, var(--cafe-beige) 14%, transparent); color: #ffffff; }
 
 .nav-module:focus-visible,
 .action-card:focus-visible,
@@ -175,7 +181,7 @@ textarea:focus-visible {
   gap: 4px;
   margin: 2px 0 4px 10px;
   padding-left: 10px;
-  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  border-left: 1px solid color-mix(in srgb, var(--cafe-beige) 22%, transparent);
 }
 
 .sub-nav[hidden],
@@ -200,10 +206,10 @@ textarea:focus-visible {
 }
 
 .nav-sub svg { flex-shrink: 0; }
-.nav-sub:hover { background: rgba(255, 255, 255, 0.07); color: #ffffff; }
+.nav-sub:hover { background: color-mix(in srgb, var(--cafe-beige) 11%, transparent); color: #ffffff; }
 
 .nav-sub.active {
-  background: rgba(255, 255, 255, 0.13);
+  background: color-mix(in srgb, var(--cafe-beige) 18%, transparent);
   color: #ffffff;
   font-weight: 600;
 }
@@ -626,7 +632,7 @@ input, textarea, select {
   padding: 10px 12px;
   border: 1px solid var(--border);
   border-radius: 9px;
-  background: #fbfcfe;
+  background: color-mix(in srgb, var(--cafe-beige) 18%, #ffffff);
   color: var(--text);
   font: inherit;
   transition: border-color 140ms ease, box-shadow 140ms ease;
@@ -656,6 +662,14 @@ button {
 
 button:active { transform: translateY(1px); }
 
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 button.primary {
   background: var(--accent);
   border-color: var(--accent);
@@ -664,15 +678,15 @@ button.primary {
 }
 
 button.primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
-button.secondary:hover { border-color: var(--border-strong); background: #f7f9fc; }
+button.secondary:hover { border-color: var(--border-strong); background: var(--surface-alt); }
 
 button.danger {
-  background: #fdf1ef;
-  border-color: #f2c4bd;
-  color: var(--danger);
+  background: color-mix(in srgb, var(--cafe-terracota) 10%, #ffffff);
+  border-color: color-mix(in srgb, var(--cafe-terracota) 28%, #ffffff);
+  color: var(--cafe-terracota);
 }
 
-button.danger:hover { background: #fae3df; }
+button.danger:hover { background: color-mix(in srgb, var(--cafe-terracota) 18%, #ffffff); }
 .custom-field { margin-bottom: 12px; }
 
 .inline-check {
