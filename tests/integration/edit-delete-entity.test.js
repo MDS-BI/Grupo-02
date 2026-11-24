@@ -21,8 +21,8 @@ beforeEach(async () => {
   w.scrollTo = vi.fn();
   w.localStorage.clear();
   vi.resetModules();
-  const first = addEntity({ name: 'Acme', code: 'AC-001' });
-  addEntity({ name: 'Globex', code: 'GL-002' });
+  const first = addEntity({ name: 'Acme', surname: 'Prueba', code: 'AC-001' });
+  addEntity({ name: 'Globex', surname: 'Prueba', code: 'GL-002' });
   const { boot } = await import('../../src/app.js');
   await boot();
   globalThis.__firstId = first.id;
@@ -41,10 +41,13 @@ describe('User Story 2 - edit and remove entities', () => {
     expect(qs('entity-id').value).toBe(globalThis.__firstId);
     expect(qs('submit-button').textContent).toBe('Actualizar');
     expect(qs('name').value).toBe('Acme');
+    expect(qs('surname').value).toBe('Prueba');
 
     qs('name').value = 'Acme Updated';
+    qs('surname').value = 'Prueba Updated';
     qs('entity-form').dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true }));
     expect(loadEntities()[0].name).toBe('Acme Updated');
+    expect(loadEntities()[0].surname).toBe('Prueba Updated');
   });
 
   it('deletes a selected entity so it disappears from storage', () => {
@@ -59,7 +62,7 @@ describe('User Story 2 - edit and remove entities', () => {
 
   it('stays responsive and correct when many entities exist', () => {
     for(let i = 0; i < 300; i++){
-      addEntity({ name: `Bulk ${i}`, code: `B-${String(i).padStart(4, '0')}` });
+      addEntity({ name: `Bulk ${i}`, surname: 'Prueba', code: `B-${String(i).padStart(4, '0')}` });
     }
     qs('nav-entities').click();
     const select = qs('edit-entity');
@@ -68,8 +71,11 @@ describe('User Story 2 - edit and remove entities', () => {
     select.value = target.value;
     select.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
     expect(qs('name').value).toBe('Bulk 150');
+    expect(qs('surname').value).toBe('Prueba');
     qs('name').value = 'Bulk 150 Renamed';
+    qs('surname').value = 'Prueba Renamed';
     qs('entity-form').dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true }));
     expect(loadEntities().find(e => e.code === 'B-0150').name).toBe('Bulk 150 Renamed');
+    expect(loadEntities().find(e => e.code === 'B-0150').surname).toBe('Prueba Renamed');
   });
 });

@@ -113,10 +113,17 @@
               <h2 id="entity-form-heading">Agregar personal</h2>
               <form id="entity-form">
                 <input type="hidden" id="entity-id" />
-                <div>
-                  <label for="name">Nombre *</label>
-                  <input id="name" name="name" required />
-                  <div class="error" id="error-name" aria-live="polite"></div>
+                <div class="field-row">
+                  <div>
+                    <label for="name">Nombre *</label>
+                    <input id="name" name="name" required />
+                    <div class="error" id="error-name" aria-live="polite"></div>
+                  </div>
+                  <div>
+                    <label for="surname">Apellidos *</label>
+                    <input id="surname" name="surname" required />
+                    <div class="error" id="error-surname" aria-live="polite"></div>
+                  </div>
                 </div>
                 <div>
                   <label for="code">Código *</label>

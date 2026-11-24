@@ -81,6 +81,7 @@ describe('User Story 3 - home dashboard with quick actions and record stats', ()
     await bootWith(undefined);
     qs('nav-entities').click();
     qs('name').value = 'Acme';
+    qs('surname').value = 'Pérez';
     qs('code').value = 'AC-001';
     qs('entity-form').dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true }));
     expect(loadEntities().length).toBe(1);

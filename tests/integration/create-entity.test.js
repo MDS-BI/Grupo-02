@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { JSDOM } from 'jsdom';
-import { loadEntities } from '../../src/storage.js';
+import { addEntity, entityDisplayName, loadEntities } from '../../src/storage.js';
 
 const html = fs.readFileSync(fileURLToPath(new URL('../../index.html', import.meta.url)), 'utf8');
 
@@ -35,21 +35,27 @@ describe('User Story 1 - create and organize entities', () => {
     expect(qs('view-entities').hidden).toBe(false);
     expect(qs('creditLimit').closest('[data-base-entity]').hidden).toBe(false);
     expect(qs('paymentTerms').closest('[data-base-entity]').hidden).toBe(false);
+    expect(qs('name').closest('.field-row')).toBe(qs('surname').closest('.field-row'));
+    expect(qs('name').required).toBe(true);
+    expect(qs('surname').required).toBe(true);
     qs('name').value = 'Acme';
+    qs('surname').value = 'Pérez';
     qs('code').value = 'AC-001';
     qs('entity-form').dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true }));
     const all = loadEntities();
     expect(all.length).toBe(1);
     expect(all[0].name).toBe('Acme');
+    expect(all[0].surname).toBe('Pérez');
     expect(all[0].code).toBe('AC-001');
     expect(all[0].entity_id).toBeDefined();
     const select = qs('edit-entity');
-    expect([...select.options].map(o => o.textContent)).toContain('Acme — AC-001');
+    expect([...select.options].map(o => o.textContent)).toContain('Acme Pérez — AC-001');
   });
 
   it('persists ERP identity and commercial fields entered through the form', () => {
     qs('nav-entities').click();
     qs('name').value = 'Acme';
+    qs('surname').value = 'Pérez';
     qs('code').value = 'AC-001';
     qs('taxId').value = 'RFC800101AB1';
     qs('email').value = 'ventas@acme.mx';
@@ -70,6 +76,7 @@ describe('User Story 1 - create and organize entities', () => {
   it('rejects a malformed email with an explanation', () => {
     qs('nav-entities').click();
     qs('name').value = 'Acme';
+    qs('surname').value = 'Pérez';
     qs('code').value = 'AC-001';
     qs('email').value = 'no-es-correo';
     qs('entity-form').dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true }));
@@ -80,10 +87,28 @@ describe('User Story 1 - create and organize entities', () => {
   it('prevents saving when required information is blank and explains what is needed', () => {
     qs('nav-entities').click();
     qs('name').value = '';
+    qs('surname').value = '';
     qs('code').value = '';
     qs('entity-form').dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true }));
     expect(loadEntities().length).toBe(0);
     expect(qs('error-name').textContent).toContain('obligatorio');
+    expect(qs('error-surname').textContent).toContain('obligatorio');
     expect(qs('error-code').textContent).toContain('obligatorio');
+  });
+
+  it('preserves a legacy full name when it is edited into nombre and apellidos', () => {
+    const legacy = addEntity({ name: 'Ana Torres', code: 'W-001' });
+    qs('nav-entities').click();
+    const select = qs('edit-entity');
+    select.value = legacy.id;
+    select.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    expect(qs('name').value).toBe('Ana');
+    expect(qs('surname').value).toBe('Torres');
+
+    qs('entity-form').dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true }));
+    const saved = loadEntities()[0];
+    expect(saved.name).toBe('Ana');
+    expect(saved.surname).toBe('Torres');
+    expect(entityDisplayName(saved)).toBe('Ana Torres');
   });
 });

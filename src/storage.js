@@ -171,14 +171,23 @@ export function loadEntities(){
   return readCollection(ENTITIES_KEY, 'el personal');
 }
 
+export function entityDisplayName(entity){
+  if(!entity) return '';
+  return [entity.name, entity.surname]
+    .map(value => String(value ?? '').trim())
+    .filter(Boolean)
+    .join(' ');
+}
+
 export function saveEntities(entities){
   return writeCollection(ENTITIES_KEY, 'el personal', entities);
 }
 
-export function validateEntity({name, code, email, targetDate, creditLimit, ...rest}){
+export function validateEntity({name, surname, code, email, targetDate, creditLimit, ...rest} = {}){
   const errors = {};
-  if(!name || !name.trim()) errors.name = 'El nombre es obligatorio';
-  if(!code || !code.trim()) errors.code = 'El código es obligatorio';
+  if(!name || !String(name).trim()) errors.name = 'El nombre es obligatorio';
+  if(surname !== undefined && !String(surname ?? '').trim()) errors.surname = 'Los apellidos son obligatorios';
+  if(!code || !String(code).trim()) errors.code = 'El código es obligatorio';
   if(!isEmpty(email) && !isValidEmail(email)) errors.email = 'El correo electrónico no es válido';
   if(!isEmpty(targetDate) && !isValidDate(targetDate)) errors.targetDate = 'La fecha objetivo debe ser una fecha válida (YYYY-MM-DD)';
   if(!isEmpty(creditLimit)){
@@ -201,6 +210,7 @@ export function addEntity(payload){
     id: generateId(),
     entity_id: generateId(),
     name: (payload.name||'').trim(),
+    surname: (payload.surname||'').trim() || undefined,
     code: (payload.code||'').trim(),
     taxId: (payload.taxId||'').trim() || undefined,
     email: (payload.email||'').trim() || undefined,
@@ -229,6 +239,7 @@ export function updateEntity(id, updates){
   list[idx] = {
     ...list[idx],
     name: (merged.name||'').trim(),
+    surname: (merged.surname||'').trim() || undefined,
     code: (merged.code||'').trim(),
     taxId: (merged.taxId||'').trim() || undefined,
     email: (merged.email||'').trim() || undefined,
@@ -282,7 +293,7 @@ export function searchEntities(term){
   const q = (term||'').trim().toLowerCase();
   if(!q) return loadEntities();
   const departments = loadDepartments();
-  const fields = ['name', 'code', 'taxId', 'email', 'phone', 'address', 'category', 'description', 'targetDate', 'paymentTerms', ...declaredFields('entity').map(f => f.key)];
+  const fields = ['name', 'surname', 'code', 'taxId', 'email', 'phone', 'address', 'category', 'description', 'targetDate', 'paymentTerms', ...declaredFields('entity').map(f => f.key)];
   return loadEntities().filter(e => {
     if(fields.some(f => String(e[f] ?? '').toLowerCase().includes(q))) return true;
     const dept = departments.find(d => d.id_departamento === e.departamentoId);

@@ -19,10 +19,11 @@ function qs(id){ return document.getElementById(id); }
 function change(id){ qs(id).dispatchEvent(new dom.window.Event('change', { bubbles: true })); }
 function submit(id){ qs(id).dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true })); }
 
-function createWorker({ name = 'Ana Torres', code = 'W-001', cargo = 'Barista' } = {}){
+function createWorker({ name = 'Ana', surname = 'Torres', code = 'W-001', cargo = 'Barista' } = {}){
   qs('nav-entities').click();
   qs('nav-entities-add').click();
   qs('name').value = name;
+  qs('surname').value = surname;
   qs('code').value = code;
   qs('cf-cargo').value = cargo;
   qs('cf-fechaIngreso').value = '2026-01-15';
@@ -112,7 +113,8 @@ describe('Reorganización de navegación - módulo Trabajadores', () => {
     const worker = createWorker();
     expect(worker).toBeTruthy();
     expect(loadEntities()).toHaveLength(1);
-    expect(worker.name).toBe('Ana Torres');
+    expect(worker.name).toBe('Ana');
+    expect(worker.surname).toBe('Torres');
     expect(worker.cargo).toBe('Barista');
     expect(worker.estadoLaboral).toBe('Activo');
     expect(worker.departamentoId).toBe(department.id_departamento);
@@ -126,7 +128,8 @@ describe('Reorganización de navegación - módulo Trabajadores', () => {
     expect(qs('entity-form-card').hidden).toBe(false);
     expect(qs('entity-form-card').parentElement.id).toBe('entity-edit-form-slot');
     expect(qs('entity-id').value).toBe(worker.id);
-    expect(qs('name').value).toBe('Ana Torres');
+    expect(qs('name').value).toBe('Ana');
+    expect(qs('surname').value).toBe('Torres');
     expect(qs('code').value).toBe('W-001');
     expect(qs('cf-cargo').value).toBe('Barista');
     expect(qs('cf-fechaIngreso').value).toBe('2026-01-15');
@@ -136,6 +139,7 @@ describe('Reorganización de navegación - módulo Trabajadores', () => {
     expect(qs('cancel-edit').hidden).toBe(false);
 
     qs('name').value = 'Ana Actualizada';
+    qs('surname').value = 'Torres Actualizada';
     qs('cf-cargo').value = 'Supervisora';
     submit('entity-form');
 
@@ -143,6 +147,7 @@ describe('Reorganización de navegación - módulo Trabajadores', () => {
     expect(entities).toHaveLength(1);
     expect(entities[0].id).toBe(worker.id);
     expect(entities[0].name).toBe('Ana Actualizada');
+    expect(entities[0].surname).toBe('Torres Actualizada');
     expect(entities[0].cargo).toBe('Supervisora');
   });
 
@@ -151,10 +156,13 @@ describe('Reorganización de navegación - módulo Trabajadores', () => {
 
     selectWorkerForEdit(worker);
     qs('name').value = 'Cambio descartado';
+    qs('surname').value = 'Cambio descartado';
     qs('cancel-edit').click();
     expect(qs('name').value).toBe('');
+    expect(qs('surname').value).toBe('');
     expect(qs('edit-entity').value).toBe('');
-    expect(loadEntities()[0].name).toBe('Ana Torres');
+    expect(loadEntities()[0].name).toBe('Ana');
+    expect(loadEntities()[0].surname).toBe('Torres');
 
     selectWorkerForEdit(worker);
     globalThis.confirm.mockReturnValueOnce(false);
@@ -166,7 +174,7 @@ describe('Reorganización de navegación - módulo Trabajadores', () => {
     qs('delete-entity').click();
     expect(loadEntities()).toHaveLength(0);
 
-    const withHistory = createWorker({ name: 'Bruno', code: 'W-002', cargo: 'Cajero' });
+    const withHistory = createWorker({ name: 'Bruno', surname: 'Díaz', code: 'W-002', cargo: 'Cajero' });
     addDepartmentAssignment({
       entity_id: withHistory.entity_id,
       id_departamento: department.id_departamento,

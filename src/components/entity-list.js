@@ -1,4 +1,4 @@
-import { loadDocuments, loadDepartments } from '../storage.js';
+import { loadDocuments, loadDepartments, entityDisplayName } from '../storage.js';
 import { labelFor, getConfig, isRRHHMode } from '../module-config.js';
 import { createDocumentItem } from './document-list.js';
 
@@ -17,7 +17,7 @@ export function createEntityItem(entity){
     .join('');
   const meta = document.createElement('div');
   meta.className = 'entity-meta';
-  meta.innerHTML = `<strong>${escapeHtml(entity.name)}</strong><div>${escapeHtml(entity.code)}${entity.category ? ' • ' + escapeHtml(entity.category) : ''}</div>` +
+  meta.innerHTML = `<strong>${escapeHtml(entityDisplayName(entity))}</strong><div>${escapeHtml(entity.code)}${entity.category ? ' • ' + escapeHtml(entity.category) : ''}</div>` +
     `${department ? '<div class="muted">Área de trabajo actual: ' + escapeHtml(department.nombre) + '</div>' : ''}` +
     `${entity.targetDate ? '<div class="muted">Fecha objetivo: ' + escapeHtml(entity.targetDate) + '</div>' : ''}` +
     `${entity.description ? '<div class="muted">' + escapeHtml(entity.description) + '</div>' : ''}` +

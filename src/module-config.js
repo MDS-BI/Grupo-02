@@ -116,7 +116,7 @@ export const DEFAULT_CONFIG = Object.freeze({
 export const FIELD_TYPES = ['text', 'number', 'date', 'select'];
 
 export const BASE_FIELDS = Object.freeze({
-  entity: Object.freeze(['id', 'entity_id', 'name', 'code', 'taxId', 'email', 'phone', 'address', 'category', 'description', 'targetDate', 'creditLimit', 'paymentTerms', 'createdAt', 'updatedAt']),
+  entity: Object.freeze(['id', 'entity_id', 'name', 'surname', 'code', 'taxId', 'email', 'phone', 'address', 'category', 'description', 'targetDate', 'creditLimit', 'paymentTerms', 'createdAt', 'updatedAt']),
   document: Object.freeze(['id', 'entity_id', 'series', 'folio', 'startDate', 'endDate', 'quantity', 'subtotal', 'discount', 'taxAmount', 'totalAmount', 'currency', 'paymentTerms', 'notes', 'status', 'createdAt', 'updatedAt'])
 });
 

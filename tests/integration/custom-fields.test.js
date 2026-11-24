@@ -57,6 +57,7 @@ describe('User Story 7 - declare custom fields for records', () => {
     await bootWith();
     qs('nav-entities').click();
     qs('name').value = 'Acme';
+    qs('surname').value = 'Pérez';
     qs('code').value = 'AC-001';
     qs('entity-form').dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true }));
     expect(loadEntities().length).toBe(0);
@@ -67,6 +68,7 @@ describe('User Story 7 - declare custom fields for records', () => {
     await bootWith();
     qs('nav-entities').click();
     qs('name').value = 'Acme';
+    qs('surname').value = 'Pérez';
     qs('code').value = 'AC-001';
     qs('cf-ingresosAnuales').value = '5000';
     qs('cf-region').value = 'EMEA';
@@ -102,6 +104,7 @@ describe('User Story 7 - declare custom fields for records', () => {
     qs('nav-entities').click();
     expect(qs('entity-custom-fields').hidden).toBe(true);
     qs('name').value = 'Acme';
+    qs('surname').value = 'Pérez';
     qs('code').value = 'AC-001';
     qs('entity-form').dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true }));
     expect(loadEntities().length).toBe(1);
@@ -112,6 +115,7 @@ describe('User Story 7 - declare custom fields for records', () => {
     await bootWith();
     qs('nav-entities').click();
     qs('name').value = 'Acme';
+    qs('surname').value = 'Pérez';
     qs('code').value = 'AC-001';
     qs('cf-ingresosAnuales').value = '750';
     qs('entity-form').dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true }));

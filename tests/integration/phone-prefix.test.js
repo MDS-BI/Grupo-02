@@ -48,6 +48,7 @@ describe('Prefijo telefónico internacional', () => {
   it('guarda el número escrito junto al prefijo seleccionado', () => {
     qs('nav-entities').click();
     qs('name').value = 'Acme';
+    qs('surname').value = 'Pérez';
     qs('code').value = 'AC-001';
     qs('phonePrefix').value = 'AR';
     qs('phone').value = '11 1234 5678';
@@ -56,7 +57,7 @@ describe('Prefijo telefónico internacional', () => {
   });
 
   it('separa el prefijo del número al editar un trabajador guardado', () => {
-    addEntity({ name: 'Acme', code: 'AC-001', phone: '+54 11 1234 5678' });
+    addEntity({ name: 'Acme', surname: 'Pérez', code: 'AC-001', phone: '+54 11 1234 5678' });
     qs('nav-entities').click();
     const select = qs('edit-entity');
     select.value = select.options[1].value;
@@ -70,7 +71,7 @@ describe('Prefijo telefónico internacional', () => {
   });
 
   it('usa Chile como prefijo para números heredados sin prefijo', () => {
-    addEntity({ name: 'Acme', code: 'AC-001', phone: '555-1234' });
+    addEntity({ name: 'Acme', surname: 'Pérez', code: 'AC-001', phone: '555-1234' });
     qs('nav-entities').click();
     const select = qs('edit-entity');
     select.value = select.options[1].value;

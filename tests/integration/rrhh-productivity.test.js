@@ -97,7 +97,8 @@ describe('Incremento 002 - RR. HH. y productividad', () => {
   it('crea un trabajador con los campos de RR. HH.', () => {
     addDepartment({ nombre: 'Operaciones' });
     qs('nav-entities').click();
-    qs('name').value = 'Ana Torres';
+    qs('name').value = 'Ana';
+    qs('surname').value = 'Torres';
     qs('code').value = 'W-001';
     qs('cf-cargo').value = 'Analista';
     qs('cf-fechaIngreso').value = '2026-01-15';

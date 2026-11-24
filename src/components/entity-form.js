@@ -8,6 +8,11 @@ import {
 
 function qs(id){ return document.getElementById(id); }
 
+function splitLegacyName(fullName){
+  const parts = String(fullName || '').trim().split(/\s+/).filter(Boolean);
+  return { name: parts.shift() || '', surname: parts.join(' ') };
+}
+
 function populatePhonePrefixes(){
   const select = qs('phonePrefix');
   if(!select || select.options.length > 0) return;
@@ -38,6 +43,7 @@ function renderEntityCustomFields(values = {}){
 export function clearEntityForm(){
   qs('entity-id').value = '';
   qs('name').value = '';
+  qs('surname').value = '';
   qs('code').value = '';
   qs('taxId').value = '';
   qs('email').value = '';
@@ -56,14 +62,17 @@ export function clearEntityForm(){
 }
 
 export function clearEntityErrors(){
-  ['name', 'code', 'email', 'targetDate', 'creditLimit'].forEach(f => { qs(`error-${f}`).textContent = ''; });
+  ['name', 'surname', 'code', 'email', 'targetDate', 'creditLimit'].forEach(f => { qs(`error-${f}`).textContent = ''; });
   clearCustomFieldErrors(qs('entity-custom-fields'));
 }
 
 export function startEntityEdit(entity){
   renderEntityCustomFields(entity);
+  const legacy = entity.surname === undefined || entity.surname === null;
+  const names = legacy ? splitLegacyName(entity.name) : { name: entity.name, surname: entity.surname };
   qs('entity-id').value = entity.id;
-  qs('name').value = entity.name || '';
+  qs('name').value = names.name || '';
+  qs('surname').value = names.surname || '';
   qs('code').value = entity.code || '';
   qs('taxId').value = entity.taxId || '';
   qs('email').value = entity.email || '';
@@ -84,6 +93,7 @@ export function startEntityEdit(entity){
 export function collectEntityPayload(){
   return {
     name: qs('name').value,
+    surname: qs('surname').value,
     code: qs('code').value,
     taxId: qs('taxId').value,
     email: qs('email').value,
@@ -100,6 +110,7 @@ export function collectEntityPayload(){
 
 export function showEntityErrors(errors){
   qs('error-name').textContent = errors.name || '';
+  qs('error-surname').textContent = errors.surname || '';
   qs('error-code').textContent = errors.code || '';
   qs('error-email').textContent = errors.email || '';
   qs('error-targetDate').textContent = errors.targetDate || '';

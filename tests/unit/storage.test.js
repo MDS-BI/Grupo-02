@@ -20,7 +20,19 @@ describe('entity storage', () => {
     expect(validateEntity({name:'', code:''}).valid).toBe(false);
     expect(validateEntity({name:'Acme', code:''}).valid).toBe(false);
     expect(validateEntity({name:'A', code:'B'}).valid).toBe(true);
+    expect(validateEntity({name:'Ana', surname:'', code:'W-001'}).valid).toBe(false);
+    expect(validateEntity({name:'Ana', surname:'', code:'W-001'}).errors.surname).toContain('obligatorio');
+    expect(validateEntity({name:'Ana', surname:'Torres', code:'W-001'}).valid).toBe(true);
     expect(validateEntity({name:'', code:''}).errors.name).toContain('obligatorio');
+  });
+
+  it('stores nombre and apellidos separately', () => {
+    const e = addEntity({name:'Ana', surname:'Torres', code:'W-001'});
+    expect(e.name).toBe('Ana');
+    expect(e.surname).toBe('Torres');
+    const updated = updateEntity(e.id, { surname: 'Ruiz' });
+    expect(updated.name).toBe('Ana');
+    expect(updated.surname).toBe('Ruiz');
   });
 
   it('adds and loads entities', () => {

@@ -62,6 +62,7 @@ describe('User Story 4 - manage entities and documents via the workspace sidebar
   it('creates, edits, and deletes an entity from the entities view', () => {
     qs('nav-entities').click();
     qs('name').value = 'Acme';
+    qs('surname').value = 'Pérez';
     qs('code').value = 'AC-001';
     qs('entity-form').dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true }));
     expect(loadEntities().length).toBe(1);
@@ -71,8 +72,10 @@ describe('User Story 4 - manage entities and documents via the workspace sidebar
     editSelect.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
     expect(qs('submit-button').textContent).toBe('Actualizar');
     qs('name').value = 'Acme Updated';
+    qs('surname').value = 'Pérez Actualizado';
     qs('entity-form').dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true }));
     expect(loadEntities()[0].name).toBe('Acme Updated');
+    expect(loadEntities()[0].surname).toBe('Pérez Actualizado');
 
     qs('delete-entity').click();
     expect(loadEntities().length).toBe(0);

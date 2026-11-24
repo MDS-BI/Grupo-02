@@ -1,6 +1,7 @@
 import { getConfig, labelFor, isRRHHMode } from '../module-config.js';
 import {
   loadEntities,
+  entityDisplayName,
   loadDocuments,
   loadDepartments,
   loadDepartmentHistory,
@@ -147,7 +148,7 @@ function recentRecords(documents, entities, limit = 5){
         item.entity_id === document_.entity_id || item.id === document_.entity_id
       );
       return {
-        worker: entity ? entity.name : 'Personal no identificado',
+        worker: entity ? entityDisplayName(entity) : 'Personal no identificado',
         indicator: document_.indicador || '',
         result: document_.resultado,
         unit: document_.unidad || '',

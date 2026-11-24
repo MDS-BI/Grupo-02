@@ -1,6 +1,6 @@
 import { loadModuleConfig, normalizeConfig, setActiveConfig, getConfig, labelFor, isRRHHMode, indicadoresParaCargo } from './module-config.js';
 import {
-  loadEntities, addEntity, updateEntity, deleteEntity, validateEntity, searchEntities, canDeleteEntity,
+  loadEntities, entityDisplayName, addEntity, updateEntity, deleteEntity, validateEntity, searchEntities, canDeleteEntity,
   loadDocuments, addDocument, updateDocument, deleteDocument, validateDocument, findDuplicateProductivity,
   getDocumentPeriod, getProductivityHistory, getComparableMeasurements, getIndicatorsForEntity, getUnitsForEntity,
   loadDepartments, addDepartment, updateDepartment, deleteDepartment, validateDepartment,
@@ -169,14 +169,14 @@ function populateDocumentEntitySelect(){
   const select = qs('document-entity');
   const prev = select.value;
   const entities = loadEntities();
-  setOptions(select, entities.map(e => ({ value: e.entity_id, label: e.name })), prev, isRRHHMode() ? '-- Selecciona personal --' : undefined);
+  setOptions(select, entities.map(e => ({ value: e.entity_id, label: entityDisplayName(e) })), prev, isRRHHMode() ? '-- Selecciona personal --' : undefined);
 }
 
 function populateEditEntitySelect(){
   const select = qs('edit-entity');
   const prev = select.value;
   const entities = loadEntities();
-  setOptions(select, entities.map(e => ({ value: e.id, label: `${e.name} — ${e.code}` })), prev, `-- Selecciona ${articulo(labelFor('entity'))} ${labelFor('entity').toLowerCase()} --`);
+  setOptions(select, entities.map(e => ({ value: e.id, label: `${entityDisplayName(e)} — ${e.code}` })), prev, `-- Selecciona ${articulo(labelFor('entity'))} ${labelFor('entity').toLowerCase()} --`);
 }
 
 function populateEditDocumentSelect(){
@@ -186,8 +186,8 @@ function populateEditDocumentSelect(){
   const options = loadDocuments().map(d => {
     const entity = entities.find(e => e.entity_id === d.entity_id);
     const label = isRRHHMode()
-      ? `${entity ? entity.name : 'Personal no identificado'} · ${getDocumentPeriod(d) || ''} · ${d.indicador || ''}`
-      : `${entity ? entity.name : 'Personal no identificado'} · ${folioLabel(d)} · ${d.startDate} → ${d.endDate}`;
+      ? `${entity ? entityDisplayName(entity) : 'Personal no identificado'} · ${getDocumentPeriod(d) || ''} · ${d.indicador || ''}`
+      : `${entity ? entityDisplayName(entity) : 'Personal no identificado'} · ${folioLabel(d)} · ${d.startDate} → ${d.endDate}`;
     return { value: d.id, label };
   });
   setOptions(select, options, prev, `-- Selecciona ${articulo(labelFor('document'))} ${labelFor('document').toLowerCase()} --`);
@@ -208,7 +208,7 @@ function assignmentEndLabel(assignment){
 function assignmentLabel(assignment){
   const department = loadDepartments().find(d => d.id_departamento === assignment.id_departamento);
   const entity = loadEntities().find(e => e.entity_id === assignment.entity_id);
-  return `${entity ? entity.name : 'Personal'} · ${department ? department.nombre : 'Área de trabajo'} · ${assignment.fecha_inicio} → ${assignmentEndLabel(assignment)}`;
+  return `${entity ? entityDisplayName(entity) : 'Personal'} · ${department ? department.nombre : 'Área de trabajo'} · ${assignment.fecha_inicio} → ${assignmentEndLabel(assignment)}`;
 }
 
 function populateEditAssignmentSelect(){
@@ -224,9 +224,9 @@ function populateAssignmentSelects(){
   const departmentPrev = qs('assignment-department')?.value;
   const filterPrev = qs('assignment-entity-filter')?.value;
 
-  setOptions(qs('assignment-entity'), entities.map(e => ({ value: e.entity_id, label: e.name })), entityPrev, '-- Selecciona personal --');
+  setOptions(qs('assignment-entity'), entities.map(e => ({ value: e.entity_id, label: entityDisplayName(e) })), entityPrev, '-- Selecciona personal --');
   setOptions(qs('assignment-department'), departments.map(d => ({ value: d.id_departamento, label: d.nombre })), departmentPrev, '-- Selecciona un área de trabajo --');
-  setOptions(qs('assignment-entity-filter'), entities.map(e => ({ value: e.entity_id, label: e.name })), filterPrev, 'Todo el personal');
+  setOptions(qs('assignment-entity-filter'), entities.map(e => ({ value: e.entity_id, label: entityDisplayName(e) })), filterPrev, 'Todo el personal');
   populateEditAssignmentSelect();
 }
 
@@ -630,7 +630,7 @@ function handleDeleteSelectedAssignment(){
 function populateHistoryEntitySelect(){
   const select = qs('history-entity');
   const prev = select?.value;
-  setOptions(select, loadEntities().map(e => ({ value: e.entity_id, label: e.name })), prev, '-- Selecciona personal --');
+  setOptions(select, loadEntities().map(e => ({ value: e.entity_id, label: entityDisplayName(e) })), prev, '-- Selecciona personal --');
 }
 
 function renderHistory(){
@@ -646,7 +646,7 @@ function renderHistory(){
 function populateEvolutionEntitySelect(){
   const select = qs('evolution-entity');
   const prev = select?.value;
-  setOptions(select, loadEntities().map(e => ({ value: e.entity_id, label: e.name })), prev, '-- Selecciona personal --');
+  setOptions(select, loadEntities().map(e => ({ value: e.entity_id, label: entityDisplayName(e) })), prev, '-- Selecciona personal --');
 }
 
 function populateEvolutionFilters(){
