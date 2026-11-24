@@ -47,6 +47,7 @@ const VIEWS = {
 };
 
 let wired = false;
+let entitySubTab = 'add';
 
 function setOptions(select, options, previousValue, placeholder){
   if(!select) return;
@@ -68,14 +69,62 @@ function setOptions(select, options, previousValue, placeholder){
   }
 }
 
+function setSidebarSubNav(visible){
+  const subNav = qs('entities-sub-nav');
+  if(subNav) subNav.hidden = !visible;
+}
+
+function setEntityEditFormVisible(visible){
+  const card = qs('entity-form-card');
+  if(card) card.hidden = !visible;
+}
+
+function setEntitySubTab(tab, options = {}){
+  const target = tab === 'edit' ? 'edit' : 'add';
+  const isAdd = target === 'add';
+  entitySubTab = target;
+
+  [
+    ['nav-entities-add', 'entity-panel-add', isAdd],
+    ['nav-entities-edit', 'entity-panel-edit', !isAdd]
+  ].forEach(([buttonId, panelId, active]) => {
+    const button = qs(buttonId);
+    const panel = qs(panelId);
+    if(button){
+      button.classList.toggle('active', active);
+      if(active) button.setAttribute('aria-current', 'true');
+      else button.removeAttribute('aria-current');
+    }
+    if(panel) panel.hidden = !active;
+  });
+
+  const formCard = qs('entity-form-card');
+  const addPanel = qs('entity-panel-add');
+  const editSlot = qs('entity-edit-form-slot');
+  if(isAdd){
+    if(formCard && addPanel && formCard.parentElement !== addPanel) addPanel.appendChild(formCard);
+    setEntityEditFormVisible(true);
+    if(options.reset || qs('entity-id').value){
+      clearEntityForm();
+      const select = qs('edit-entity');
+      if(select) select.value = '';
+    }
+  } else {
+    if(formCard && editSlot && formCard.parentElement !== editSlot) editSlot.appendChild(formCard);
+    setEntityEditFormVisible(Boolean(qs('edit-entity').value));
+  }
+}
+
 function showModule(name, opts = {}){
   if(!MODULES.includes(name)) name = 'dashboard';
   MODULES.forEach(m => { qs(VIEWS[m]).hidden = m !== name; });
   setActiveModule(name);
+  setSidebarSubNav(name === 'entities');
   if(name === 'dashboard'){
     renderDashboard();
   }
   if(name === 'entities'){
+    setEntitySubTab(opts.entityTab || 'add');
     populateDocumentEntitySelect();
     populateEditEntitySelect();
     if(opts.newRecord || !qs('entity-id').value) clearEntityForm();
@@ -215,10 +264,26 @@ function refreshSearch(){
 }
 
 function onEditEntityChange(){
+  setEntitySubTab('edit');
   const id = qs('edit-entity').value;
-  if(!id){ clearEntityForm(); return; }
+  if(!id){
+    clearEntityForm();
+    setEntityEditFormVisible(false);
+    return;
+  }
   const entity = loadEntities().find(e => e.id === id);
-  if(entity) startEntityEdit(entity);
+  if(entity){
+    startEntityEdit(entity);
+    setEntityEditFormVisible(true);
+    qs('error-edit-entity').textContent = '';
+  }
+}
+
+function handleCancelEntityEdit(){
+  clearEntityForm();
+  qs('edit-entity').value = '';
+  setEntityEditFormVisible(false);
+  qs('error-edit-entity').textContent = '';
 }
 
 function syncEntityCurrentDepartment(entityId){
@@ -249,7 +314,9 @@ function handleDeleteSelectedEntity(){
   try{
     deleteEntity(id);
     qs('error-edit-entity').textContent = '';
+    qs('edit-entity').value = '';
     clearEntityForm();
+    setEntityEditFormVisible(false);
     afterSaveRefresh();
   }catch(e){
     qs('error-edit-entity').textContent = e.message;
@@ -263,6 +330,7 @@ function handleDeactivateSelectedEntity(){
     updateEntity(id, { estadoLaboral: 'Inactivo' });
     qs('error-edit-entity').textContent = '';
     startEntityEdit(loadEntities().find(e => e.id === id));
+    setEntityEditFormVisible(true);
     afterSaveRefresh();
   }catch(e){
     qs('error-edit-entity').textContent = e.message;
@@ -317,7 +385,14 @@ function handleEntitySubmit(ev){
     }else{
       addEntity(payload);
     }
-    clearEntityForm();
+    if(id){
+      const saved = loadEntities().find(entity => entity.id === id);
+      if(saved) startEntityEdit(saved);
+      else clearEntityForm();
+      setEntityEditFormVisible(true);
+    }else{
+      clearEntityForm();
+    }
     afterSaveRefresh();
   }catch(e){
     showStorageFailure(e);
@@ -631,8 +706,13 @@ function applyLabels(config){
 
   qs('entities-view-heading').textContent = entities;
   qs('documents-view-heading').textContent = documents;
-  qs('entity-form-heading').textContent = `Agregar / Editar ${entity}`;
+  qs('entity-form-heading').textContent = rrhh
+    ? `Agregar ${entity.toLowerCase()}`
+    : `Agregar / Editar ${entity}`;
+  qs('nav-entities-add-label').textContent = 'Agregar';
+  qs('nav-entities-edit-label').textContent = `Editar o eliminar ${entity.toLowerCase()}`;
   qs('edit-entity-heading').textContent = `Editar o eliminar ${articulo(entity)} ${entity.toLowerCase()}`;
+  qs('edit-entity-label').textContent = `Selecciona ${articulo(entity)} ${entity.toLowerCase()}`;
   qs('document-form-heading').textContent = `Agregar / Editar ${document_}`;
   qs('edit-document-heading').textContent = `Editar o eliminar ${articulo(document_)} ${document_.toLowerCase()}`;
   qs('search-view-heading').textContent = `Buscar ${entities}`;
@@ -716,12 +796,15 @@ function wireEvents(){
   document.querySelectorAll('.nav-module').forEach(btn => {
     btn.addEventListener('click', () => showModule(btn.dataset.module));
   });
+  document.querySelectorAll('.nav-sub').forEach(btn => {
+    btn.addEventListener('click', () => showModule('entities', { entityTab: btn.dataset.entityTab }));
+  });
   qs('action-new-entity').addEventListener('click', () => showModule('entities', { newRecord: true, focusForm: true }));
   qs('action-new-document').addEventListener('click', () => showModule('documents', { newRecord: true, focusForm: true }));
   qs('action-open-entities').addEventListener('click', () => showModule('entities'));
   qs('action-find').addEventListener('click', () => showModule('search', { focusSearch: true }));
   qs('entity-form').addEventListener('submit', handleEntitySubmit);
-  qs('cancel-edit').addEventListener('click', clearEntityForm);
+  qs('cancel-edit').addEventListener('click', handleCancelEntityEdit);
   qs('document-form').addEventListener('submit', handleDocumentSubmit);
   qs('document-cancel-edit').addEventListener('click', clearDocumentForm);
   setupSearchBar(qs('search-input'), () => refreshSearch());

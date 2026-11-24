@@ -169,6 +169,45 @@ textarea:focus-visible {
   box-shadow: 0 6px 16px color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
+.sub-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 2px 0 4px 10px;
+  padding-left: 10px;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.sub-nav[hidden],
+.entity-panel[hidden],
+.entity-form-card[hidden] { display: none; }
+
+.nav-sub {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.nav-sub svg { flex-shrink: 0; }
+.nav-sub:hover { background: rgba(255, 255, 255, 0.07); color: #ffffff; }
+
+.nav-sub.active {
+  background: rgba(255, 255, 255, 0.13);
+  color: #ffffff;
+  font-weight: 600;
+}
+
 .content {
   padding: 30px 34px 48px;
   overflow-x: hidden;
@@ -729,6 +768,9 @@ tbody tr:last-child td { border-bottom: none; }
   .content { padding: 22px 18px 36px; }
   .nav-module { justify-content: center; padding: 11px 8px; }
   .nav-module .nav-label { display: none; }
+  .sub-nav { margin-left: 0; padding-left: 0; border-left: none; }
+  .nav-sub { justify-content: center; padding: 9px 8px; }
+  .nav-sub .nav-label { display: none; }
   .dashboard-header { align-items: flex-start; }
 }
 
