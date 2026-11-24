@@ -675,14 +675,14 @@ form > div { margin-bottom: 12px; }
 }
 
 .phone-field select {
-  width: calc(35% - 4px);
-  flex: 0 0 calc(35% - 4px);
+  width: 25%;
+  flex: 0 0 25%;
   min-width: 0;
 }
 
 .phone-field input {
-  width: calc(65% - 4px);
-  flex: 0 0 calc(65% - 4px);
+  width: calc(75% - 8px);
+  flex: 0 0 calc(75% - 8px);
   min-width: 0;
 }
 
