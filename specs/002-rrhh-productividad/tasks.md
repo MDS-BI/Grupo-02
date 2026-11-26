@@ -4,7 +4,7 @@
 **Entrada:** `spec.md`, `plan.md` y `data-model.md` de `specs/002-rrhh-productividad/`  
 **Prerrequisitos:** Documentación de 002 y recuperación/verificación del módulo base (E0)  
 **Rama de trabajo:** `correccion-specs-002`  
-**Estado:** Las seis historias corresponden a funcionalidades existentes. Suite automatizada aprobada (14 archivos, 165 pruebas), T076 verificada en Edge aislado y T072, T083 y T084 completadas; el grupo confirmó la distribución de responsables. Sigue pendiente la revisión final del grupo.
+**Estado:** Las seis historias corresponden a funcionalidades existentes. Suite automatizada aprobada, T076 verificada en Edge aislado y T072, T083 y T084 completadas; el grupo confirmó la distribución de responsables. La revisión final del grupo fue aprobada el 25-11-2026.
 
 **Separación de trabajo:** T001–T009 (E0) recuperan y verifican el módulo base del incremento 001; no son funcionalidades nuevas de 002. T010–T070 cubren infraestructura y HU1–HU4. HU5 y HU6 se relacionan con tareas y pruebas ya existentes en las fases 2, 4, 7 y 8. T071–T086 registran las verificaciones, documentación y cierre.
 
@@ -442,11 +442,11 @@ El incremento 002 se considera finalizado cuando:
 - [x] Se aprobó el texto de la advertencia y se verificó su presentación (T072).
 - [x] T083 se completó y aprobó conforme a los criterios establecidos.
 - [x] Se confirmó la distribución de responsables para las seis historias (T084).
-- [ ] El grupo revisó los cambios antes de integrarlos.
+- [x] El grupo revisó los cambios antes de integrarlos. Revisión final aprobada el 25-11-2026.
 
 ---
 
-**Nota final:** La implementación técnica, la suite automatizada, T072, T076 (500 registros en Edge aislado), T083, T084 y la compilación están completadas. HU5 y HU6 corresponden a funcionalidades vinculadas con tareas y pruebas existentes. Sigue pendiente la revisión final del grupo. T085, T086, T087–T095 y T096–T100 están completadas. No se realizaron commits ni push automáticos.
+**Nota final:** La implementación técnica, la suite automatizada, T072, T076 (500 registros en Edge aislado), T083, T084 y la compilación están completadas. HU5 y HU6 corresponden a funcionalidades vinculadas con tareas y pruebas existentes. La revisión final del grupo fue aprobada el 25-11-2026. T085, T086, T087–T095 y T096–T100 están completadas.
 
 ---
 
