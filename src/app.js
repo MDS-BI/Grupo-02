@@ -739,6 +739,7 @@ function applyLabels(config){
 
   document.querySelectorAll('[data-base-entity]').forEach(el => { el.hidden = rrhh; });
   document.querySelectorAll('[data-base-document]').forEach(el => { el.hidden = rrhh; });
+  document.querySelectorAll('[data-rrhh-only]').forEach(el => { el.hidden = !rrhh; });
 
   if(rrhh){
     const inspection = inspectDocumentsForRRHH();
