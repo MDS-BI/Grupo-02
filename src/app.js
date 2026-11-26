@@ -162,7 +162,13 @@ function showModule(name, opts = {}){
     if(opts.focusSearch) qs('search-input').focus();
   }
   showPendingStorageError();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  const announcer = qs('route-announcer');
+  if(announcer){
+    const activeNav = document.querySelector(`.nav-module[data-module="${name}"]`);
+    announcer.textContent = `Vista: ${activeNav ? activeNav.textContent.trim() : name}`;
+  }
+  const reduceMotion = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
 }
 
 function populateDocumentEntitySelect(){

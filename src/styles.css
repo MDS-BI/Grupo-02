@@ -57,6 +57,17 @@ h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 
 p { margin: 0 0 12px; }
 
 .muted { color: var(--muted); font-size: 0.9em; }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 .empty {
   color: var(--muted);
   padding: 14px 16px;
@@ -286,6 +297,19 @@ textarea:focus-visible {
 }
 
 .view[hidden] { display: none; }
+.view:not([hidden]) { animation: view-in 220ms ease both; }
+@keyframes view-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 
 /* ==========================================================================
    Dashboard: header, KPIs, panels, quick actions

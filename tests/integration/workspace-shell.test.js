@@ -142,6 +142,17 @@ describe('User Story 13 - branded ERP workspace shell', () => {
     expect(qs('view-dashboard').hidden).toBe(false);
   });
 
+  it('announces the visible section after navigating', async () => {
+    await bootWith(undefined);
+    expect(qs('route-announcer').textContent).toBe('Vista: Panel');
+
+    qs('nav-entities').click();
+    expect(qs('route-announcer').textContent).toBe('Vista: Personal');
+
+    qs('nav-documents').click();
+    expect(qs('route-announcer').textContent).toBe('Vista: Evaluaciones');
+  });
+
   it('preserves all stored data while navigating between modules', async () => {
     await bootWith(undefined);
     const entity = addEntity({ name: 'Acme', code: 'AC-001' });

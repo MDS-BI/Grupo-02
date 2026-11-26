@@ -63,6 +63,8 @@ npm run dev
 
 Abre `http://localhost:5173`. Para el flujo principal, crea un departamento y un trabajador, registra su asignación, ingresa una medición mensual y consulta las vistas **Historial** y **Evolución**. Para probar rápidamente el MVP, usa **Cargar datos de demostración** en el panel: reemplaza el almacenamiento local con seis trabajadores ficticios, cinco áreas de trabajo, seis asignaciones y mediciones en dos períodos consecutivos.
 
+La navegación anuncia el cambio de vista a lectores de pantalla, muestra transiciones suaves entre secciones y respeta `prefers-reduced-motion`.
+
 No hay credenciales de acceso: el MVP no implementa inicio de sesión, usuarios, contraseñas ni control de acceso. Basta con abrir la URL local; no hay que buscar ni pedir un login.
 
 Compilar para producción:
