@@ -6,7 +6,7 @@ import {
   loadDepartments, addDepartment, updateDepartment, deleteDepartment, validateDepartment,
   loadDepartmentHistory, addDepartmentAssignment, updateDepartmentAssignment, deleteDepartmentAssignment,
   validateDepartmentAssignment, changeDepartment, getAssignmentsForEntity, getAssignmentsOverlapping,
-  getCurrentAssignment, monthBounds, saveEntities,
+  getCurrentAssignment, monthBounds, saveEntities, loadDemoData,
   getStorageError, clearStorageError, inspectDocumentsForRRHH
 } from './storage.js';
 import { clearEntityForm, startEntityEdit, collectEntityPayload, showEntityErrors, refreshEntityCustomFields, nextEmployeeCode, rememberEmployeeCode } from './components/entity-form.js';
@@ -739,6 +739,7 @@ function applyLabels(config){
   qs('document-entity-label').textContent = `${entity} *`;
 
   qs('data-warning').hidden = !rrhh;
+  qs('action-load-demo').hidden = !rrhh;
   qs('deactivate-entity').hidden = !rrhh;
   document.querySelectorAll('.rrhh-nav').forEach(el => {
     el.hidden = !rrhh;
@@ -805,6 +806,19 @@ function showStorageFailure(error){
   if(typeof alert === 'function') alert(message);
 }
 
+function handleLoadDemoData(){
+  try{
+    loadDemoData();
+    clearEntityForm();
+    clearDocumentForm();
+    clearDepartmentForm();
+    clearAssignmentForm();
+    showModule('dashboard');
+  }catch(error){
+    showStorageFailure(error);
+  }
+}
+
 function wireEvents(){
   if(wired) return;
   wired = true;
@@ -818,6 +832,7 @@ function wireEvents(){
   qs('action-new-document').addEventListener('click', () => showModule('documents', { newRecord: true, focusForm: true }));
   qs('action-open-entities').addEventListener('click', () => showModule('entities'));
   qs('action-find').addEventListener('click', () => showModule('search', { focusSearch: true }));
+  qs('action-load-demo').addEventListener('click', handleLoadDemoData);
   qs('entity-form').addEventListener('submit', handleEntitySubmit);
   qs('cancel-edit').addEventListener('click', handleCancelEntityEdit);
   qs('document-form').addEventListener('submit', handleDocumentSubmit);

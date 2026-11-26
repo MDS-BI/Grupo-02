@@ -1,4 +1,4 @@
-import { getConfig, isRRHHMode, labelFor } from './module-config.js';
+import { getConfig, isRRHHMode, labelFor, indicadoresParaCargo } from './module-config.js';
 
 export const ENTITIES_KEY = 'erp_base_module:entities';
 export const DOCUMENTS_KEY = 'erp_base_module:documents';
@@ -101,6 +101,13 @@ export function periodFromDates(startDate){
 export function currentPeriod(){
   const now = new Date();
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}`;
+}
+
+function shiftPeriod(period, monthsAgo){
+  const match = /^(\d{4})-(\d{2})$/.exec(String(period || ''));
+  if(!match) return null;
+  const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1 - monthsAgo, 1));
+  return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}`;
 }
 
 function dayBefore(date){
@@ -1089,9 +1096,80 @@ export function getUnitsForEntity(entityId, indicador){
     .sort((a, b) => a.localeCompare(b, 'es'));
 }
 
+export function loadDemoData(){
+  if(!isRRHHMode()){
+    throw new Error('Los datos de demostración solo están disponibles en el módulo de RR. HH.');
+  }
+
+  clearAll();
+
+  const periods = [shiftPeriod(currentPeriod(), 2), shiftPeriod(currentPeriod(), 1)];
+  const firstPeriodBounds = monthBounds(periods[0]);
+  const workers = [
+    { name: 'Camila', surname: 'Rojas', taxId: '12.345.671-9', cargo: 'Barista', area: 'Barra', description: 'Preparación y control de calidad del café.' },
+    { name: 'Ignacio', surname: 'Fuentes', taxId: '13.456.782-0', cargo: 'Cajero', area: 'Caja', description: 'Atención en caja y cierre de operaciones.' },
+    { name: 'Valentina', surname: 'Soto', taxId: '14.567.893-1', cargo: 'Mesero', area: 'Salón', description: 'Atención a mesas y experiencia del cliente.' },
+    { name: 'Matías', surname: 'Herrera', taxId: '15.678.904-2', cargo: 'Cocinero', area: 'Cocina', description: 'Preparación de platos y control de inventario.' },
+    { name: 'Javiera', surname: 'Muñoz', taxId: '16.789.015-3', cargo: 'Encargado', area: 'Supervisión', description: 'Supervisión de turnos y cierre del local.' },
+    { name: 'Rodrigo', surname: 'Silva', taxId: '17.890.126-4', cargo: 'Barista', area: 'Barra', description: 'Apoyo en barra y preparación de bebidas.' }
+  ];
+
+  const departmentsByArea = new Map();
+  for(const worker of workers){
+    if(departmentsByArea.has(worker.area)) continue;
+    const department = addDepartment({ nombre: worker.area, descripcion: worker.description });
+    departmentsByArea.set(worker.area, department);
+  }
+
+  workers.forEach((worker, index) => {
+    const department = departmentsByArea.get(worker.area);
+    const entity = addEntity({
+      name: worker.name,
+      surname: worker.surname,
+      code: `EMP-${String(index + 1).padStart(3, '0')}`,
+      taxId: worker.taxId,
+      cargo: worker.cargo,
+      fechaIngreso: firstPeriodBounds.startDate,
+      estadoLaboral: 'Activo',
+      departamentoId: department.id_departamento
+    });
+    const assignment = addDepartmentAssignment({
+      entity_id: entity.entity_id,
+      id_departamento: department.id_departamento,
+      fecha_inicio: firstPeriodBounds.startDate
+    });
+    const indicators = indicadoresParaCargo(worker.cargo);
+
+    periods.forEach((period, periodIndex) => {
+      const indicator = indicators[(index + periodIndex) % indicators.length];
+      const meta = 80 + index * 5 + periodIndex * 4;
+      const resultado = Math.round(meta * (0.82 + ((index + periodIndex) % 4) * 0.04));
+      addDocument({
+        entityId: entity.entity_id,
+        period,
+        indicador: indicator.value,
+        unidad: indicator.unidad,
+        asignacionId: assignment.id_historial,
+        turno: periodIndex === 0 ? 'Mañana' : 'Tarde',
+        meta,
+        resultado,
+        evaluacionCalidad: 3 + ((index + periodIndex) % 3),
+        evaluacionResponsabilidad: 4,
+        evaluacionCumplimiento: 3 + ((index + periodIndex) % 3),
+        evaluacionColaboracion: 4,
+        observaciones: `Desempeño de ${worker.name} en ${period}.`,
+        oportunidadesMejora: periodIndex === 0 ? 'Reforzar chequeos de fin de turno.' : 'Mantener el nivel y documentar incidencias.'
+      });
+    });
+  });
+
+  return calcularMetasConsolidadas();
+}
+
 export function clearAll(){
   saveEntities([]);
   saveDocuments([]);
   saveDepartments([]);
   saveDepartmentHistory([]);
+  saveMetasConsolidadas([]);
 }

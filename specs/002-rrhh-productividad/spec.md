@@ -125,6 +125,8 @@ No se modifica el MER ni se agregan nuevas entidades al modelo de referencia.
 
 Los nombres de campos se verificaron durante la planificación técnica contra las estructuras reales del módulo base. Los campos adicionales se implementaron mediante los mecanismos de extensión previstos en dicho módulo.
 
+El panel de RR. HH. incluye la acción **Cargar datos de demostración**, que reemplaza las colecciones locales por seis trabajadores ficticios con códigos `EMP-001` a `EMP-006`, cinco áreas de trabajo, una asignación vigente por trabajador y una medición por trabajador en dos períodos consecutivos. Los nombres son ficticios y distintos de `Ana Perez`; la acción recalcula `erp_base_module:metas_consolidadas` al terminar.
+
 ### 5.3. Reglas de correspondencia
 
 - El trabajador se representa mediante la entidad Trabajador, vinculada a `Entity`.

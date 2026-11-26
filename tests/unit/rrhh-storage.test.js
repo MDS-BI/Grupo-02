@@ -6,7 +6,7 @@ import {
   getCurrentAssignment, getAssignmentsForEntity, addDocument, updateDocument,
   loadDocuments, saveDocuments, validateDocument, findDuplicateProductivity,
   getProductivityHistory, getComparableMeasurements, inspectDocumentsForRRHH,
-  calcularMetasConsolidadas, loadMetasConsolidadas, saveMetasConsolidadas,
+  calcularMetasConsolidadas, loadMetasConsolidadas, saveMetasConsolidadas, loadDemoData,
   getDepartmentForAssignment, deleteDocument
 } from '../../src/storage.js';
 import { setActiveConfig, RRHH_CONFIG } from '../../src/module-config.js';
@@ -756,5 +756,29 @@ describe('metas consolidadas por departamento y período', () => {
     expect(metas.length).toBe(1);
     expect(metas[0].metaConsolidada).toBe(100);
     expect(metas[0].resultadoConsolidado).toBe(0);
+  });
+});
+
+describe('datos de demostración', () => {
+  it('carga personal variado, dos períodos y metas consolidadas', () => {
+    const consolidado = loadDemoData();
+    const entities = loadEntities();
+    const documents = loadDocuments();
+    const periods = [...new Set(documents.map(d => d.startDate.slice(0, 7)))].sort();
+    const areas = [...new Set(loadDepartments().map(d => d.nombre))];
+    const nombres = entities.map(e => `${e.name} ${e.surname}`);
+
+    expect(entities).toHaveLength(6);
+    expect(entities.map(e => e.code)).toEqual(['EMP-001', 'EMP-002', 'EMP-003', 'EMP-004', 'EMP-005', 'EMP-006']);
+    expect(loadDepartmentHistory()).toHaveLength(6);
+    expect(documents).toHaveLength(12);
+    expect(periods).toHaveLength(2);
+    expect(areas).toHaveLength(5);
+    expect(nombres).not.toContain('Ana Perez');
+    expect(new Set(entities.map(e => e.cargo)).size).toBeGreaterThanOrEqual(4);
+    expect(new Set(documents.map(d => d.indicador)).size).toBeGreaterThanOrEqual(6);
+    expect(new Set(documents.map(d => d.asignacionId)).size).toBe(6);
+    expect(consolidado.length).toBeGreaterThanOrEqual(areas.length);
+    expect(loadMetasConsolidadas().length).toBe(consolidado.length);
   });
 });

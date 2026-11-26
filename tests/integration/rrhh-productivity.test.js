@@ -86,6 +86,20 @@ describe('Incremento 002 - RR. HH. y productividad', () => {
     expect(qs('paymentTerms').closest('[data-base-entity]').hidden).toBe(true);
   });
 
+  it('carga datos de demostración desde una acción del panel', () => {
+    expect(qs('action-load-demo').hidden).toBe(false);
+    qs('action-load-demo').click();
+
+    expect(loadEntities()).toHaveLength(6);
+    expect(loadDocuments()).toHaveLength(12);
+    expect(qs('stat-entities').textContent).toBe('6');
+    expect(qs('stat-documents').textContent).toBe('12');
+    expect(qs('view-dashboard').hidden).toBe(false);
+
+    qs('nav-entities').click();
+    expect(qs('code').value).toBe('EMP-007');
+  });
+
   it('crea departamentos desde la vista de departamentos', () => {
     qs('nav-departments').click();
     qs('department-nombre').value = 'Finanzas';
