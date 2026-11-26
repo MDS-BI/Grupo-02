@@ -17,7 +17,8 @@ La documentación de planilla, remuneraciones y liquidaciones se conserva como r
 - **Historial:** consulta cronológica por trabajador con el departamento histórico de cada medición.
 - **Evolución:** comparación exclusiva de mediciones con el mismo indicador y la misma unidad.
 - **Protecciones:** no se eliminan trabajadores con historial ni asignaciones con mediciones vinculadas; los trabajadores pueden marcarse como `Inactivo`.
-- **Datos ficticios:** la aplicación no implementa autenticación, roles ni control de acceso. No debe utilizarse con datos reales de trabajadores.
+- **Roles activos:** selector demostrativo con tres perfiles —Administrador / Gerente de Cafetería, Jefe de Turno / Supervisor y Barista / Trabajador (Solo lectura)— que ajusta vistas, botones, acciones y datos visibles. No hay autenticación con credenciales ni verificación de identidad real.
+- **Datos ficticios:** no debe utilizarse con datos reales de trabajadores.
 
 El MER original de nueve entidades se conserva sin modificaciones. El incremento 002 reutiliza `Entity` para trabajadores y `Document` para productividad, e implementa `Departamento` e `Historial_Departamento`.
 
@@ -31,6 +32,7 @@ La aplicación guarda los registros en el `localStorage` del navegador:
 - `erp_base_module:documents`: registros de productividad.
 - `erp_base_module:departamentos`: departamentos.
 - `erp_base_module:historial_departamentos`: asignaciones históricas.
+- `erp_base_module:rol_activo`: estado demostrativo del rol activo y su contexto; no es una entidad laboral.
 
 Los datos permanecen disponibles al navegar o volver a abrir la aplicación en el mismo navegador. El almacenamiento es local a ese navegador y dispositivo: no hay sincronización, servidor, autenticación ni copias de seguridad automáticas. Si se borran los datos del sitio, se pueden perder los registros.
 
@@ -43,11 +45,11 @@ Antes de guardar productividad, la aplicación inspecciona la colección de docu
 - Curso: Modelación de Sistemas (580211-1)
 - Grupo: Grupo-02
 - Integrantes:
-  - Daphnne Hidalgo
+  - Daphnne Hidalgo Mundaca
   - Consuelo Estefania Hidalgo Salgado
   - Bastián Ignacio Reinado Bravo
   - Bruno Phillipe Cabalin Ferreira
-  - Soarzo Mancilla
+  - Lucas Soarzo Mancilla
   - Emilio Vejar Bravo
 
 ---
@@ -79,7 +81,21 @@ La aplicación arranca con la configuración de RR. HH. definida en `src/module-
 
 ---
 
-## 5. Documentación de la funcionalidad
+## 5. Roles activos y control de acceso
+
+El encabezado de la aplicación muestra el selector **Rol activo**. El rol predeterminado es **Administrador / Gerente de Cafetería**. Al cambiar de rol, las vistas, botones, acciones y datos visibles se actualizan de inmediato; el estado se guarda en `erp_base_module:rol_activo` y se recupera al volver a abrir la aplicación. Este control es demostrativo: **no autentica, no solicita credenciales y no verifica la identidad real**.
+
+| Rol activo | Cómo probarlo | Permisos |
+|---|---|---|
+| **Administrador / Gerente de Cafetería** | Seleccionarlo en **Rol activo**. | Accede al Panel, trabajadores, departamentos, asignaciones, medición, historial, evolución y búsqueda. Puede crear y editar trabajadores, departamentos, asignaciones y turnos, marcar trabajadores como Inactivos, configurar metas globales de ventas y registrar, corregir o eliminar mediciones de cualquier área o turno. |
+| **Jefe de Turno / Supervisor** | Seleccionarlo y elegir explícitamente un **Área** (`Barra`, `Cocina` o `Salón`) y un **Turno** (`Mañana` o `Tarde`). | Solo ve Medición, Historial por área/turno y Evolución por área/turno. Puede registrar y corregir mediciones del área y turno seleccionados, incluida la meta esperada individual. No puede crear ni editar trabajadores, departamentos, asignaciones, turnos ni metas globales; esas acciones se ocultan y se bloquean. |
+| **Barista / Trabajador (Solo lectura)** | Seleccionarlo y elegir explícitamente el **Trabajador propio** en el encabezado. | Solo ve Mi desempeño y Mi evolución del trabajador seleccionado. No puede registrar, corregir ni eliminar mediciones, ni acceder a gestión, metas globales o datos de otros trabajadores. |
+
+Si se intenta ejecutar una acción no permitida, la aplicación la bloquea, muestra un mensaje en el aviso superior y no guarda cambios parciales. El cambio de rol no modifica trabajadores, asignaciones, mediciones ni metas.
+
+---
+
+## 6. Documentación de la funcionalidad
 
 - `specs/002-rrhh-productividad/spec.md`: especificación funcional.
 - `specs/002-rrhh-productividad/plan.md`: plan técnico.

@@ -1,10 +1,14 @@
 import { getConfig, isRRHHMode } from './module-config.js';
+import { AREAS, ROLE_STORAGE_KEY } from './roles.js';
+
+export { ROLE_STORAGE_KEY };
 
 export const ENTITIES_KEY = 'erp_base_module:entities';
 export const DOCUMENTS_KEY = 'erp_base_module:documents';
 export const DEPARTMENTS_KEY = 'erp_base_module:departamentos';
 export const HISTORY_KEY = 'erp_base_module:historial_departamentos';
 export const METAS_CONSOLIDADAS_KEY = 'erp_base_module:metas_consolidadas';
+export const GLOBAL_GOALS_KEY = 'erp_base_module:metas_globales';
 
 const OPEN_END = '9999-12-31';
 
@@ -975,6 +979,37 @@ export function saveMetasConsolidadas(metas){
   return writeCollection(METAS_CONSOLIDADAS_KEY, 'las metas y resultados consolidadas', metas);
 }
 
+export function loadGlobalGoals(){
+  return readCollection(GLOBAL_GOALS_KEY, 'las metas globales de ventas');
+}
+
+export function saveGlobalGoals(goals){
+  return writeCollection(GLOBAL_GOALS_KEY, 'las metas globales de ventas', goals);
+}
+
+export function upsertGlobalGoal(payload = {}){
+  const area = normalizeText(payload.area);
+  const periodo = normalizeText(payload.periodo || payload.period);
+  const metaGlobal = Number(payload.metaGlobal ?? payload.meta);
+  if(!AREAS.includes(area)) throw new Error('Selecciona un área válida');
+  if(!monthBounds(periodo)) throw new Error('Selecciona un período válido en formato AAAA-MM');
+  if(!Number.isFinite(metaGlobal) || metaGlobal < 0) throw new Error('La meta global debe ser un número mayor o igual a cero');
+  const now = new Date().toISOString();
+  const previous = loadGlobalGoals().find(goal => goal.area === area && goal.periodo === periodo);
+  const goal = {
+    id: previous?.id || generateId(),
+    area,
+    periodo,
+    metaGlobal,
+    createdAt: previous?.createdAt || now,
+    updatedAt: now
+  };
+  const goals = loadGlobalGoals().filter(item => item.id !== goal.id);
+  goals.push(goal);
+  saveGlobalGoals(goals);
+  return goal;
+}
+
 /**
  * Calcula y persiste las metas esperadas y los resultados consolidadas por
  * departamento y período.
@@ -1083,4 +1118,6 @@ export function clearAll(){
   saveDocuments([]);
   saveDepartments([]);
   saveDepartmentHistory([]);
+  saveMetasConsolidadas([]);
+  saveGlobalGoals([]);
 }

@@ -1,11 +1,11 @@
 
 # Especificación Funcional: Módulo RR. HH. e Historial de Productividad Laboral
 
-**Identificador de funcionalidad**: `002-rrhh-productividad`  
-**Rama de trabajo de Git**: `correccion-specs-002`  
-**Creada**: 2026-10-20  
-**Actualizada**: 2026-11-09  
-**Estado**: Implementación completada; suite automatizada aprobada (14 archivos, 132 pruebas) y prueba técnica de 500 registros aprobada (T076). Advertencia sobre datos ficticios aprobada (T072) y responsables asignados (T084). Pendientes las mediciones manuales de SC-001 a SC-003 y la evaluación de usuarios de SC-004 (T083).
+**Identificador de funcionalidad**: `002-rrhh-productividad`\
+**Rama de trabajo de Git**: `003-roles-acceso-cafeteria`\
+**Creada**: 2026-10-20\
+**Actualizada**: 2026-11-26\
+**Estado**: Implementación completada; suite automatizada aprobada (16 archivos, 180 pruebas) y prueba técnica de 500 registros aprobada (T076). Advertencia sobre datos ficticios aprobada (T072), responsables asignados (T084) y control de acceso por roles FR-052 a FR-065 verificado (T075, T106–T112). Pendientes las mediciones manuales de SC-001 a SC-003 y la evaluación de usuarios de SC-004 (T083).
 **Entrada**: Incremento 002 sobre el módulo base ERP (001). Decisiones de alcance aprobadas para esta especificación.
 
 ---
@@ -22,13 +22,15 @@ Este módulo busca conservar las mediciones de productividad y las metas de vent
 
 ## 2. Usuarios y necesidades
 
-- **Administrador o encargado de la cafetería (usuario principal):** necesita registrar al personal de barra, cocina y salón, gestionar sus asignaciones de área y turno, ingresar mediciones periódicas de productividad y metas de ventas, y consultar el historial de cada trabajador.
+El MVP implementa un **control de acceso por interfaz basado en un rol activo seleccionable**. El selector de rol es una función demostrativa: habilita u oculta vistas, botones y acciones, pero NO verifica la identidad real de quien usa la aplicación.
 
-- **Jefatura de área —jefe de barra, jefe de cocina o encargado de salón (usuario secundario):** necesita consultar la productividad y el cumplimiento de metas de los integrantes de su área y turno (mañana o tarde) para dar seguimiento a su desempeño.
+- **Administrador / Gerente de Cafetería (acceso total):** necesita registrar y editar al personal de Barra, Cocina y Salón; gestionar departamentos, asignaciones históricas y turnos (Mañana o Tarde); administrar las metas de ventas globales; registrar, corregir y consultar mediciones de productividad; y revisar el historial y la evolución de cualquier trabajador. Es el único rol con acceso a todas las vistas y a todas las acciones de gestión.
 
-- **Dirección o gerencia de la cafetería (usuario potencial futuro):** podría consultar información resumida de ventas y productividad para apoyar la toma de decisiones.
+- **Jefe de Turno / Supervisor (acceso operativo restringido):** corresponde al jefe de barra, jefe de cocina o encargado de salón. Necesita consultar mediciones, historial y evolución **solo de su área (Barra, Cocina o Salón) y de su turno (Mañana o Tarde)**, y puede registrar y corregir mediciones de productividad dentro de ese alcance. NO puede crear ni editar trabajadores, departamentos, asignaciones o turnos, ni modificar metas de ventas globales. Para que el alcance sea reproducible, la interfaz le permite seleccionar explícitamente su área y su turno.
 
-**Limitación del MVP:** no se implementa autenticación ni control de acceso. La distinción entre tipos de usuarios describe sus necesidades, pero no representa una restricción de seguridad implementada.
+- **Barista / Trabajador (Solo lectura):** necesita consultar únicamente su propio desempeño y su propia evolución. Para que el alcance sea reproducible, la interfaz le permite seleccionar explícitamente el trabajador que representa como "yo". NO tiene acceso a formularios de registro ni corrección, ni a datos de otros trabajadores, departamentos, turnos o metas globales.
+
+La dirección o gerencia de la cafetería queda cubierta por el rol Administrador / Gerente de Cafetería en este MVP; no se incorpora un cuarto rol.
 
 ---
 
@@ -44,6 +46,8 @@ El incremento 002 contempla las siguientes funcionalidades:
 
 4. **Visualización de la evolución:** presentar resultados históricos en tablas o paneles resumidos para facilitar el análisis de la productividad.
 
+5. **Control de acceso por rol activo:** seleccionar uno de tres roles en la interfaz para determinar qué vistas, botones y acciones están disponibles.
+
 ---
 
 ## 4. Fuera del alcance de 002
@@ -54,7 +58,7 @@ Las siguientes funcionalidades no forman parte de este incremento:
 - Comparación de productividad entre departamentos o trabajadores.
 - Catálogo avanzado de indicadores y fórmulas.
 - Cálculo automático de una puntuación única de productividad.
-- Autenticación, inicio de sesión, roles y control de acceso.
+- Autenticación con credenciales, inicio de sesión y verificación de identidad real. La selección de roles y el control de acceso por interfaz SÍ están dentro del alcance.
 - Auditoría de modificaciones.
 - Exportación, respaldo central y sincronización multiusuario.
 - Backend y base de datos remota.
@@ -141,9 +145,9 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 ### Historia de Usuario 1: Registro de medición de productividad (Prioridad: P1)
 
-**Como** encargado de la cafetería,  
-**quiero** registrar los resultados de productividad y el cumplimiento de metas de ventas de un trabajador de barra, cocina o salón en un período y turno específicos (mañana o tarde),  
-**para** mantener actualizado su expediente y poder dar seguimiento al desempeño del equipo.
+**Como** Administrador / Gerente de Cafetería o Jefe de Turno / Supervisor con el rol activo correspondiente,\
+**quiero** registrar los resultados de productividad y el cumplimiento de metas de ventas de un trabajador de barra, cocina o salón en un período y turno específicos (mañana o tarde),\
+**para** mantener actualizado su expediente y poder dar seguimiento al desempeño del equipo dentro de mi alcance.
 
 **Justificación de prioridad:** es la funcionalidad principal del incremento. Sin mediciones no existe información para consultar ni analizar el cumplimiento de las metas de la cafetería.
 
@@ -151,7 +155,7 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 **Responsable:** Daphnne Hidalgo Mundaca.
 
-**Requisitos relacionados:** FR-012 a FR-023.
+**Requisitos relacionados:** FR-012 a FR-023 y FR-052 a FR-065.
 
 #### Escenarios de aceptación
 
@@ -187,13 +191,23 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 16. **Dado** un registro guardado con metas, resultados, evaluaciones, turno, observaciones u oportunidades de mejora, **cuando** se consulta su historial o evolución, **entonces** se muestran esos datos asociados al registro.
 
+17. **Dado** el rol Administrador / Gerente de Cafetería activo, **cuando** abre el formulario de medición, **entonces** puede seleccionar cualquier trabajador de Barra, Cocina o Salón y cualquier turno Mañana o Tarde y guardar la medición.
+
+18. **Dado** el rol Jefe de Turno / Supervisor activo con área Barra y turno Mañana, **cuando** abre el formulario de medición, **entonces** solo puede seleccionar trabajadores asignados a Barra en turno Mañana para ese período; una medición fuera de ese alcance se rechaza.
+
+19. **Dado** el rol Jefe de Turno / Supervisor activo, **cuando** registra una medición permitida, **entonces** el formulario incluye meta esperada individual, resultado, evaluación cualitativa, observaciones y oportunidades de mejora, sin exponer la configuración de metas de ventas globales.
+
+20. **Dado** el rol Barista / Trabajador (Solo lectura) activo, **cuando** consulta las vistas disponibles, **entonces** no encuentra el botón "Nueva medición" ni ningún formulario de registro o corrección, y cualquier intento de registro queda bloqueado sin guardar cambios.
+
+21. **Dado** un formulario abierto con el rol Administrador / Gerente de Cafetería, **cuando** se cambia al rol Barista / Trabajador (Solo lectura), **entonces** el formulario deja de estar disponible de inmediato y no se guardan cambios no confirmados.
+
 ---
 
 ### Historia de Usuario 2: Consulta del historial de desempeño (Prioridad: P1)
 
-**Como** jefe de barra, jefe de cocina o encargado de salón de la cafetería,  
-**quiero** consultar el historial de productividad y de metas de ventas de un trabajador, incluyendo su área y su turno (mañana o tarde),  
-**para** analizar cómo han evolucionado sus resultados durante distintos períodos.
+**Como** Administrador / Gerente de Cafetería, Jefe de Turno / Supervisor de su área y turno, o Barista / Trabajador respecto de su propio desempeño,\
+**quiero** consultar el historial de productividad y de metas de ventas permitido según mi rol, incluyendo el área y el turno (mañana o tarde),\
+**para** analizar cómo han evolucionado los resultados durante distintos períodos sin acceder a información fuera de mi alcance.
 
 **Justificación de prioridad:** permite conservar y consultar la trayectoria de productividad de cada integrante del equipo de la cafetería.
 
@@ -201,7 +215,7 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 **Responsable:** Bruno Phillipe Cabalin Ferreira.
 
-**Requisitos relacionados:** FR-024 a FR-027.
+**Requisitos relacionados:** FR-024 a FR-027 y FR-052 a FR-065.
 
 #### Escenarios de aceptación
 
@@ -215,12 +229,20 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 5. **Dado** un trabajador reasignado, **cuando** se consulta su historial, **entonces** las mediciones anteriores permanecen disponibles sin ser sobrescritas.
 
+6. **Dado** el rol Administrador / Gerente de Cafetería activo, **cuando** consulta el historial, **entonces** puede seleccionar y ver el historial completo de cualquier trabajador de la cafetería.
+
+7. **Dado** el rol Jefe de Turno / Supervisor activo con área Cocina y turno Tarde, **cuando** consulta el historial, **entonces** solo se muestran mediciones cuyo departamento histórico sea Cocina y cuyo turno registrado sea Tarde.
+
+8. **Dado** el rol Barista / Trabajador (Solo lectura) activo, **cuando** consulta su historial, **entonces** solo se muestran sus propias mediciones y no existe lista, buscador ni acceso a historiales de otros trabajadores.
+
+9. **Dado** un cambio de rol activo, **cuando** se abre nuevamente la vista de historial, **entonces** los datos visibles se ajustan de inmediato al nuevo alcance sin conservar registros del rol anterior.
+
 ---
 
 ### Historia de Usuario 3: Gestión de trabajadores y asignaciones de departamento (Prioridad: P1)
 
-**Como** administrador de la cafetería,  
-**quiero** registrar al personal de barra, cocina y salón y administrar sus asignaciones de área y turno (mañana o tarde),  
+**Como** administrador de la cafetería,\
+**quiero** registrar al personal de barra, cocina y salón y administrar sus asignaciones de área y turno (mañana o tarde),\
 **para** mantener actualizada su información laboral y conservar el historial de sus cambios de área.
 
 **Justificación de prioridad:** es necesaria para asociar correctamente cada medición al trabajador y al área o turno de su período.
@@ -229,7 +251,7 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 **Responsable:** Consuelo Estefania Hidalgo Salgado.
 
-**Requisitos relacionados:** FR-001 a FR-011.
+**Requisitos relacionados:** FR-001 a FR-011 y FR-052 a FR-065.
 
 #### Escenarios de aceptación
 
@@ -249,13 +271,21 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 8. **Dado** un trabajador con registros históricos, **cuando** se intenta eliminarlo físicamente, **entonces** el sistema impide la eliminación y permite marcarlo como Inactivo.
 
+9. **Dado** el rol Administrador / Gerente de Cafetería activo, **cuando** abre la vista de gestión, **entonces** están disponibles los botones para crear y editar trabajadores, crear y editar departamentos Barra, Cocina y Salón, crear y cerrar asignaciones, definir turnos Mañana o Tarde y marcar trabajadores como Inactivos.
+
+10. **Dado** el rol Jefe de Turno / Supervisor activo, **cuando** abre cualquier vista permitida, **entonces** no están disponibles los botones ni formularios para crear o editar trabajadores, departamentos, asignaciones o turnos, y cualquier intento directo de ejecutarlos se bloquea sin modificar datos.
+
+11. **Dado** el rol Barista / Trabajador (Solo lectura) activo, **cuando** consulta la interfaz, **entonces** no encuentra la vista de gestión de trabajadores ni acciones de edición de departamentos, asignaciones, turnos o metas globales.
+
+12. **Dado** el rol Jefe de Turno / Supervisor activo, **cuando** consulta una asignación dentro de una medición de su área y turno, **entonces** puede ver los datos de la asignación como contexto, pero no puede editarlos.
+
 ---
 
 ### Historia de Usuario 4: Visualización de la evolución de productividad (Prioridad: P2)
 
-**Como** administrador de la cafetería o jefe de área,  
-**quiero** visualizar la evolución de los indicadores de productividad y de las metas de ventas de un trabajador a lo largo del tiempo, distinguiendo su área y su turno (mañana o tarde),  
-**para** identificar tendencias en el desempeño del equipo y apoyar la toma de decisiones de la cafetería.
+**Como** Administrador / Gerente de Cafetería, Jefe de Turno / Supervisor o Barista / Trabajador según su rol activo,\
+**quiero** visualizar la evolución de los indicadores de productividad y de las metas de ventas dentro de mi alcance, distinguiendo el área y el turno (mañana o tarde),\
+**para** identificar tendencias en el desempeño sin consultar información de otros trabajadores ni de otras áreas o turnos.
 
 **Justificación de prioridad:** permite analizar las mediciones registradas, pero depende de que las funcionalidades anteriores estén disponibles.
 
@@ -263,7 +293,7 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 **Responsable:** Bastián Ignacio Reinado Bravo.
 
-**Requisitos relacionados:** FR-028 a FR-031.
+**Requisitos relacionados:** FR-028 a FR-031 y FR-052 a FR-065.
 
 #### Escenarios de aceptación
 
@@ -278,6 +308,14 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 5. **Dados** registros insuficientes, **cuando** se consulta la evolución, **entonces** se informa que no existen datos suficientes.
 
 6. **Dada** la visualización de productividad, **cuando** se muestran los resultados, **entonces** el sistema no genera una puntuación única automática ni emite juicios de desempeño.
+
+7. **Dado** el rol Administrador / Gerente de Cafetería activo, **cuando** consulta la evolución, **entonces** puede seleccionar cualquier trabajador y ver todas sus mediciones históricas.
+
+8. **Dado** el rol Jefe de Turno / Supervisor activo, **cuando** consulta la evolución, **entonces** solo ve la evolución de las mediciones de su área y turno seleccionados.
+
+9. **Dado** el rol Barista / Trabajador (Solo lectura) activo, **cuando** consulta la evolución, **entonces** solo ve la evolución de su propio desempeño y no puede seleccionar a otro trabajador.
+
+10. **Dado** un rol distinto de Administrador / Gerente de Cafetería, **cuando** consulta la evolución, **entonces** no encuentra botones ni vistas para modificar metas de ventas globales; los valores individuales de meta esperada de las mediciones permitidas permanecen visibles.
 
 ---
 
@@ -303,6 +341,10 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 | Corrección de registro | Solo modifica el registro seleccionado |
 | Eliminación de trabajador con historial | No permitida; se utiliza estado Inactivo |
 | Eliminación de departamento con historial | No permitida mientras existan relaciones históricas |
+| Rol activo | Debe ser uno de los tres roles definidos: Administrador / Gerente de Cafetería, Jefe de Turno / Supervisor o Barista / Trabajador (Solo lectura) |
+| Área y turno del Supervisor | Deben estar seleccionados para mostrar mediciones, historial y evolución; el alcance se aplica sobre el departamento histórico y el turno del registro |
+| Trabajador propio del Barista | Debe estar seleccionado para mostrar únicamente su desempeño y su evolución |
+| Acciones por rol | Los botones y acciones no permitidos para el rol activo deben ocultarse o deshabilitarse y no deben ejecutarse ni modificar datos |
 
 Los errores de validación deben comunicarse mediante mensajes claros para el usuario.
 
@@ -355,7 +397,7 @@ Los errores de validación deben comunicarse mediante mensajes claros para el us
 ### Requisitos generales
 
 - **FR-032:** El sistema DEBE utilizar almacenamiento local del navegador y funcionar sin backend.
-- **FR-033:** El MVP NO DEBE presentar autenticación o control de acceso como funcionalidades implementadas.
+- **FR-033:** El MVP NO DEBE presentar autenticación con credenciales ni verificación de identidad real como funcionalidades implementadas; SÍ DEBE presentar el selector de rol activo y el control de acceso por interfaz descritos en FR-052 a FR-065.
 - **FR-034:** El sistema DEBE utilizar datos ficticios para las demostraciones.
 - **FR-035:** El sistema DEBE mostrar de forma segura el contenido ingresado por el usuario, evitando la ejecución de scripts introducidos en campos de texto.
 - **FR-036:** El sistema DEBE sugerir automáticamente los indicadores correspondientes al cargo del trabajador seleccionado.
@@ -374,6 +416,36 @@ Los errores de validación deben comunicarse mediante mensajes claros para el us
 - **FR-049:** La meta esperada consolidada y el resultado consolidado DEBEN calcularse de forma independiente a partir de sus respectivos campos individuales.
 - **FR-050:** Al modificar únicamente la meta esperada de un registro, solo debe cambiar la meta esperada consolidada (el resultado consolidado se mantiene).
 - **FR-051:** Al modificar únicamente el resultado de un registro, solo debe cambiar el resultado consolidado (la meta esperada consolidada se mantiene).
+
+### Control de acceso por rol activo
+
+- **FR-052:** El sistema DEBE ofrecer un selector de rol activo con exactamente tres opciones: "Administrador / Gerente de Cafetería", "Jefe de Turno / Supervisor" y "Barista / Trabajador (Solo lectura)".
+
+- **FR-053:** El sistema DEBE usar "Administrador / Gerente de Cafetería" como rol activo predeterminado, mostrar el rol activo de forma visible en las vistas y aplicar cualquier cambio de rol de inmediato.
+
+- **FR-054:** Con el rol Administrador / Gerente de Cafetería activo, el sistema DEBE habilitar todas las vistas y todos los botones: gestión de trabajadores, departamentos, asignaciones y turnos; configuración de metas de ventas globales; registro y corrección de mediciones; consulta del historial; y consulta de la evolución de cualquier trabajador.
+
+- **FR-055:** Con el rol Administrador / Gerente de Cafetería activo, el sistema DEBE permitir crear y editar trabajadores, crear y editar los departamentos Barra, Cocina y Salón, crear y cerrar asignaciones históricas, definir los turnos Mañana y Tarde, marcar trabajadores como Inactivos, configurar metas de ventas globales y registrar o corregir mediciones de cualquier área o turno.
+
+- **FR-056:** Con el rol Jefe de Turno / Supervisor activo, el sistema DEBE habilitar únicamente las vistas operativas "Medición", "Historial por área/turno" y "Evolución por área/turno", y DEBE solicitar la selección explícita de un área (Barra, Cocina o Salón) y de un turno (Mañana o Tarde) antes de mostrar datos.
+
+- **FR-057:** Con el rol Jefe de Turno / Supervisor activo, el sistema DEBE habilitar los botones "Nueva medición" y "Corregir medición" solo para trabajadores cuya asignación histórica corresponda al área seleccionada y cuya medición corresponda al turno seleccionado; el formulario DEBE permitir meta esperada individual, resultado, evaluación cualitativa, observaciones y oportunidades de mejora.
+
+- **FR-058:** Con el rol Jefe de Turno / Supervisor activo, el sistema DEBE ocultar o deshabilitar los botones y acciones para crear o editar trabajadores, departamentos, asignaciones y turnos, para marcar trabajadores como Inactivos y para modificar metas de ventas globales; también DEBE impedir el acceso a las vistas de gestión.
+
+- **FR-059:** Con el rol Barista / Trabajador (Solo lectura) activo, el sistema DEBE habilitar únicamente las vistas "Mi desempeño" y "Mi evolución", DEBE solicitar la selección explícita del trabajador propio y DEBE mostrar solo las mediciones y la evolución de ese trabajador.
+
+- **FR-060:** Con el rol Barista / Trabajador (Solo lectura) activo, el sistema DEBE ocultar o deshabilitar el botón "Nueva medición", la acción "Corregir medición", los formularios de registro, la gestión de trabajadores, departamentos, asignaciones y turnos, la configuración de metas de ventas globales y cualquier acceso a datos de otros trabajadores.
+
+- **FR-061:** El sistema DEBE aplicar el alcance de datos según el rol activo: sin filtro para Administrador / Gerente de Cafetería; por departamento histórico de la asignación y turno registrado para Jefe de Turno / Supervisor; y por trabajador propio seleccionado para Barista / Trabajador (Solo lectura).
+
+- **FR-062:** La vista y los botones de configuración de metas de ventas globales DEBEN estar disponibles solo para el rol Administrador / Gerente de Cafetería. Los campos individuales de meta esperada dentro de una medición permitida permanecen disponibles para Administrador / Gerente de Cafetería y Jefe de Turno / Supervisor; las variables consolidadas internas continúan ocultas según FR-048.
+
+- **FR-063:** Al cambiar el rol activo, el sistema DEBE actualizar de inmediato las vistas, botones, acciones y datos visibles, sin modificar trabajadores, asignaciones, mediciones ni metas como consecuencia del cambio de rol.
+
+- **FR-064:** Si se intenta ejecutar una acción no permitida para el rol activo, el sistema DEBE impedirla, mostrar un mensaje claro al usuario y NO DEBE guardar cambios parciales.
+
+- **FR-065:** El selector de rol DEBE entenderse únicamente como un control demostrativo de interfaz; NO DEBE presentarse como autenticación, inicio de sesión ni comprobación de identidad real.
 
 ---
 
@@ -415,7 +487,7 @@ Los errores de validación deben comunicarse mediante mensajes claros para el us
 
 18. **Datos eliminados del navegador:** el sistema no garantiza su recuperación, ya que no cuenta con respaldo ni sincronización.
 
-19. **Uso compartido del navegador:** no existe autenticación ni separación de usuarios. Solo deben utilizarse datos ficticios.
+19. **Uso compartido del navegador:** el rol activo es seleccionable y controla vistas y acciones, pero no verifica la identidad real de quien usa la aplicación. Solo deben utilizarse datos ficticios.
 
 20. **Intento de registrar liquidaciones:** las funcionalidades de planilla no forman parte del incremento 002.
 
@@ -449,6 +521,16 @@ Los errores de validación deben comunicarse mediante mensajes claros para el us
 
 35. **Resultado 0 válido:** un registro con resultado 0 es válido y contribuye 0 a la suma del resultado consolidado.
 
+36. **Supervisor sin área o turno seleccionados:** no se muestran mediciones, historial ni evolución hasta que seleccione explícitamente su área y su turno.
+
+37. **Barista sin trabajador propio seleccionado:** no se muestra información de desempeño hasta que seleccione explícitamente el trabajador que representa como "yo".
+
+38. **Intento de acción de gestión con rol restringido:** si un Supervisor o un Barista intenta crear o editar trabajadores, departamentos, asignaciones, turnos o metas globales, la acción se bloquea, se informa al usuario y no se modifica ningún dato.
+
+39. **Reasignación de un trabajador:** el Supervisor solo ve las mediciones cuyo departamento histórico y turno coinciden con su alcance; el Administrador conserva acceso al historial completo.
+
+40. **Cambio de rol con formulario abierto:** el formulario deja de estar disponible si el nuevo rol no lo permite y los cambios no confirmados no se guardan.
+
 Los comportamientos adicionales sobre errores de almacenamiento deberán validarse con el grupo antes de cerrar la especificación; la advertencia sobre uso exclusivo de datos ficticios fue aprobada (T072).
 
 ---
@@ -464,12 +546,15 @@ Los comportamientos adicionales sobre errores de almacenamiento deberán validar
 - **SC-007:** El 100% de los registros inválidos se rechaza con un mensaje claro.
 - **SC-008:** El 100% de los registros históricos muestra período, departamento, indicador, resultado y unidad.
 - **SC-009:** Cuando no hay datos suficientes, el sistema informa la situación sin generar resultados ficticios.
-- **SC-010:** El MVP no presenta autenticación ni control de acceso como funcionalidades disponibles.
+- **SC-010:** El 100% de las combinaciones rol-acción definidas en FR-052 a FR-065 se comporta según el rol activo, sin que se ejecuten acciones no autorizadas.
 - **SC-011:** Los datos utilizados en la demostración son ficticios.
 - **SC-012:** Los registros se conservan al recargar la aplicación mientras el almacenamiento local siga disponible.
 - **SC-013:** Al seleccionar un trabajador con cargo definido, el sistema sugiere automáticamente los indicadores correspondientes.
 - **SC-014:** Un registro de productividad puede incluir turno, meta, evaluación cualitativa (1-5), observaciones y oportunidades de mejora, y esos datos se conservan al guardar.
 - **SC-015:** Los registros históricos creados antes de incorporar los nuevos campos siguen siendo válidos y consultables sin errores.
+- **SC-016:** El 100% de los cambios de rol aplica vistas, botones, acciones y datos visibles en menos de 5 segundos y sin modificar información.
+- **SC-017:** En el 100% de las pruebas, el Jefe de Turno / Supervisor no ve mediciones de otras áreas u otros turnos y el Barista / Trabajador (Solo lectura) no ve datos de otros trabajadores.
+- **SC-018:** Al menos el 90% de los usuarios de prueba comprende qué rol tiene activo y completa sin ayuda las tareas permitidas para ese rol.
 
 Estos criterios deberán verificarse durante las pruebas de implementación.
 
@@ -478,7 +563,7 @@ Estos criterios deberán verificarse durante las pruebas de implementación.
 ## 11. Suposiciones
 
 - El módulo funciona localmente, sin backend ni sincronización multiusuario.
-- Los datos se almacenan en el navegador mediante `localStorage`.
+- Los datos se almacenan en el almacenamiento local del navegador.
 - Se utilizan exclusivamente datos ficticios.
 - El MER existente de 9 entidades se mantiene como referencia.
 - No se crean entidades nuevas en el MER.
@@ -493,6 +578,12 @@ Estos criterios deberán verificarse durante las pruebas de implementación.
 - Las reglas de validación provienen de la documentación existente de productividad.
 - Los trabajadores con historial no se eliminan físicamente.
 - El sistema no garantiza respaldo ni recuperación de datos eliminados del navegador.
+- El selector de rol es una ayuda demostrativa de la interfaz; no sustituye autenticación ni comprueba identidad real.
+- El rol activo predeterminado al abrir la aplicación es Administrador / Gerente de Cafetería.
+- Para el rol Jefe de Turno / Supervisor, el usuario selecciona explícitamente un área (Barra, Cocina o Salón) y un turno (Mañana o Tarde); esa combinación define su alcance.
+- Para el rol Barista / Trabajador (Solo lectura), el usuario selecciona explícitamente el trabajador propio; ese trabajador define su alcance.
+- "Meta de ventas global" alude a la configuración administrativa de metas; "meta esperada" es un campo individual de cada medición y forma parte del registro permitido.
+- Las variables consolidadas internas de metas y resultados continúan ocultas porque permanecen fuera de la interfaz según FR-048.
 
 ---
 
@@ -508,9 +599,9 @@ La productividad no debe entenderse como una representación completa del aporte
 
 ### 12.3. Privacidad y confidencialidad
 
-El almacenamiento local no ofrece autenticación, control de acceso ni respaldo centralizado.
+El almacenamiento local no ofrece autenticación, verificación de identidad ni respaldo centralizado.
 
-Cualquier persona con acceso al navegador podría consultar los registros. Por esta razón, el MVP debe utilizar únicamente datos ficticios.
+Los roles activos seleccionables limitan vistas, botones, acciones y datos visibles dentro de la demostración, pero NO impiden que una persona con acceso al navegador cambie el rol activo. Por esta razón, el MVP debe utilizar únicamente datos ficticios.
 
 ### 12.4. Pérdida de información
 
@@ -542,6 +633,11 @@ La aplicación está destinada a demostraciones académicas con datos ficticios.
 | Duplicados | Permitir con advertencia | No imponer unicidad |
 | Cambio durante el mes | Selección de asignación | Evitar asignación automática incorrecta |
 | Validaciones | Reglas existentes de productividad | Mantener coherencia documental |
+| Control de acceso | Tres roles activos seleccionables | Vistas, botones y acciones distintos por rol |
+| Autenticación | Fuera del alcance | El selector de rol no verifica identidad real |
+| Alcance del Supervisor | Área y turno seleccionados | Solo medición, historial y evolución de ese ámbito |
+| Alcance del Barista | Trabajador propio seleccionado | Solo lectura de su desempeño y evolución |
+| Metas de ventas | Configuración global solo para Administrador | La meta esperada individual sigue dentro del registro de medición |
 
 ---
 
@@ -565,13 +661,14 @@ Los integrantes adicionales se distribuyen las tareas de soporte de integración
 
 ### 14.2. Verificaciones de cierre
 
-- Responsables de cada historia de usuario y tareas de soporte asignados por el grupo (T084 cerrado).
+- Responsables de cada historia de usuario y tareas de soporte asignados por el grupo (T084 cerrado). La incorporación de roles y control de acceso no modifica esta asignación.
+- Verificación automatizada de la matriz de roles y permisos (FR-052 a FR-065) para los tres roles activos, cubierta por T106–T112.
 - Texto de la advertencia sobre datos ficticios aprobado por el grupo (T072 cerrado): "Aviso: Este módulo funciona exclusivamente en almacenamiento local con fines académicos. Ingrese únicamente datos ficticios; no registre información personal ni laboral real."
 - Completar la prueba manual de extremo a extremo y documentar las mediciones de SC-001 a SC-004 (pendiente; T083).
 - Prueba técnica con 500 registros en Edge aislado: verificada (T076); evaluación de usuarios reales para SC-004 pendiente (T083).
-- Coherencia entre `plan.md`, `data-model.md`, `tasks.md` y esta especificación revisada: completada (T085).
+- Coherencia previa entre `plan.md`, `data-model.md`, `tasks.md` y esta especificación: completada (T085). La ampliación de roles requiere una revisión posterior de esos documentos, sin modificar los responsables asignados.
 - Nombres de campos verificados contra las estructuras reales del módulo base; tareas de implementación registradas en `tasks.md`: completado.
-- Mantener los cambios en la rama `correccion-specs-002` hasta su revisión.
+- Mantener los cambios en la rama `003-roles-acceso-cafeteria` hasta su revisión.
 
 ---
 

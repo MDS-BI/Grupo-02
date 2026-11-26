@@ -1,12 +1,12 @@
 
 # Modelo de Datos — Incremento 002: RR. HH. e Historial de Productividad Laboral
 
-**Funcionalidad:** `002-rrhh-productividad`  
-**Rama:** `correccion-specs-002`  
-**Fecha:** 2026-11-09  
-**Especificación:** `specs/002-rrhh-productividad/spec.md`  
-**MER de referencia:** `specs/001-erp-base-module/data-model.md`  
-**Estado:** Modelo implementado y verificado; suite automatizada aprobada (14 archivos, 132 pruebas) y prueba técnica con 500 registros aprobada (T076). Pendientes las mediciones manuales SC-001 a SC-003, la evaluación de usuarios de SC-004 y la asignación de responsables.
+**Funcionalidad:** `002-rrhh-productividad`\
+**Rama:** `003-roles-acceso-cafeteria`\
+**Fecha:** 2026-11-26\
+**Especificación:** `specs/002-rrhh-productividad/spec.md`\
+**MER de referencia:** `specs/001-erp-base-module/data-model.md`\
+**Estado:** Modelo implementado y verificado; suite automatizada aprobada (16 archivos, 180 pruebas) y prueba técnica con 500 registros aprobada (T076). Responsables asignados (T084), texto de advertencia aprobado (T072) y estado de rol activo con sus filtros verificado (FR-052 a FR-065). Pendientes las mediciones manuales SC-001 a SC-003 y la evaluación de usuarios de SC-004.
 
 ## 1. Propósito y alcance
 
@@ -288,7 +288,7 @@ Cuando existe una sola asignación válida para el mes, la aplicación puede sel
 - No se permiten períodos anteriores al ingreso del trabajador.
 - `indicador` debe tener entre 3 y 60 caracteres.
 - `resultado` debe ser numérico y mayor o igual a cero.
-- `unidad` es obligatoria.
+- `unidad` es opcional en el formulario de cafetería; se conserva para registros anteriores.
 - El trabajador debe existir.
 - La asignación debe existir y corresponder al trabajador.
 - No se permite registrar productividad sin una asignación válida.
@@ -371,6 +371,49 @@ Las metas y resultados consolidadas se almacenan en `erp_base_module:metas_conso
 - Las metas y resultados consolidadas se recalculan automáticamente tras crear, modificar o eliminar cualquier registro de productividad.
 - Si un grupo queda sin registros asociados, su variable consolidada se elimina.
 - La meta esperada y el resultado de un registro pueden ser diferentes; cada una se suma de forma independiente.
+
+#### Metas globales de ventas configurables
+
+La configuración administrativa de metas globales es distinta de la meta esperada individual de cada medición y de las variables consolidadas internas. Se almacena en `erp_base_module:metas_globales` como un arreglo JSON.
+
+| Campo | Tipo | Descripción |
+|---|---|---|
+| `id` | string | Identificador del registro de meta global |
+| `area` | string | `Barra`, `Cocina` o `Salón` |
+| `periodo` | string | Período mensual en formato AAAA-MM |
+| `metaGlobal` | number | Meta global de ventas no negativa |
+
+La combinación `area + periodo` es única. Solo el rol Administrador / Gerente de Cafetería puede crear o modificar estos registros, conforme a FR-062; Jefe de Turno / Supervisor y Barista / Trabajador (Solo lectura) no ven ni pueden ejecutar esta configuración.
+
+### 4.7. Estado de rol activo (no entidad del MER)
+
+El control de acceso por interfaz usa un estado de demostración que NO se agrega al MER de nueve entidades y NO representa una persona autenticada.
+
+| Campo | Tipo | Obligatorio | Descripción |
+|---|---|---|---|
+| `rolActivo` | string | Sí | `administrador`, `supervisor` o `barista` |
+| `supervisorArea` | string/null | Condicional | `Barra`, `Cocina` o `Salón`; obligatorio cuando `rolActivo` es `supervisor` |
+| `supervisorTurno` | string/null | Condicional | `Mañana` o `Tarde`; obligatorio cuando `rolActivo` es `supervisor` |
+| `baristaEntityId` | string/null | Condicional | `Entity.entity_id` del trabajador propio; obligatorio cuando `rolActivo` es `barista` |
+
+Reglas:
+
+- Si no existe estado válido, el rol activo predeterminado es `administrador`.
+- El selector ofrece exactamente tres opciones: Administrador / Gerente de Cafetería, Jefe de Turno / Supervisor y Barista / Trabajador (Solo lectura).
+- El estado se aplica de inmediato al cambiar de rol y NO modifica trabajadores, departamentos, asignaciones, mediciones ni metas.
+- Los campos de contexto pueden conservarse para facilitar el regreso a un rol, pero solo se usan cuando ese rol está activo.
+- El estado no almacena credenciales, nombres reales ni datos laborales adicionales.
+- Se almacena en `erp_base_module:rol_activo` como un objeto JSON; un valor ausente, incompleto o inválido se trata como rol administrador predeterminado.
+
+#### Derivación del alcance según el rol
+
+| Rol activo | Vistas permitidas | Alcance de datos | Acciones de gestión |
+|---|---|---|---|
+| `administrador` | Todas | Sin filtro: cualquier trabajador, área, turno, medición, historial y evolución | Habilitadas: trabajadores, departamentos, asignaciones, turnos, metas de ventas globales, registro y corrección de mediciones |
+| `supervisor` | Medición, Historial por área/turno y Evolución por área/turno | Documentos cuyo departamento histórico resuelto desde `asignacionId` iguala `supervisorArea` y cuyo `turno` iguala `supervisorTurno` | Solo registro y corrección de mediciones dentro del alcance; bloqueadas trabajadores, departamentos, asignaciones, turnos y metas globales |
+| `barista` | Mi desempeño y Mi evolución | Documentos cuyo `entity_id` iguala `baristaEntityId` | Solo lectura; bloqueados formularios de registro, corrección y cualquier dato de otros trabajadores |
+
+La configuración de metas de ventas globales es exclusiva de `administrador`. El campo individual `meta` continúa dentro del formulario de medición permitido para administrador y supervisor; las variables consolidadas de `erp_base_module:metas_consolidadas` permanecen ocultas según FR-048.
 
 ## 5. Relaciones y cardinalidades
 
@@ -484,6 +527,9 @@ Este diagrama representa las estructuras utilizadas por 002 y no reemplaza el ME
 | `erp_base_module:documents` | Registros de productividad | Clave existente; nuevo uso en 002 |
 | `erp_base_module:departamentos` | Departamentos | Propuesta para 002 |
 | `erp_base_module:historial_departamentos` | Asignaciones históricas | Propuesta para 002 |
+| `erp_base_module:metas_consolidadas` | Sumas internas por departamento y período | Definida para FR-043 a FR-051; oculta en la interfaz |
+| `erp_base_module:metas_globales` | Metas globales de ventas por área y período | Definida para FR-062; administración exclusiva del Administrador |
+| `erp_base_module:rol_activo` | Estado demostrativo del rol y su contexto | Definido para FR-052 a FR-065; no es una entidad del MER |
 
 ### 7.2. Formato de almacenamiento
 
@@ -637,14 +683,30 @@ Los registros históricos no se modifican durante la consulta.
 
 No se calcula una puntuación única de productividad ni se emiten evaluaciones automáticas de desempeño.
 
+### 8.5. Aplicación del rol activo
+
+**Entrada:** `rolActivo`, contexto del rol y colección de documentos.
+
+**Proceso:**
+
+1. Resolver el rol activo; si falta o es inválido, usar `administrador`.
+2. Si el rol es `supervisor`, exigir `supervisorArea` y `supervisorTurno`.
+3. Si el rol es `barista`, exigir `baristaEntityId`.
+4. Resolver el departamento histórico de cada documento desde su `asignacionId`.
+5. Aplicar el filtro correspondiente: todos, departamento histórico + turno, o trabajador propio.
+6. Habilitar u ocultar vistas, botones y acciones según la tabla de la sección 4.7.
+7. Bloquear cualquier acción no permitida sin modificar datos.
+
+**Salida:** vistas, botones, acciones y datos visibles correspondientes al rol activo.
+
 ## 9. Seguridad, privacidad y limitaciones
 
 El incremento 002 utiliza `localStorage`, sin backend ni base de datos remota.
 
 Limitaciones:
 
-- No existe autenticación.
-- No existe control de acceso por roles.
+- No existe autenticación con credenciales ni verificación de identidad real.
+- Existe control de acceso por interfaz basado en un rol activo seleccionable; limita vistas, botones, acciones y datos visibles, pero no impide que una persona con acceso al navegador cambie el rol.
 - No existe sincronización multiusuario.
 - No existe respaldo automático.
 - Los datos pueden perderse al limpiar el navegador.
@@ -667,6 +729,8 @@ La aplicación no debe utilizarse para tomar decisiones laborales automáticas b
 | FR-024 a FR-027 | Consulta de historial |
 | FR-028 a FR-031 | Evolución de productividad |
 | FR-032 a FR-035 | Persistencia, privacidad y seguridad |
+| FR-036 a FR-051 | Campos de cafetería, metas y resultados consolidados |
+| FR-052 a FR-065 | Estado de rol activo, alcance por rol y bloqueo de acciones |
 | HU1 | Registro de productividad |
 | HU2 | Consulta de historial |
 | HU3 | Gestión de trabajadores y asignaciones |
@@ -689,12 +753,13 @@ La aplicación no debe utilizarse para tomar decisiones laborales automáticas b
 | Datos anteriores en documents | Verificación implementada con bloqueo seguro y cubierta por pruebas automatizadas |
 | Código base en working tree | Restaurado y verificado |
 | Nombres reales de campos | Verificados en implementación |
-| Suite automatizada | Aprobada: 14 archivos de prueba, 132 pruebas |
+| Suite automatizada | Aprobada: 16 archivos de prueba, 180 pruebas |
 | Prueba manual de extremo a extremo y criterios SC-001 a SC-004 | Pendiente (T083) |
 | 500 registros: Historial, Evolución y navegación en Edge aislado | Verificado: 500 filas; renderizado 113.7 ms/113.5 ms; cuatro vistas 145.4 ms; sin errores (T076) |
 | Evaluación con usuarios reales para SC-004 | Pendiente (T083) |
 | Advertencia sobre datos ficticios | Texto pendiente de aprobación del grupo (T072) |
-| Responsables de historias de usuario | Pendientes de asignación por el grupo (T084) |
+| Responsables de historias de usuario | Asignados en `spec.md` §14.1 (T084 cerrado) |
+| Estado de rol activo y filtros por rol | Implementado y verificado (T106–T112; FR-052 a FR-065) |
 
 ## 12. Criterios de aceptación del modelo
 
@@ -714,6 +779,9 @@ El modelo se considera coherente cuando:
 - Se evita que una corrección de asignación invalide mediciones guardadas.
 - Se mantiene planilla y liquidaciones fuera del alcance de 002.
 - Las decisiones de diseño están implementadas y verificadas.
+- El estado de rol activo tiene tres valores válidos y un predeterminado documentado.
+- El alcance de datos por rol se deriva del departamento histórico, el turno y el trabajador propio según corresponda.
+- Las acciones no permitidas por rol se bloquean sin modificar los datos de negocio.
 
 ## 13. Glosario
 
@@ -727,3 +795,6 @@ El modelo se considera coherente cuando:
 - **Período:** mes evaluado, almacenado con `startDate` y `endDate`.
 - **Folio:** correlativo entero positivo de cada registro de productividad.
 - **MVP:** conjunto mínimo de funcionalidades exigidas para el incremento 002.
+- **Rol activo:** estado de interfaz que determina vistas, botones, acciones y alcance de datos; no autentica identidad.
+- **Supervisor:** rol operativo limitado a un área (Barra, Cocina o Salón) y un turno (Mañana o Tarde).
+- **Barista:** rol de solo lectura limitado al trabajador propio seleccionado.
