@@ -898,11 +898,11 @@ function applyRoleControls(){
   controls.hidden = !isRRHHMode();
   if(!isRRHHMode()) return;
 
-  qs('role-select').value = roleState.rolActivo;
+  const rs=qs('role-select'); if(rs) rs.value = roleState.rolActivo;
   const supervisor = roleState.rolActivo === ROLES.SUPERVISOR;
   const barista = roleState.rolActivo === ROLES.BARISTA;
-  for(const id of ['role-area', 'role-area-label', 'role-turn', 'role-turn-label']) qs(id).hidden = !supervisor;
-  for(const id of ['role-worker', 'role-worker-label']) qs(id).hidden = !barista;
+  for(const id of ['role-area', 'role-area-label', 'role-turn', 'role-turn-label']){ const el=qs(id); if(el) el.hidden=!supervisor; }
+  for(const id of ['role-worker', 'role-worker-label']){ const el=qs(id); if(el) el.hidden=!barista; }
   if(supervisor){
     qs('role-area').value = roleState.supervisorArea;
     qs('role-turn').value = roleState.supervisorTurno;
@@ -912,7 +912,7 @@ function applyRoleControls(){
   }
   const selectedWorker = loadEntities().find(entity => entity.entity_id === roleState.baristaEntityId);
   const workerName = selectedWorker ? entityDisplayName(selectedWorker) : '';
-  qs('role-scope').textContent = `Rol activo: ${roleLabel(roleState.rolActivo)} · ${scopeDescription(roleState, workerName)}`;
+  const scope=qs('role-scope'); if(scope) scope.textContent = `Rol activo: ${roleLabel(roleState.rolActivo)} · ${scopeDescription(roleState, workerName)}`;
 }
 
 function applyRolePermissions(){
@@ -1161,10 +1161,10 @@ function wireEvents(){
   document.querySelectorAll('.nav-sub').forEach(btn => {
     btn.addEventListener('click', () => showModule('entities', { entityTab: btn.dataset.entityTab }));
   });
-  qs('role-select').addEventListener('change', handleRoleChange);
-  qs('role-area').addEventListener('change', handleRoleContextChange);
-  qs('role-turn').addEventListener('change', handleRoleContextChange);
-  qs('role-worker').addEventListener('change', handleRoleContextChange);
+  qs('role-select')?.addEventListener('change', handleRoleChange);
+  qs('role-area')?.addEventListener('change', handleRoleContextChange);
+  qs('role-turn')?.addEventListener('change', handleRoleContextChange);
+  qs('role-worker')?.addEventListener('change', handleRoleContextChange);
   qs('global-goal-form')?.addEventListener('submit', handleGlobalGoalSubmit);
   qs('action-new-entity').addEventListener('click', () => showModule('entities', { newRecord: true, focusForm: true }));
   qs('action-new-document').addEventListener('click', () => showModule('documents', { newRecord: true, focusForm: true }));

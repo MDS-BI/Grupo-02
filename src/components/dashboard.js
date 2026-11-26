@@ -110,15 +110,9 @@ function todayString(){
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 }
 
-function activeWorkerCount(entities){
-  const statusField = getConfig().customFields.find(field =>
-    field.target === 'entity' && field.key === 'estadoLaboral'
-  );
-  if(!statusField) return entities.length;
-  const activeOption = (statusField.options || []).find(option => /^activo$/i.test(String(option).trim()));
-  const activeValue = activeOption || 'Activo';
-  return entities.filter(entity => String(entity[statusField.key] ?? '').trim() === activeValue).length;
-}
+function isEntityActive(entity){ return /^activo$/i.test(String(entity?.estadoLaboral ?? entity?.status ?? '').trim()); }
+function activeWorkerCount(entities){ return entities.filter(isEntityActive).length; }
+
 
 function currentAssignmentCount(){
   const today = todayString();
@@ -333,10 +327,6 @@ function renderLineChart(months, resultSeries, metaSeries){
 
   const points = months.map((m, i) => ({ month: m, result: resultSeries[i], meta: metaSeries[i] }));
   const hasAny = points.some(p => Number.isFinite(p.result) || Number.isFinite(p.meta));
-  if(!hasAny){
-    container.appendChild(element('p', 'empty chart-empty-state', 'A?n no hay evaluaciones para mostrar la evoluci?n del desempe?o.')); 
-    return;
-  }
   const comparable = points.filter(p => Number.isFinite(p.result));
   const hasComparison = comparable.length >= 2;
 
@@ -386,15 +376,8 @@ function renderLineChart(months, resultSeries, metaSeries){
     valid.forEach(p => {
       const c = document.createElementNS(SVG_NS, 'circle');
       c.setAttribute('cx', xFor(p.i)); c.setAttribute('cy', yFor(p[key]));
-      c.setAttribute('r', '4.5'); c.setAttribute('fill', color); c.setAttribute('stroke', '#fff'); c.setAttribute('stroke-width','2');
-      c.setAttribute('class','chart-point');
-      c.dataset.period = p.month; c.dataset.value = String(p[key]); c.dataset.series = key;
+      c.setAttribute('r', '3.5'); c.setAttribute('fill', color);
       svg.appendChild(c);
-      const t = document.createElementNS(SVG_NS, 'text');
-      t.setAttribute('x', xFor(p.i)); t.setAttribute('y', yFor(p[key]) - 10);
-      t.setAttribute('text-anchor','middle'); t.setAttribute('font-size','10'); t.setAttribute('fill', color);
-      t.textContent = formatResult(p[key]);
-      svg.appendChild(t);
     });
   };
 
@@ -410,20 +393,29 @@ function renderLineChart(months, resultSeries, metaSeries){
     svg.appendChild(label);
   });
 
+  if(!hasAny){
+    const msg = document.createElementNS(SVG_NS,'text');
+    msg.setAttribute('x', margin.left + width/2); msg.setAttribute('y', margin.top + height/2);
+    msg.setAttribute('text-anchor','middle'); msg.setAttribute('font-size','12'); msg.setAttribute('fill','var(--muted)');
+    msg.textContent = 'Sin evaluaciones registradas en el per?odo seleccionado';
+    svg.appendChild(msg);
+  }
+
   container.appendChild(svg);
+  if(!hasAny){ container.appendChild(element('p','empty chart-empty-state','A?n no hay evaluaciones para mostrar la evoluci?n del desempe?o.')); }
   const legend = element('div','chart-legend');
-  legend.innerHTML = `<div class="legend-item"><span class="legend-color" style="background:#84592B"></span><span class="legend-label">Resultado</span></div>` +
-    (hasMeta ? `<div class="legend-item"><span class="legend-color legend-color-meta"></span><span class="legend-label">Meta de desempe?o</span></div>` : '');
+  legend.innerHTML = '<div class="legend-item"><span class="legend-color" style="background:#84592B"></span><span class="legend-label">Resultado</span></div><div class="legend-item"><span class="legend-color legend-color-meta"></span><span class="legend-label">Meta de desempe?o</span></div>';
   container.appendChild(legend);
 
   const summary = element('div','chart-summary');
-  if(hasComparison){
+  if(!hasAny) summary.textContent = 'El gr?fico se mostrar? con datos reales cuando se registren evaluaciones en los per?odos seleccionados.';
+  else if(hasComparison){
     const first = comparable[0], last = comparable[comparable.length-1];
     const diff = Number(last.result) - Number(first.result);
     const trend = diff > 0 ? 'alza' : diff < 0 ? 'baja' : 'estable';
-    summary.textContent = `Comparaci?n: ${formatResult(first.result)} (${first.month}) ? ${formatResult(last.result)} (${last.month}) ? Tendencia ${trend}${diff !== 0 ? ` (${diff>0?'+':''}${formatResult(diff)})` : ''}.`; 
+    summary.textContent = `Comparaci?n: ${formatResult(first.result)} (${first.month}) ? ${formatResult(last.result)} (${last.month}) ? Tendencia ${trend}${diff !== 0 ? ` (${diff>0?'+':''}${formatResult(diff)})` : ''}.`;
   } else {
-    summary.textContent = 'Hay datos disponibles, pero se necesitan evaluaciones en al menos dos per?odos para comparar la evoluci?n.'; 
+    summary.textContent = 'Hay datos disponibles, pero se necesitan evaluaciones en al menos dos per?odos para comparar la evoluci?n.';
   }
   container.appendChild(summary);
 }
@@ -460,28 +452,31 @@ function renderDistribution(){
   container.appendChild(summary);
 
   const rows = departments.map(dep => {
-    const workers = entities.filter(e => (e.departamentoId || e.departmentId) === dep.id_departamento).length;
+    const depWorkers = entities.filter(e => (e.departamentoId || e.departmentId) === dep.id_departamento);
+    const active = depWorkers.filter(isEntityActive).length;
+    const inactive = Math.max(0, depWorkers.length - active);
     const current = activeAssignments.filter(a => a.id_departamento === dep.id_departamento).length;
-    return { name: dep.nombre || '?rea', workers, current };
+    return { name: dep.nombre || '?rea', workers: depWorkers.length, active, inactive, current };
   });
-  if(rows.length === 0){
-    container.appendChild(element('p','empty activity-empty','No hay ?reas de trabajo registradas.')); 
-    return;
-  }
-  const max = Math.max(1, ...rows.map(r => Math.max(r.workers, r.current)));
+  const unassigned = entities.filter(e => !(e.departamentoId || e.departmentId));
+  if(unassigned.length){ const active=unassigned.filter(isEntityActive).length; rows.push({ name:'Sin ?rea asignada', workers:unassigned.length, active, inactive:unassigned.length-active, current:0 }); }
+  if(rows.length === 0){ container.appendChild(element('p','empty activity-empty','No hay ?reas de trabajo registradas.')); return; }
+  const max = Math.max(1, ...rows.map(r => r.workers));
+  const legendD = element('div','distribution-legend');
+  legendD.innerHTML = '<span class="legend-item"><span class="legend-color" style="background:#84592B"></span><span class="legend-label">Activos</span></span><span class="legend-item"><span class="legend-color" style="background:#C7A97A"></span><span class="legend-label">Inactivos</span></span>';
+  container.appendChild(legendD);
   const list = element('div', 'distribution-list');
   rows.forEach(row => {
     const item = element('div', 'distribution-row');
     const head = element('div', 'distribution-row-head');
     head.append(element('span','distribution-name', row.name), element('span','distribution-count', `${row.workers} trabajador${row.workers===1?'':'es'}`));
-    const bar = element('div', 'distribution-bar');
-    const fill = element('span', 'distribution-fill');
-    fill.style.width = `${(row.workers / max) * 100}%`;
-    bar.appendChild(fill);
+    const bar = element('div', 'distribution-bar distribution-bar-stacked');
+    const a = element('span','distribution-fill distribution-fill-active'); a.style.width = `${(row.active/max)*100}%`;
+    const i = element('span','distribution-fill distribution-fill-inactive'); i.style.width = `${(row.inactive/max)*100}%`;
+    bar.append(a,i);
     const meta = element('div', 'distribution-meta');
-    meta.textContent = `Asignaciones vigentes: ${row.current}`;
-    item.append(head, bar, meta);
-    list.appendChild(item);
+    meta.textContent = `Activos: ${row.active} ? Inactivos: ${row.inactive} ? Asignaciones vigentes: ${row.current}`;
+    item.append(head, bar, meta); list.appendChild(item);
   });
   container.appendChild(list);
 }
@@ -593,4 +588,5 @@ export function renderDashboard(){
   const metaSeries = months.map(m => { const b = monthMap.get(m); return b.metaCount ? b.metaSum / b.metaCount : null; });
   renderLineChart(months, resultSeries, metaSeries);
   renderRecentActivity(recentRecords(loadDocuments(), loadEntities()));
+  renderDistribution();
 }
