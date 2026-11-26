@@ -230,31 +230,37 @@ function ensureLayout(view){
   if(!heading || !subtitle || !statGrid || !actionsHeading || !actionGrid) return;
 
   const shell = element('div', 'dashboard-shell');
-
   const kpiSection = element('section', 'dashboard-section');
-  kpiSection.appendChild(element('h2', 'section-title', 'Indicadores clave de desempeño'));
+  kpiSection.appendChild(element('h2', 'section-title', 'Indicadores principales'));
   const existingIcons = ['users', 'file'];
   statGrid.querySelectorAll('.stat-card').forEach((card, index) => {
     if(!card.querySelector('.stat-icon')) card.prepend(icon(existingIcons[index] || 'layers', 'stat-icon'));
   });
   statGrid.append(
     statCard('stat-active', 'stat-active-label', 'Personal activo', 'activity'),
-    statCard('stat-departments', 'stat-departments-label', 'Áreas de trabajo', 'layers'),
-    statCard('stat-assignments', 'stat-assignments-label', 'Asignaciones de área vigentes', 'calendar')
+    statCard('stat-departments', 'stat-departments-label', '?reas de trabajo', 'layers'),
+    statCard('stat-assignments', 'stat-assignments-label', 'Asignaciones vigentes', 'calendar')
   );
   kpiSection.appendChild(statGrid);
 
-  const panels = element('div', 'dashboard-panels');
-  panels.append(
+  const topPanels = element('div', 'dashboard-panels dashboard-panels-main');
+  topPanels.append(
     createChartPanel(),
-    panel('dashboard-activity', 'Actividad reciente', 'Últimas 5 evaluaciones', 'file')
+    panel('dashboard-activity', 'Actividad reciente', '?ltimas 5 evaluaciones', 'file')
   );
 
-  const actionSection = element('section', 'dashboard-section');
-  actionSection.appendChild(actionsHeading);
-  actionSection.appendChild(actionGrid);
+  const bottomPanels = element('div', 'dashboard-panels dashboard-panels-secondary');
+  bottomPanels.append(
+    panel('dashboard-distribution', 'Distribuci?n del personal', 'Por ?rea y estado', 'layers'),
+    panel('dashboard-actions-panel', 'Acciones r?pidas', 'Accesos frecuentes', 'activity')
+  );
+  const actionPanel = bottomPanels.querySelectorAll('.panel')[1];
+  if(actionPanel){
+    actionPanel.querySelector('.panel-body').appendChild(actionGrid);
+    actionsHeading.remove();
+  }
 
-  shell.append(kpiSection, panels, actionSection);
+  shell.append(kpiSection, topPanels, bottomPanels);
   view.appendChild(shell);
   view.dataset.dashboardLayout = 'ready';
   decorateActionButtons(actionGrid);
@@ -420,6 +426,64 @@ function renderLineChart(months, resultSeries, metaSeries){
     summary.textContent = 'Hay datos disponibles, pero se necesitan evaluaciones en al menos dos per?odos para comparar la evoluci?n.';
   }
   container.appendChild(summary);
+}
+
+function renderDistribution(){
+  const container = document.getElementById('dashboard-distribution');
+  if(!container) return;
+  container.replaceChildren();
+
+  const entities = loadEntities();
+  const departments = loadDepartments().slice().sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||'','es'));
+  const assignments = loadDepartmentHistory();
+  const today = todayString();
+  const activeAssignments = assignments.filter(a => a.fecha_inicio && a.fecha_inicio <= today && (!a.fecha_fin || a.fecha_fin >= today));
+
+  const activeCount = entities.filter(e => isActiveStatus(e.status)).length;
+  const inactiveCount = Math.max(0, entities.length - activeCount);
+
+  if(entities.length === 0 && departments.length === 0){
+    container.appendChild(element('p', 'empty activity-empty', 'No hay informaci?n de personal disponible para mostrar la distribuci?n.'));
+    return;
+  }
+
+  const summary = element('div', 'distribution-summary');
+  [
+    ['Personal activo', String(activeCount)],
+    ['Personal inactivo', String(inactiveCount)],
+    ['Asignaciones vigentes', String(activeAssignments.length)]
+  ].forEach(([label, value]) => {
+    const card = element('div', 'distribution-mini');
+    card.append(element('span','distribution-mini-value', value), element('span','distribution-mini-label', label));
+    summary.appendChild(card);
+  });
+  container.appendChild(summary);
+
+  const rows = departments.map(dep => {
+    const workers = entities.filter(e => (e.departamentoId || e.departmentId) === dep.id_departamento).length;
+    const current = activeAssignments.filter(a => a.id_departamento === dep.id_departamento).length;
+    return { name: dep.nombre || '?rea', workers, current };
+  });
+  if(rows.length === 0){
+    container.appendChild(element('p','empty activity-empty','No hay ?reas de trabajo registradas.'));
+    return;
+  }
+  const max = Math.max(1, ...rows.map(r => Math.max(r.workers, r.current)));
+  const list = element('div', 'distribution-list');
+  rows.forEach(row => {
+    const item = element('div', 'distribution-row');
+    const head = element('div', 'distribution-row-head');
+    head.append(element('span','distribution-name', row.name), element('span','distribution-count', `${row.workers} trabajador${row.workers===1?'':'es'}`));
+    const bar = element('div', 'distribution-bar');
+    const fill = element('span', 'distribution-fill');
+    fill.style.width = `${(row.workers / max) * 100}%`;
+    bar.appendChild(fill);
+    const meta = element('div', 'distribution-meta');
+    meta.textContent = `Asignaciones vigentes: ${row.current}`;
+    item.append(head, bar, meta);
+    list.appendChild(item);
+  });
+  container.appendChild(list);
 }
 
 function renderRecentActivity(records){
