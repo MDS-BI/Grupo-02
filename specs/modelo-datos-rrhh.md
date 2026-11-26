@@ -82,7 +82,7 @@ Representa el resultado registrado para un trabajador en un período. La asignac
 - Cada registro debe referenciar una asignación existente. El trabajador y el equipo del registro se obtienen de esa asignación.
 - La asignación debe corresponder al período registrado. El período no puede ser futuro ni anterior a la fecha de ingreso del trabajador.
 - Si hay más de una asignación de equipo dentro de un mismo mes, debe definirse antes de implementar si se permite más de un registro mensual asociado a distintas asignaciones o qué asignación representa el período. No se presupone aquí una regla que no aparece en los requisitos.
-- El indicador debe tener entre 3 y 60 caracteres; el resultado debe ser un número no negativo; la unidad es obligatoria.
+- El indicador debe tener entre 3 y 60 caracteres; el resultado debe ser un número no negativo; la unidad es opcional y, si se informa, debe ser texto no vacío.
 - La política de duplicados para trabajador + período + indicador está pendiente de confirmación; no se impone una restricción de unicidad en esta propuesta.
 - Corregir un registro solo modifica ese registro; no altera los de otros períodos.
 - No se definen indicadores, evaluaciones, puntajes ni fórmulas de productividad.

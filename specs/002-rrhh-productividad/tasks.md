@@ -193,7 +193,7 @@ La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T08
 
 - [x] T040 [P] [US1] Agregar pruebas unitarias para validar el período mensual, el primer y último día del mes, el rechazo de períodos futuros y los anteriores al ingreso.
 
-- [x] T041 [P] [US1] [US6] Agregar pruebas unitarias para indicador de 3 a 60 caracteres, resultado numérico no negativo y unidad obligatoria.
+- [x] T041 [P] [US1] [US6] Agregar pruebas unitarias para indicador de 3 a 60 caracteres, resultado numérico no negativo y unidad opcional.
 
 - [x] T042 [P] [US1] Agregar pruebas unitarias para validar asignaciones: existencia, pertenencia al trabajador, superposición con el período y selección automática o explícita.
 
@@ -476,7 +476,7 @@ El incremento 002 se considera finalizado cuando:
 - [x] T097 Implementar función `calcularMetasConsolidadas` que agrupe documentos por departamento+período y sume las metas.
 - [x] T098 Llamar a `calcularMetasConsolidadas` automáticamente en `addDocument`, `updateDocument`, `deleteDocument` y `deleteDocumentsForEntity`.
 - [x] T099 Agregar pruebas unitarias para metas consolidadas en `tests/unit/rrhh-storage.test.js` (14 pruebas).
-- [x] T100 Actualizar documentación: `spec.md` (requisitos FR-043 a FR-048, casos límite 26-33), `data-model.md` (sección 4.6), `tasks.md` (Fase 9).
+- [x] T100 Actualizar documentación: `spec.md` (requisitos FR-043 a FR-051, casos límite 26-33), `data-model.md` (sección 4.6), `tasks.md` (Fase 9), `contracts/storage.md` (clave `erp_base_module:metas_consolidadas`).
 
 ---
 
@@ -497,8 +497,9 @@ El incremento 002 se considera finalizado cuando:
 
 -----
 
-## Pendientes – Historia de Usuario 7
+## Fuera de alcance – Historia de Usuario 7
 
-- [ ] Actualizar tasks.md con las tareas necesarias para implementar la HU7: confidencialidad de licencias médicas y ausencias justificadas.
-- [ ] Definir las tareas de registro, consulta, privacidad y validación de licencias médicas ficticias.
-- [ ] Verificar que la implementación no almacene ni exponga diagnósticos ni antecedentes clínicos.
+La HU7 se conserva en `spec.md` solo como contexto de privacidad. No tiene claves de almacenamiento, campos, interfaz ni pruebas en el MVP 002; las tareas siguientes no deben ejecutarse para reconstruir la entrega actual.
+
+- [ ] Diferido: definir tareas de registro, consulta, privacidad y validación de licencias médicas ficticias en un incremento posterior.
+- [ ] Diferido: verificar en ese incremento que la implementación no almacene ni exponga diagnósticos ni antecedentes clínicos.

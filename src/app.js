@@ -709,8 +709,10 @@ function applyLabels(config){
   qs('action-new-document-sub').textContent = `Registrar ${document_.toLowerCase()}`;
   qs('action-open-entities-title').textContent = entities;
   qs('action-open-entities-sub').textContent = `Abrir la gestión de ${entities.toLowerCase()}`;
-  qs('action-find-title').textContent = `Buscar ${documents.toLowerCase()}`;
-  qs('action-find-sub').textContent = `Buscar ${entities.toLowerCase()}`;
+  qs('action-find-title').textContent = `Buscar ${entities.toLowerCase()}`;
+  qs('action-find-sub').textContent = rrhh
+    ? `Buscar ${entity.toLowerCase()} por nombre, código, cargo o área de trabajo`
+    : `Buscar ${entity.toLowerCase()} por nombre, código o categoría`;
 
   qs('entities-view-heading').textContent = entities;
   qs('documents-view-heading').textContent = documents;

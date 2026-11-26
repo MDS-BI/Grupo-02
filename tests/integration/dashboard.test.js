@@ -52,7 +52,7 @@ describe('User Story 3 - home dashboard with quick actions and record stats', ()
     expect(qs('action-new-entity-title').textContent).toBe('Nuevo personal');
     expect(qs('action-new-document-title').textContent).toBe('Nueva evaluación');
     expect(qs('action-open-entities-title').textContent).toBe('Personal');
-    expect(qs('action-find-title').textContent).toBe('Buscar evaluaciones');
+    expect(qs('action-find-title').textContent).toBe('Buscar personal');
   });
 
   it('uses configured terminology on quick actions and stat cards', async () => {
@@ -61,6 +61,7 @@ describe('User Story 3 - home dashboard with quick actions and record stats', ()
     expect(qs('action-new-document-title').textContent).toBe('Nuevo Pedido de Venta');
     expect(qs('stat-entities-label').textContent).toBe('Clientes');
     expect(qs('stat-documents-label').textContent).toBe('Pedidos de Venta');
+    expect(qs('action-find-title').textContent).toBe('Buscar clientes');
   });
 
   it('shows live statistics that match stored records', async () => {

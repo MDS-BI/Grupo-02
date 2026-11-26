@@ -40,7 +40,7 @@ export const RRHH_CONFIG = Object.freeze({
     { target: 'entity', key: 'contactoEmergenciaTelefono', label: 'Teléfono del contacto de emergencia', type: 'text', required: false },
     { target: 'document', key: 'indicador', label: 'Indicador de desempeño', type: 'text', required: true },
     { target: 'document', key: 'resultado', label: 'Resultado obtenido', type: 'number', required: true },
-    { target: 'document', key: 'unidad', label: 'Unidad', type: 'text', required: true },
+    { target: 'document', key: 'unidad', label: 'Unidad', type: 'text', required: false },
     { target: 'document', key: 'asignacionId', label: 'Asignación de área', type: 'text', required: true, optionsSource: 'assignments' },
     { target: 'document', key: 'turno', label: 'Turno', type: 'select', required: true, options: Object.freeze(['Mañana', 'Tarde']) },
     { target: 'document', key: 'meta', label: 'Meta esperada', type: 'number', required: true },

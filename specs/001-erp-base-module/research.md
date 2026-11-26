@@ -20,6 +20,8 @@
 
 ## Investigación complementaria: historial de actividad (Historia de Usuario 14)
 
+> Esta investigación se conserva como referencia de diseño, pero la HU14 quedó fuera de alcance del MVP entregable. Las decisiones siguientes no están implementadas en `src/` y no forman parte del contrato ejecutable actual.
+
 ### Evidencia del repositorio
 
 - La documentación del proyecto y `plan.md` describen `localStorage` como persistencia del módulo base. El README documenta las claves `erp_base_module:entities` y `erp_base_module:documents`.

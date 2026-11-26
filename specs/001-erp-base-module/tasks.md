@@ -329,25 +329,27 @@
 
 ---
 
-## Fase 19: Historia de Usuario 14 - Registrar y consultar el historial de actividad
+## Fase 19: Historia de Usuario 14 - Registrar y consultar el historial de actividad (FUERA DE ALCANCE del MVP entregable)
 
-**Objetivo**: Registrar eventos disponibles de inicio/cierre de sesión, consultas explícitas, búsquedas ejecutadas y los intentos de creación, modificación y eliminación de entidades/documentos; permitir que cualquier persona que pueda utilizar el ERP local consulte el historial cronológico, sin autenticación ni roles.
+**Estado de reconstrucción:** esta fase documenta una propuesta no implementada. No define código, clave de `localStorage`, interfaz ni pruebas de la entrega actual; no debe ejecutarse para reconstruir el MVP.
+
+**Objetivo propuesto**: Registrar eventos disponibles de inicio/cierre de sesión, consultas explícitas, búsquedas ejecutadas y los intentos de creación, modificación y eliminación de entidades/documentos; permitir que cualquier persona que pueda utilizar el ERP local consulte el historial cronológico, sin autenticación ni roles.
 
 **Prueba Independiente**: Una persona con acceso al ERP local realiza eventos cubiertos, abre Historial y comprueba acción, módulo, hora, resultado y actor disponible o «No identificado». Las actividades anteriores siguen disponibles después de recargar mientras el almacenamiento del navegador no se haya borrado o alterado.
 
 ### Pruebas para la Historia de Usuario 14
 
-- [ ] T082 [P] [US14] Añadir pruebas unitarias para los siete valores de action, campos opcionales, carga ordenada de al menos 500 actividades, identidad ausente, resultados fallidos y append-only en tests/unit/storage.test.js
-- [ ] T083 [P] [US14] Añadir pruebas de integración para consultas explícitas, búsquedas ejecutadas y mutaciones exitosas/fallidas; verificar sesiones solo si ya existe un emisor, búsquedas sin coincidencias exitosas y exclusión de lecturas internas/pulsaciones en tests/integration/activity-log.test.js
-- [ ] T084 [P] [US14] Añadir pruebas de integración para acceso al historial sin roles, estado vacío, actor no identificado, persistencia tras recarga, ausencia de vencimiento/borrado en interfaz, privacidad de descripciones y fallo de escritura comunicado en tests/integration/activity-log.test.js
+- [ ] Diferido: T082 [P] [US14] Añadir pruebas unitarias para los siete valores de action, campos opcionales, carga ordenada de al menos 500 actividades, identidad ausente, resultados fallidos y append-only en tests/unit/storage.test.js
+- [ ] Diferido: T083 [P] [US14] Añadir pruebas de integración para consultas explícitas, búsquedas ejecutadas y mutaciones exitosas/fallidas; verificar sesiones solo si ya existe un emisor, búsquedas sin coincidencias exitosas y exclusión de lecturas internas/pulsaciones en tests/integration/activity-log.test.js
+- [ ] Diferido: T084 [P] [US14] Añadir pruebas de integración para acceso al historial sin roles, estado vacío, actor no identificado, persistencia tras recarga, ausencia de vencimiento/borrado en interfaz, privacidad de descripciones y fallo de escritura comunicado en tests/integration/activity-log.test.js
 
 ### Implementación de la Historia de Usuario 14
 
-- [ ] T085 [US14] Añadir a src/storage.js la persistencia append-only de actividades en erp_base_module:activities y propagar los errores de lectura/escritura sin resultados vacíos engañosos
-- [ ] T086 [US14] Conectar consultas explícitas, búsquedas ejecutadas, intentos de crear/modificar/eliminar entidades y documentos y eventos de sesión solo si existe un emisor previo; registrar resultado, módulo y contexto de identidad existente (nulo si falta) en src/app.js sin registrar navegación ni lecturas internas
-- [ ] T087 [US14] Crear src/components/activity-log.js y la navegación a Historial con orden descendente, campos de auditoría y estado vacío
-- [ ] T088 [US14] Comunicar fallos de auditoría sin ocultarlos, sin revertir silenciosamente una operación de negocio ya persistida y sin guardar credenciales, secretos, valores sensibles completos ni términos de búsqueda en src/app.js
-- [ ] T089 Ejecutar pruebas enfocadas de HU14 y regresión; comprobar orden con al menos 500 eventos, cuota/lectura/escritura fallidas, y que no se alteran las claves ni los datos existentes de entidades y documentos
+- [ ] Diferido: T085 [US14] Añadir a src/storage.js la persistencia append-only de actividades en erp_base_module:activities y propagar los errores de lectura/escritura sin resultados vacíos engañosos
+- [ ] Diferido: T086 [US14] Conectar consultas explícitas, búsquedas ejecutadas, intentos de crear/modificar/eliminar entidades y documentos y eventos de sesión solo si existe un emisor previo; registrar resultado, módulo y contexto de identidad existente (nulo si falta) en src/app.js sin registrar navegación ni lecturas internas
+- [ ] Diferido: T087 [US14] Crear src/components/activity-log.js y la navegación a Historial con orden descendente, campos de auditoría y estado vacío
+- [ ] Diferido: T088 [US14] Comunicar fallos de auditoría sin ocultarlos, sin revertir silenciosamente una operación de negocio ya persistida y sin guardar credenciales, secretos, valores sensibles completos ni términos de búsqueda en src/app.js
+- [ ] Diferido: T089 Ejecutar pruebas enfocadas de HU14 y regresión; comprobar orden con al menos 500 eventos, cuota/lectura/escritura fallidas, y que no se alteran las claves ni los datos existentes de entidades y documentos
 
 **Punto de control**: Los eventos cubiertos aparecen con resultado e identidad disponible o «No identificado»; todos los usuarios locales pueden consultar el historial; los errores se comunican, las descripciones minimizan datos y los registros previos se conservan mientras el almacenamiento local siga disponible.
 

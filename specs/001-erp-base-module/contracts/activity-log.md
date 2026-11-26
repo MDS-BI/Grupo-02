@@ -1,5 +1,7 @@
 # Contrato del Historial de Actividad
 
+> Contrato de referencia fuera de alcance del MVP entregable. `erp_base_module:activities` no se implementa ni se expone en la aplicación actual.
+
 ## Propósito
 
 Definir la persistencia y consulta de la actividad realizada en el ERP. Este contrato complementa `entity-storage.md`; no introduce autenticación ni reemplaza la persistencia de entidades y documentos.

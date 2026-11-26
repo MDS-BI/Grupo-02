@@ -31,7 +31,7 @@
 
 ## Notas
 
-- Las Historias de Usuario 1-13 conservan su lista de preparación existente. Las decisiones de alcance de la HU14 se adoptaron según esta revisión; quedan pendientes la implementación y su verificación.
+- Las Historias de Usuario 1-13 conservan su lista de preparación existente. La HU14 quedó documentada como propuesta fuera de alcance del MVP entregable; no se implementa ni se verifica en esta entrega.
 
 ## Revisión de Historia de Usuario 14 - Historial de actividad
 
@@ -51,12 +51,12 @@
 - [x] Las tareas incluyen pruebas unitarias, integración, interfaz y regresión.
 - [x] Se documentó la arquitectura local existente y la ausencia de autenticación en la evidencia revisada.
 
-### Decisiones adoptadas y trabajo restante
+### Decisiones adoptadas y alcance de la documentación
 
 - [x] El acceso se ofrece a cualquier persona que pueda utilizar el ERP local; no se restringe a administradores.
 - [x] No se auditan navegación, lecturas internas de interfaz ni cada pulsación de tecla.
 - [x] No se implementan autenticación ni roles; sesiones solo se registran si ya existe un emisor.
 - [x] No se fija retención garantizada, exportación ni respaldo central en el MVP; no se elimina automáticamente y no se ofrece borrado en interfaz.
-- [ ] Implementar y probar el alcance de HU14 descrito en la Fase 19 de `tasks.md`.
+- [x] Se documentó que la Fase 19 de `tasks.md` no forma parte del MVP entregable y no debe ejecutarse al reconstruirlo.
 
-La HU14 tiene su alcance documental definido. La implementación debe respetar las limitaciones de almacenamiento local y no presentar el historial como inmutable, central, respaldado o prueba de identidad autenticada.
+La HU14 tiene su alcance documental definido como referencia futura. Si se implementa en otro incremento, debe respetar las limitaciones de almacenamiento local y no presentar el historial como inmutable, central, respaldado o prueba de identidad autenticada.

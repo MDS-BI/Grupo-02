@@ -290,7 +290,7 @@ Cuando existe una sola asignación válida para el mes, la aplicación puede sel
 - No se permiten períodos anteriores al ingreso del trabajador.
 - `indicador` debe tener entre 3 y 60 caracteres.
 - `resultado` debe ser numérico y mayor o igual a cero.
-- `unidad` es obligatoria.
+- `unidad` es opcional; si se informa, debe ser texto no vacío.
 - El trabajador debe existir.
 - La asignación debe existir y corresponder al trabajador.
 - No se permite registrar productividad sin una asignación válida.

@@ -233,7 +233,9 @@ Como usuario de negocio, quiero un espacio de trabajo estilo ERP consistente, co
 
 
 
-### Historial de usuario 14 - Registrar y consultar la actividad de usuario
+### Historial de usuario 14 - Registrar y consultar la actividad de usuario (FUERA DE ALCANCE del MVP entregable)
+
+> Esta historia, sus escenarios, requisitos FR-042 a FR-049 y criterios SC-012/SC-015 se conservan solo como referencia de diseño. No están implementados, no generan claves de `localStorage` ni interfaz, y no forman parte del alcance ejecutable al reconstruir el MVP.
 
 Como usuario del ERP, quiero consultar el historial de actividad local para supervisar los eventos realizados dentro de la aplicación e identificar la acción, el módulo, la fecha y hora y la identidad disponible de quien la realizó.
 

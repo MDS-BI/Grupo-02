@@ -327,7 +327,9 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 ---
 
-### Historia de Usuario 7: Confidencialidad de licencias médicas y ausencias justificadas (Prioridad: P1)
+### Historia de Usuario 7: Confidencialidad de licencias médicas y ausencias justificadas (FUERA DE ALCANCE del MVP 002)
+
+> Esta historia se conserva solo como contexto de privacidad. **No está implementada**, no define claves de `localStorage`, campos ni interfaz en este MVP, y no debe ejecutarse al reconstruir el incremento 002. Los escenarios siguientes no son criterios de aceptación de la entrega actual.
 
 **Como** encargado de RR. HH. de la cafetería,<br>
 **quiero** registrar y consultar las licencias médicas ficticias del personal con la mínima información necesaria —trabajador, fechas de ausencia, tipo de reposo y estado de tramitación—,<br>
@@ -339,9 +341,9 @@ Los nombres de campos se verificaron durante la planificación técnica contra l
 
 **Responsable:** Consuelo Hidalgo.
 
-**Requisitos relacionados:** FR-010, FR-032, FR-034, FR-035, FR-040, FR-041 y FR-042; reglas de validación, protección de registros y privacidad documentadas en esta especificación.
+**Estado de reconstrucción:** no implementada; excluida del alcance ejecutable del MVP 002. Los requisitos FR-010, FR-032, FR-034, FR-035, FR-040, FR-041 y FR-042 solo motivan la advertencia de datos ficticios y no se cubren con código ni pruebas en esta entrega.
 
-#### Escenarios de aceptación
+#### Escenarios de referencia (no ejecutables en el MVP 002)
 
 1. **Dado** un trabajador ficticio existente, **cuando** se registra una licencia médica con fecha de inicio, fecha de término, tipo de reposo (total o parcial) y estado (pendiente, autorizada, rechazada o finalizada), **entonces** la ausencia queda asociada al trabajador y se muestra en su historial con esas fechas.
 2. **Dado** el formulario de licencia médica, **cuando** se abre para registrar una ausencia, **entonces** no ofrece campos de diagnóstico, enfermedad, exámenes, tratamientos ni antecedentes clínicos, y solo permite los datos necesarios para identificar la ausencia y su tramitación.

@@ -104,7 +104,9 @@ Objeto de configuración cargado al arrancar que adapta el módulo base en un m�
 - El campo `status` es intencionadamente de texto libre a nivel base para que cada módulo personalizado pueda imponer su propio ciclo de vida (p. ej., estados de pedidos, estados de aprobación).
 - La unicidad de folio por serie, las partidas de documento (líneas con producto, cantidad y precio) y la numeración automática son puntos de extensión naturales para módulos que los requieran.
 
-# Modelo de Datos — Módulo ERP de Recursos Humanos, Planilla y Productividad
+## Apéndice A — Modelo de RR. HH. y productividad (referencia, no MER adicional)
+
+> Este apéndice es una copia de referencia del modelo del incremento 002. No define un MER adicional al del módulo base y no debe duplicarse al reconstruir el proyecto.
 
 **Asignatura:** Modelación de Sistemas 2026-2  
 **Grupo:** Grupo-02  

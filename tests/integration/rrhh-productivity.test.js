@@ -79,6 +79,8 @@ describe('Incremento 002 - RR. HH. y productividad', () => {
     expect(qs('nav-entities-label').textContent).toBe('Personal');
     expect(qs('nav-documents-label').textContent).toBe('Evaluaciones de desempeño');
     expect(qs('data-warning').hidden).toBe(false);
+    expect(qs('action-find-title').textContent).toBe('Buscar personal');
+    expect(qs('action-find-sub').textContent).toContain('cargo');
     expect(qs('productivity-fields').hidden).toBe(false);
     expect(qs('creditLimit').closest('[data-base-entity]').hidden).toBe(true);
     expect(qs('paymentTerms').closest('[data-base-entity]').hidden).toBe(true);
