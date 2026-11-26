@@ -653,7 +653,7 @@ La confirmación de la distribución ampliada completa T084.
 - Prueba técnica con 500 registros en Edge aislado: verificada (T076).
 - Coherencia entre `plan.md`, `data-model.md`, `tasks.md` y esta especificación revisada: completada (T085).
 - Nombres de campos verificados contra las estructuras reales del módulo base; tareas de implementación registradas en `tasks.md`: completado.
-- Mantener los cambios en la rama `correccion-specs-002` hasta su revisión.
+- Mantener los cambios en la rama `correccion-specs-002` hasta su revisión; la revisión final del grupo quedó aprobada el 25-11-2026.
 
 ---
 

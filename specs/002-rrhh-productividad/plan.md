@@ -150,7 +150,7 @@ Se permiten extensiones aditivas de los archivos existentes del módulo ERP base
 
 ## 10. Estado de tasks.md
 
-`tasks.md` contiene tareas concretas de implementación y pruebas por etapa. HU5 y HU6 se relacionan con funcionalidades y pruebas existentes; no agregan implementación. La implementación, las pruebas automatizadas, T076, T072, T083 y T084 están completadas. T085 y T086 están completadas; la revisión final del grupo sigue pendiente.
+`tasks.md` contiene tareas concretas de implementación y pruebas por etapa. HU5 y HU6 se relacionan con funcionalidades y pruebas existentes; no agregan implementación. La implementación, las pruebas automatizadas, T076, T072, T083 y T084 están completadas. T085 y T086 están completadas; la revisión final del grupo fue aprobada el 25-11-2026.
 
 ---
 

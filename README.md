@@ -63,6 +63,8 @@ npm run dev
 
 Abre `http://localhost:5173`. Para el flujo principal, crea un departamento y un trabajador, registra su asignación, ingresa una medición mensual y consulta las vistas **Historial** y **Evolución**.
 
+No hay credenciales de acceso: el MVP no implementa inicio de sesión, usuarios, contraseñas ni control de acceso. Basta con abrir la URL local; no hay que buscar ni pedir un login.
+
 Compilar para producción:
 
 ```bash
@@ -112,3 +114,20 @@ Estas mejoras no están implementadas en el MVP y no deben presentarse como func
 - Vitest — documentación oficial: https://vitest.dev/guide/
 - jsdom — documentación del proyecto: https://github.com/jsdom/jsdom
 - Documentación interna del proyecto: `specs/001-erp-base-module/` y `specs/002-rrhh-productividad/`.
+
+---
+
+## 8. Evidencia colaborativa
+
+**Nómina oficial:** la nómina del grupo para el MVP es de **6 integrantes**, la indicada en la sección 3. En versiones anteriores del README se registraban 5; ese desajuste quedó corregido y todas las historias de usuario tienen responsable asignado en `specs/002-rrhh-productividad/tasks.md`.
+
+**Trazabilidad de Pull Requests:** los incrementos quedaron integrados mediante los siguientes PRs del repositorio `MDS-BI/Grupo-02`:
+
+| PR | Rama de origen | Uso principal |
+|---|---|---|
+| [#2](https://github.com/MDS-BI/Grupo-02/pull/2) | `historial-productividad` | Implementación inicial del historial de productividad. |
+| [#4](https://github.com/MDS-BI/Grupo-02/pull/4) | `phillipecabalin-patch-1` | Ajustes de la historia de productividad. |
+| [#5](https://github.com/MDS-BI/Grupo-02/pull/5) | `historial-ajustes` | Ajustes al historial y a la documentación del incremento 002. |
+| [#6](https://github.com/MDS-BI/Grupo-02/pull/6) | `correccion-specs-002` | Consolidación de specs, tareas y responsables de 002. |
+
+Los commits posteriores a esos PRs continúan registrados en el historial de Git y son revisables desde el repositorio remoto.
