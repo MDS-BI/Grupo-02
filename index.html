@@ -301,19 +301,6 @@
                 <div id="productivity-duplicate-warning" class="warning" hidden></div>
 
                 <div>
-                  <label for="cf-indicador">Indicador de desempeño *</label>
-                  <input id="cf-indicador" name="cf-indicador" />
-                  <div class="error" id="error-cf-indicador" aria-live="polite"></div>
-                </div>
-                <div class="field-row">
-                  <div>
-                    <label for="cf-resultado">Resultado *</label>
-                    <input id="cf-resultado" name="cf-resultado" type="number" min="0" step="any" />
-                    <div class="error" id="error-cf-resultado" aria-live="polite"></div>
-                  </div>
-                </div>
-
-                <div>
                   <label for="cf-turno">Turno *</label>
                   <select id="cf-turno" name="cf-turno">
                     <option value="">-- Selecciona un turno --</option>
@@ -321,12 +308,6 @@
                     <option value="Tarde">Tarde</option>
                   </select>
                   <div class="error" id="error-cf-turno" aria-live="polite"></div>
-                </div>
-
-                <div>
-                  <label for="cf-meta">Meta esperada *</label>
-                  <input id="cf-meta" name="cf-meta" type="number" min="0" step="any" />
-                  <div class="error" id="error-cf-meta" aria-live="polite"></div>
                 </div>
 
                 <section class="form-section" aria-labelledby="evaluation-indicators-heading">
@@ -387,17 +368,48 @@
                   </div>
                 </section>
 
-                <div>
-                  <label for="cf-observaciones">Observaciones</label>
-                  <textarea id="cf-observaciones" name="cf-observaciones" rows="2"></textarea>
-                  <div class="error" id="error-cf-observaciones" aria-live="polite"></div>
-                </div>
-
-                <div>
-                  <label for="cf-oportunidadesMejora">Oportunidades de mejora</label>
-                  <textarea id="cf-oportunidadesMejora" name="cf-oportunidadesMejora" rows="2"></textarea>
-                  <div class="error" id="error-cf-oportunidadesMejora" aria-live="polite"></div>
-                </div>
+                <section class="form-section" aria-labelledby="evaluation-results-heading">
+                  <h3 id="evaluation-results-heading" class="form-section-title">Resultados y observaciones</h3>
+                  <div>
+                    <label for="cf-indicador">Indicador de desempeño *</label>
+                    <input id="cf-indicador" name="cf-indicador" />
+                    <div class="error" id="error-cf-indicador" aria-live="polite"></div>
+                  </div>
+                  <div class="field-row">
+                    <div>
+                      <label for="cf-meta">Meta esperada *</label>
+                      <input id="cf-meta" name="cf-meta" type="number" min="0" step="any" />
+                      <div class="error" id="error-cf-meta" aria-live="polite"></div>
+                    </div>
+                    <div>
+                      <label for="cf-resultado">Resultado *</label>
+                      <input id="cf-resultado" name="cf-resultado" type="number" min="0" step="any" />
+                      <div class="error" id="error-cf-resultado" aria-live="polite"></div>
+                    </div>
+                  </div>
+                  <div class="competency-average" aria-live="polite">
+                    <div class="competency-average-head">
+                      <span class="competency-average-label">Promedio de las cuatro competencias</span>
+                      <span id="competency-average-value" class="competency-average-value">— / 5</span>
+                    </div>
+                    <div class="competency-average-scale" aria-hidden="true">
+                      <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                    </div>
+                    <div class="competency-average-bar" role="img" aria-label="Promedio de competencias sobre una escala de 1 a 5">
+                      <div id="competency-average-fill" class="competency-average-fill" style="width:0%"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <label for="cf-observaciones">Observaciones</label>
+                    <textarea id="cf-observaciones" name="cf-observaciones" rows="2"></textarea>
+                    <div class="error" id="error-cf-observaciones" aria-live="polite"></div>
+                  </div>
+                  <div>
+                    <label for="cf-oportunidadesMejora">Oportunidades de mejora</label>
+                    <textarea id="cf-oportunidadesMejora" name="cf-oportunidadesMejora" rows="2"></textarea>
+                    <div class="error" id="error-cf-oportunidadesMejora" aria-live="polite"></div>
+                  </div>
+                </section>
               </div>
               <div data-base-document>
                 <div class="field-row">

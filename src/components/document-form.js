@@ -59,10 +59,35 @@ export function renderStatusControl(currentStatus){
 
 const EVAL_FIELDS = ['evaluacionCalidad','evaluacionResponsabilidad','evaluacionCumplimiento','evaluacionColaboracion'];
 
+function competencyAverage(){
+  const vals = EVAL_FIELDS.map(f => Number(qs('cf-' + f)?.value)).filter(n => Number.isFinite(n) && n >= 1 && n <= 5);
+  if(vals.length !== EVAL_FIELDS.length) return null;
+  return vals.reduce((a,b) => a + b, 0) / vals.length;
+}
+
+export function updateCompetencyAverage(){
+  const avg = competencyAverage();
+  const valueEl = qs('competency-average-value');
+  const fillEl = qs('competency-average-fill');
+  if(!valueEl || !fillEl) return;
+  if(avg === null){
+    valueEl.textContent = '? / 5';
+    fillEl.style.width = '0%';
+    fillEl.parentElement?.setAttribute('aria-label', 'Promedio de competencias sobre una escala de 1 a 5');
+    return;
+  }
+  const rounded = Math.round(avg * 100) / 100;
+  const display = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2).replace(/.?0+$/, '');
+  valueEl.textContent = display + ' / 5';
+  fillEl.style.width = ((avg / 5) * 100) + '%';
+  fillEl.parentElement?.setAttribute('aria-label', 'Promedio de competencias: ' + display + ' sobre 5');
+}
+
 function setRatingValue(field, value){
   const hidden = qs('cf-' + field);
   if(hidden) hidden.value = value === undefined || value === null ? '' : String(value);
   document.querySelectorAll(`input[name="rating-${field}"]`).forEach(r => { r.checked = String(value) === r.value; });
+  updateCompetencyAverage();
 }
 
 function initRatingInputs(){
@@ -73,6 +98,7 @@ function initRatingInputs(){
       radio.addEventListener('change', () => {
         const hidden = qs('cf-' + field);
         if(hidden) hidden.value = radio.value;
+        updateCompetencyAverage();
       });
     });
   });
