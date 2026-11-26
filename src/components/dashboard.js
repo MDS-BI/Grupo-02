@@ -439,7 +439,7 @@ function renderDistribution(){
   const today = todayString();
   const activeAssignments = assignments.filter(a => a.fecha_inicio && a.fecha_inicio <= today && (!a.fecha_fin || a.fecha_fin >= today));
 
-  const activeCount = entities.filter(e => isActiveStatus(e.status)).length;
+  const activeCount = entities.filter(isEntityActive).length;
   const inactiveCount = Math.max(0, entities.length - activeCount);
 
   if(entities.length === 0 && departments.length === 0){
