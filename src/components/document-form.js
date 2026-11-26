@@ -129,6 +129,8 @@ export function startDocumentEdit(doc){
     qs('cf-indicador').value = doc.indicador || '';
     qs('cf-resultado').value = doc.resultado === undefined ? '' : doc.resultado;
     qs('cf-asignacionId').value = doc.asignacionId || '';
+    const area = qs('cf-areaTrabajo');
+    if(area) area.value = doc.departamentoId || doc.areaTrabajoId || '';
     qs('cf-turno').value = doc.turno || '';
     qs('cf-meta').value = doc.meta === undefined ? '' : doc.meta;
     qs('cf-evaluacionCalidad').value = doc.evaluacionCalidad === undefined ? '' : doc.evaluacionCalidad;

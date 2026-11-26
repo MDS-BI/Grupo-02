@@ -536,26 +536,52 @@ function handleDocumentSubmit(ev){
   }
 }
 
+function populateProductivityAreas(preferredDepartmentId){
+  if(!isRRHHMode()) return;
+  const select = qs('cf-areaTrabajo');
+  if(!select) return;
+  const prev = preferredDepartmentId || select.value;
+  const departments = loadDepartments().slice().sort((a,b) => (a.nombre || '').localeCompare(b.nombre || '', 'es'));
+  setOptions(select, departments.map(d => ({ value: d.id_departamento, label: d.nombre })), prev, '-- Selecciona un ?rea de trabajo --');
+}
+
+function syncProductivityAreaFromAssignment(){
+  const assignmentId = qs('cf-asignacionId')?.value;
+  const areaSelect = qs('cf-areaTrabajo');
+  if(!areaSelect) return;
+  if(!assignmentId) return;
+  const assignment = loadDepartmentHistory().find(a => a.id_historial === assignmentId);
+  if(assignment && assignment.id_departamento){
+    areaSelect.value = assignment.id_departamento;
+  }
+}
+
 function populateProductivityAssignments(preferredAssignmentId){
   if(!isRRHHMode()) return;
   const select = qs('cf-asignacionId');
   if(!select) return;
   const entityId = qs('document-entity').value;
   const period = qs('productivity-period').value;
+  const selectedArea = qs('cf-areaTrabajo')?.value || '';
   const bounds = monthBounds(period);
   const previous = preferredAssignmentId || select.value;
   select.innerHTML = '';
   const blank = document.createElement('option');
   blank.value = '';
-  blank.textContent = '-- Selecciona una asignación de área --';
+  blank.textContent = '-- Selecciona una asignaci?n de ?rea --';
   select.appendChild(blank);
-  if(!entityId || !bounds) return;
-  const assignments = getAssignmentsOverlapping(entityId, bounds.startDate, bounds.endDate);
+  if(!entityId || !bounds) {
+    const err = qs('error-cf-asignacionId');
+    if(err) err.textContent = '';
+    return;
+  }
+  let assignments = getAssignmentsOverlapping(entityId, bounds.startDate, bounds.endDate);
+  if(selectedArea) assignments = assignments.filter(a => a.id_departamento === selectedArea);
   for(const assignment of assignments){
     const department = loadDepartments().find(d => d.id_departamento === assignment.id_departamento);
     const opt = document.createElement('option');
     opt.value = assignment.id_historial;
-    opt.textContent = `${department ? department.nombre : 'Área de trabajo'} · ${assignment.fecha_inicio} → ${assignmentEndLabel(assignment)}`;
+    opt.textContent = `${department ? department.nombre : '?rea de trabajo'} ? ${assignment.fecha_inicio} ? ${assignmentEndLabel(assignment)}`;
     select.appendChild(opt);
   }
   if(assignments.length === 1){
@@ -563,11 +589,16 @@ function populateProductivityAssignments(preferredAssignmentId){
   } else if(previous && [...select.options].some(o => o.value === previous)){
     select.value = previous;
   }
+  syncProductivityAreaFromAssignment();
   const error = qs('error-cf-asignacionId');
   if(error){
-    error.textContent = assignments.length === 0
-      ? 'El personal no tiene una asignación de área para este período.'
-      : '';
+    if(assignments.length === 0){
+      error.textContent = selectedArea
+        ? 'El personal no tiene una asignaci?n en el ?rea seleccionada para este per?odo.'
+        : 'El personal no tiene una asignaci?n de ?rea para este per?odo.';
+    } else {
+      error.textContent = '';
+    }
   }
 }
 

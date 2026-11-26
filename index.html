@@ -271,17 +271,35 @@
             <form id="document-form">
               <input type="hidden" id="document-id" />
               <input type="hidden" id="document-entity-id" />
-              <div>
+              <div id="document-entity-standalone">
                 <label for="document-entity" id="document-entity-label">Personal *</label>
                 <select id="document-entity" name="document-entity"></select>
                 <div class="error" id="error-document-entity" aria-live="polite"></div>
               </div>
               <div id="productivity-fields" hidden>
-                <div>
-                  <label for="productivity-period">Período (AAAA-MM) *</label>
-                  <input id="productivity-period" name="productivity-period" type="month" />
-                  <div class="error" id="error-period" aria-live="polite"></div>
-                </div>
+                <section class="form-section" aria-labelledby="evaluation-data-heading">
+                  <h3 id="evaluation-data-heading" class="form-section-title">Datos de la evaluación</h3>
+                  <div id="document-entity-slot"></div>
+                  <div class="field-row">
+                    <div>
+                      <label for="productivity-period">Período (AAAA-MM) *</label>
+                      <input id="productivity-period" name="productivity-period" type="month" />
+                      <div class="error" id="error-period" aria-live="polite"></div>
+                    </div>
+                    <div>
+                      <label for="cf-areaTrabajo">Área de trabajo *</label>
+                      <select id="cf-areaTrabajo" name="cf-areaTrabajo"></select>
+                      <div class="error" id="error-cf-areaTrabajo" aria-live="polite"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <label for="cf-asignacionId">Asignación de área *</label>
+                    <select id="cf-asignacionId" name="cf-asignacionId"></select>
+                    <div class="error" id="error-cf-asignacionId" aria-live="polite"></div>
+                  </div>
+                </section>
+                <div id="productivity-duplicate-warning" class="warning" hidden></div>
+
                 <div>
                   <label for="cf-indicador">Indicador de desempeño *</label>
                   <input id="cf-indicador" name="cf-indicador" />
@@ -294,12 +312,6 @@
                     <div class="error" id="error-cf-resultado" aria-live="polite"></div>
                   </div>
                 </div>
-                <div>
-                  <label for="cf-asignacionId">Asignación de área *</label>
-                  <select id="cf-asignacionId" name="cf-asignacionId"></select>
-                  <div class="error" id="error-cf-asignacionId" aria-live="polite"></div>
-                </div>
-                <div id="productivity-duplicate-warning" class="warning" hidden></div>
 
                 <div>
                   <label for="cf-turno">Turno *</label>
