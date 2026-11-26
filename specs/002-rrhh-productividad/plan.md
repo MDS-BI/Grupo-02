@@ -1,10 +1,92 @@
 # Implementation Plan: Módulo de RR. HH. — Historial de Productividad Laboral
 
-**Rama**: `correccion-specs-002` | **Fecha**: 2026-11-09 | **Especificación**: `specs/002-rrhh-productividad/spec.md` | **Estado**: Las seis historias corresponden a funcionalidades implementadas. Suite automatizada, prueba técnica con 500 registros, pruebas manuales SC-001 a SC-004, T072 y T084 completadas; la distribución de responsables para HU1–HU6 fue confirmada por el grupo.
+**Rama**: `correccion-specs-002` integrada con `003-roles-acceso-cafeteria` | **Fecha**: 2026-11-26 | **Especificación**: `specs/002-rrhh-productividad/spec.md` | **Estado**: Las seis historias corresponden a funcionalidades implementadas. Suite automatizada aprobada (16 archivos, 180 pruebas; 14 archivos y 165 pruebas en la corrección previa), prueba técnica con 500 registros (T076), pruebas manuales SC-001 a SC-004 aprobadas (T083), T072 y T084 completadas, roles FR-052 a FR-065 verificados (T075, T106–T112); revisión final aprobada el 25-11-2026.
 
-**Entrada**: Especificación 002 con sus 6 historias de usuario y decisiones de alcance, y MER de 9 entidades documentado en `specs/001-erp-base-module/data-model.md` como referencia. **Rol de planificación y tareas**.
+**Entrada**: Especificación 002 con sus 6 historias de usuario, los requisitos FR-052 a FR-065 de control de acceso por rol activo y decisiones de alcance aprobadas, y MER de 9 entidades documentado en `specs/001-erp-base-module/data-model.md` como referencia. **Rol de planificación y tareas**.
 
-**Nota sobre el modelo de datos**: El MER de 9 entidades de 001 se conserva sin modificaciones y se utiliza como referencia. El incremento 002 se apoya en `Entity`/Trabajador, `Departamento`, `Historial_Departamento` y `Document`. `specs/002-rrhh-productividad/data-model.md` está completado y verificado contra el MER; sirvió de entrada para generar `tasks.md`. No se crean entidades nuevas.
+**Nota sobre el modelo de datos**: El MER de 9 entidades de 001 se conserva sin modificaciones y se utiliza como referencia. El incremento 002 se apoya en `Entity`/Trabajador, `Departamento`, `Historial_Departamento` y `Document`. `specs/002-rrhh-productividad/data-model.md` está completado y verificado contra el MER; sirvió de entrada para generar `tasks.md`. No se crean entidades nuevas; el rol activo es un estado de interfaz, no una entidad del MER.
+
+## Summary
+
+El incremento 002 conserva el contexto de cafetería, los turnos Mañana/Tarde y las metas de ventas, y añade un selector de rol activo con tres perfiles: Administrador / Gerente de Cafetería, Jefe de Turno / Supervisor y Barista / Trabajador (Solo lectura). El enfoque técnico reutiliza el ERP base, conserva el MER de nueve entidades, mantiene el almacenamiento local y deriva el alcance de datos de las estructuras ya existentes. El rol no autentica identidad: habilita u oculta vistas, botones y acciones.
+
+## Technical Context
+
+**Language/Version**: JavaScript del proyecto base, ejecutado con Vite.
+
+**Primary Dependencies**: Vite, Vitest y jsdom, ya presentes en `package.json`; no se incorporan dependencias nuevas.
+
+**Storage**: almacenamiento local del navegador mediante las colecciones ya documentadas en `contracts/storage.md`, más el estado de rol activo como dato demostrativo de interfaz.
+
+**Testing**: Vitest con pruebas unitarias y de integración; verificación manual guiada por `quickstart.md`.
+
+**Target Platform**: navegador de escritorio, aplicación local sin backend.
+
+**Project Type**: aplicación web de una sola página, implementada como extensión aditiva del módulo ERP base.
+
+**Performance Goals**: SC-003 (consulta de historial en menos de 10 segundos), SC-006 (utilizable con 500 registros) y SC-016 (cambio de rol aplicado en menos de 5 segundos).
+
+**Constraints**: sin backend, sin autenticación con credenciales, sin datos reales de trabajadores, sin modificaciones al MER y sin reemplazo de contratos del módulo base.
+
+**Scale/Scope**: una cafetería, tres departamentos (Barra, Cocina, Salón), dos turnos (Mañana, Tarde), tres roles activos y hasta 500 registros de productividad verificados.
+
+No hay aspectos pendientes de clarificación. El alcance del Supervisor se resuelve con la selección explícita de área y turno; el alcance del Barista con la selección explícita de su trabajador.
+
+## Constitution Check
+
+*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+
+| Principio | Evaluación | Evidencia en el plan |
+|---|---|---|
+| I. Code Quality & Maintainability | Pasa | Extensiones aditivas, contratos base intactos, estado de rol documentado sin nueva entidad del MER. |
+| II. Test-First & Verification | Pasa | T107 y T112 preparan pruebas antes o junto con la implementación de roles; T081 ejecuta la suite completa. |
+| III. User Experience Consistency | Pasa | Mismo selector visible en todas las vistas, cambio inmediato, botones ocultos o deshabilitados y mensajes claros ante acciones bloqueadas. |
+| IV. Performance & Reliability | Pasa | SC-016 limita el cambio de rol a 5 segundos; SC-006 cubre 500 registros; FR-063 prohíbe mutar datos al cambiar de rol. |
+| Quality Standards | Pasa | `spec.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/`, `quickstart.md`, `tasks.md` y README se actualizan en este incremento documental. |
+| Development Workflow | Pasa | Cambio pequeño y revisable, con criterios de aceptación por rol y verificación pendiente en T083 y T112. |
+
+No se identifican violaciones que requieran justificación.
+
+## Project Structure
+
+### Documentation (this feature)
+
+```text
+specs/002-rrhh-productividad/
+├── plan.md              # Este archivo
+├── research.md          # Decisiones técnicas, incluida la selección de roles
+├── data-model.md        # Estado de rol activo, alcance y validaciones
+├── quickstart.md        # Guía de validación por rol
+├── contracts/
+│   └── storage.md       # Contrato de persistencia local y estado de rol
+├── tasks.md             # Tareas, incluida la Fase 10 de control de acceso
+└── checklists/
+    └── requirements.md  # Checklist de calidad de la especificación
+```
+
+### Source Code (repository root)
+
+```text
+src/
+├── app.js
+├── main.js
+├── storage.js
+├── module-config.js
+├── components/
+│   ├── entity-form.js
+│   ├── entity-list.js
+│   ├── custom-fields.js
+│   ├── document-form.js
+│   ├── document-list.js
+│   ├── history-view.js
+│   ├── evolution-view.js
+│   └── dashboard.js
+tests/
+├── unit/
+└── integration/
+```
+
+**Structure Decision**: se mantienen los archivos reales recuperados del módulo base. El selector de rol y las reglas de alcance se integran en `app.js`, `main.js`, `module-config.js` y `storage.js` según corresponda, sin crear un módulo autónomo ni modificar el MER.
 
 ## 1. Problema y solución propuesta
 
@@ -24,11 +106,11 @@ No se crean tablas ni entidades nuevas; no se alteran los nombres ni la semánti
 
 ## 2. Usuarios potenciales
 
-- **Encargado de Recursos Humanos**: necesita registrar trabajadores, gestionar departamentos y asignaciones históricas, ingresar mediciones periódicas de productividad y consultar el historial de cada trabajador.
-- **Jefatura de departamento**: necesita consultar la productividad de los integrantes de su departamento para dar seguimiento a su desempeño. En el MVP, esta distinción es una necesidad de diseño y no un control de acceso implementado.
-- **Dirección o gerencia (usuario potencial futuro)**: podría consultar información resumida para apoyar la toma de decisiones.
+- **Administrador / Gerente de Cafetería**: necesita registrar y editar trabajadores de Barra, Cocina y Salón; gestionar departamentos, asignaciones históricas y turnos Mañana/Tarde; administrar metas de ventas globales; registrar, corregir y consultar mediciones; y revisar historial y evolución de cualquier trabajador. Accede a todas las vistas y acciones.
+- **Jefe de Turno / Supervisor**: corresponde al jefe de barra, jefe de cocina o encargado de salón. Consulta mediciones, historial y evolución solo de su área y turno seleccionados, y puede registrar y corregir mediciones dentro de ese alcance. No crea ni edita trabajadores, departamentos, asignaciones o turnos, ni modifica metas de ventas globales.
+- **Barista / Trabajador (Solo lectura)**: consulta únicamente su propio desempeño y evolución, usando el trabajador propio seleccionado en la interfaz. No accede a formularios de registro ni a datos de otros trabajadores.
 
-**Limitación del MVP**: no se implementa autenticación, inicio de sesión, roles ni control de acceso. La distinción entre tipos de usuarios describe sus necesidades, pero no representa una restricción de seguridad implementada. Solo deben utilizarse datos ficticios.
+**Alcance del MVP**: el selector de rol activo habilita u oculta vistas, botones y acciones, pero NO autentica ni verifica identidad real. Cualquier persona con acceso al navegador puede cambiar el rol activo; por ello solo deben utilizarse datos ficticios. La dirección o gerencia queda representada por el rol Administrador / Gerente de Cafetería.
 
 ## 3. Funciones del MVP (alcance obligatorio)
 
@@ -44,7 +126,9 @@ No se crean tablas ni entidades nuevas; no se alteran los nombres ni la semánti
 
 6. **Validación y protección de registros (HU6)**: el sistema muestra errores, advierte sobre duplicados y bloquea registros incompatibles o fallos de almacenamiento para evitar guardados incorrectos o pérdida silenciosa de datos. Ya implementado en las validaciones y el almacenamiento.
 
-**Fuera del alcance de 002**: planilla, remuneraciones, contratos y liquidaciones de sueldo; comparación de productividad entre departamentos o trabajadores; catálogo avanzado de indicadores y fórmulas; cálculo automático de una puntuación única de productividad; autenticación, inicio de sesión, roles y control de acceso; auditoría de modificaciones; exportación, respaldo central y sincronización multiusuario; backend y base de datos remota; uso de información real de trabajadores.
+7. **Control de acceso por rol activo**: selector con tres roles que regula vistas, botones, acciones y alcance de datos. El Administrador accede a todo; el Supervisor queda limitado a medición, historial y evolución de su área y turno; el Barista solo consulta su propio desempeño y evolución. La configuración de metas de ventas globales es administrativa, sin exponer las variables consolidadas internas.
+
+**Fuera del alcance de 002**: planilla, remuneraciones, contratos y liquidaciones de sueldo; comparación de productividad entre departamentos o trabajadores; catálogo avanzado de indicadores y fórmulas; cálculo automático de una puntuación única de productividad; autenticación con credenciales, inicio de sesión y verificación de identidad real; auditoría de modificaciones; exportación, respaldo central y sincronización multiusuario; backend y base de datos remota; uso de información real de trabajadores.
 
 Las funcionalidades de planilla y liquidaciones permanecen documentadas en el modelo 001 y en el MER existente; no se elimina su documentación. Las entidades `Tarea`, `Meta` y `Registro_Horas` permanecen en el MER, pero no se utilizan como flujos de negocio en 002. Su integración completa queda fuera del alcance de este incremento.
 
@@ -59,13 +143,14 @@ Las funcionalidades de planilla y liquidaciones permanecen documentadas en el mo
 | E4 - Gestión de trabajadores, departamentos y asignaciones | Formularios de trabajadores y departamentos, asignaciones históricas, validaciones y vista del departamento actual con asignaciones anteriores. | E0, E2, E3 | Completada |
 | E5 - Registro e historial de productividad | Formulario de medición por período, selección de asignación, validaciones y consulta cronológica del historial. | E4 | Completada |
 | E6 - Visualización de la evolución | Tablas o paneles resumidos de resultados históricos comparables. | E5 | Completada |
-| E7 - Integración, pruebas y documentación de ejecución | Integración de E4, E5 y E6, más las funcionalidades existentes de HU5 y HU6; suite automatizada aprobada e instrucciones de ejecución. | E4, E5, E6 | Implementación, pruebas automatizadas y validación manual T083 completadas |
+| E7 - Integración, pruebas y documentación de ejecución | Integración de E4, E5 y E6, más las funcionalidades existentes de HU5 y HU6; suite automatizada aprobada e instrucciones de ejecución. | E4, E5, E6 | Implementación, pruebas automatizadas y validación manual T083 completadas y aprobadas |
+| E8 - Control de acceso por rol activo | Selector de tres roles, vistas y botones por rol, alcance de datos por departamento histórico/turno/trabajador propio y bloqueo de acciones no permitidas (FR-052 a FR-065). | E7, Fases 8 y 9 | Completado; tareas T106–T112 cerradas |
 
-**Regla de dependencias cumplida**: E0, E2 y E3 habilitaron E4; E4 habilitó E5; E5 habilitó E6; E7 integró el incremento, aprobó la suite automatizada y completó la validación manual T083.
+**Regla de dependencias cumplida**: E0, E2 y E3 habilitaron E4; E4 habilitó E5; E5 habilitó E6; E7 integró el incremento, aprobó la suite automatizada y completó la validación manual T083; E8 depende de E7 (y de las Fases 8 y 9) porque las reglas de alcance se aplican sobre vistas y datos ya existentes.
 
-**Criterios de finalización**: las etapas de implementación quedaron terminadas cuando sus entregables existen, fueron revisados y satisfacen las funciones del MVP sin regresiones. La recuperación del código base quedó completada; las verificaciones manuales y aprobaciones de cierre pendientes se detallan en §10.
+**Criterios de finalización**: las etapas de implementación quedaron terminadas cuando sus entregables existen, fueron revisados y satisfacen las funciones del MVP sin regresiones. La recuperación del código base quedó completada; los resultados de las verificaciones manuales y aprobaciones de cierre se detallan en §10.
 
-## 5. Roles de trabajo (distribución confirmada)
+## 5. Roles de trabajo del equipo (distintos de los roles de acceso de la aplicación)
 
 | Rol | Responsabilidad | Entregables |
 |---|---|---|
@@ -75,14 +160,14 @@ Las funcionalidades de planilla y liquidaciones permanecen documentadas en el mo
 | Rol 4 — Planificación y tareas | Alcance, etapas, dependencias, tareas, pruebas y riesgos. | `plan.md` y `tasks.md` |
 | Rol 5 — Visualización e integración | Tablas o paneles resumidos, integración con el registro, pruebas de ejecución e instrucciones. | Código de visualización, integración y documentación de ejecución |
 
-La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T084) y está registrada en `spec.md` §14.1 y `tasks.md`. Se mantienen las asignaciones de apoyo previamente documentadas. Los nombres de archivos de código se confirmaron después de E0, según la estructura real del módulo base.
+La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T084) y está registrada en `spec.md` §14.1 y `tasks.md`. Se mantienen las asignaciones de apoyo previamente documentadas; la verificación adicional de FR-052 a FR-065 se asigna a Lucas Omar Soarzo Mancilla y Emilio Vejar Bravo sin modificar esas responsabilidades. Estos roles de trabajo no deben confundirse con los tres roles activos de la aplicación (Administrador / Gerente de Cafetería, Jefe de Turno / Supervisor y Barista / Trabajador (Solo lectura)). Los nombres de archivos de código se confirmaron después de E0, según la estructura real del módulo base; no se inventan nombres ni archivos adicionales.
 
 ## 6. Ampliaciones futuras (fuera del alcance de 002)
 
 - Comparación de productividad entre departamentos o trabajadores.
 - Catálogo avanzado de indicadores y fórmulas.
 - Cálculo automático de una puntuación única de productividad.
-- Autenticación, inicio de sesión, roles y control de acceso.
+- Autenticación con credenciales, inicio de sesión y verificación de identidad real. El selector de roles y el control de acceso por interfaz ya están dentro del alcance de 002.
 - Auditoría de modificaciones.
 - Exportación, respaldo central y sincronización multiusuario.
 - Backend y base de datos remota.
@@ -94,7 +179,7 @@ La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T08
 **Privacidad y manejo de información sensible**:
 
 - Los datos del módulo (nombres, cargos, ingresos y resultados individuales) son información laboral sensible. El almacenamiento del módulo base es local (`localStorage` del navegador): no hay servidor, cifrado en reposo ni copias de seguridad. Existe riesgo de pérdida de datos por limpieza del navegador y de exposición en equipos compartidos. Mitigación del MVP: documentar este límite en el `README`, usar el módulo en equipos controlados y evitar campos sensibles innecesarios. No se registran documentos, remuneraciones ni datos de salud.
-- Sin backend no hay control de acceso real: la distinción entre encargado de RR. HH. y jefatura de departamento es, en el MVP, una decisión de diseño sin enforcement técnico. No debe presentarse como una funcionalidad de seguridad.
+- Sin backend no hay autenticación ni verificación de identidad real: el selector de rol activo limita vistas, botones, acciones y datos visibles, pero cualquier persona con acceso al navegador puede cambiar de rol. No debe presentarse como una funcionalidad de seguridad.
 - La política de retención y borrado de datos queda pendiente de definición. El sistema no garantiza respaldo ni recuperación de datos eliminados del navegador.
 - Si el almacenamiento local está lleno o no disponible, el sistema debe informar que no pudo guardar los datos y evitar mostrar una confirmación de guardado exitoso. Este comportamiento debe validarse con el grupo.
 - La aplicación debe mostrar una advertencia de uso exclusivo de datos ficticios. El grupo aprobó el texto y se verificó su presentación (T072 completada). No se garantiza la detección automática de información real.
@@ -124,7 +209,7 @@ La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T08
 Se permiten extensiones aditivas de los archivos existentes del módulo ERP base, incluyendo almacenamiento, configuración, interfaz y componentes, siempre que se conserven los contratos, las funciones existentes y la compatibilidad con el módulo original. No se deben eliminar ni reemplazar funcionalidades base innecesariamente. Las estructuras de Departamento e Historial_Departamento se implementarán como extensiones del incremento 002, sin modificar el MER de nueve entidades.
 
 - Se respeta la validación base: trabajador con `name` y `code` no vacíos; fechas válidas y `endDate >= startDate`; claves de campos personalizados sin choque con nombres base; retroalimentación clara ante datos faltantes.
-- Validaciones específicas de 002: el trabajador y el departamento deben existir; la asignación debe corresponder al trabajador y superponerse con el período; la fecha de inicio es obligatoria y válida; la fecha de término es opcional y no puede ser anterior a la fecha de inicio; no se permiten asignaciones superpuestas para el mismo trabajador; solo puede existir una asignación vigente a la vez por trabajador; el período es obligatorio y válido en formato `AAAA-MM`; no se permiten períodos futuros ni anteriores a la fecha de ingreso; el indicador es obligatorio y debe tener entre 3 y 60 caracteres; el resultado debe ser numérico y mayor o igual a cero; la unidad es opcional y, si se informa, debe ser texto no vacío; los registros duplicados se permiten con advertencia; la corrección solo modifica el registro seleccionado; un trabajador sin asignación válida para el período no puede registrar productividad; si existen varias asignaciones que se superponen con el período, el usuario debe seleccionar la correspondiente.
+- Validaciones específicas de 002: el trabajador y el departamento deben existir; la asignación debe corresponder al trabajador y superponerse con el período; la fecha de inicio es obligatoria y válida; la fecha de término es opcional y no puede ser anterior a la fecha de inicio; no se permiten asignaciones superpuestas para el mismo trabajador; solo puede existir una asignación vigente a la vez por trabajador; el período es obligatorio y válido en formato `AAAA-MM`; no se permiten períodos futuros ni anteriores a la fecha de ingreso; el indicador es obligatorio y debe tener entre 3 y 60 caracteres; el resultado debe ser numérico y mayor o igual a cero; la unidad es opcional y, si se informa, debe ser texto no vacío, aunque en el formulario de cafetería no se solicita y se conserva solo para registros anteriores; los registros duplicados se permiten con advertencia; el rol activo debe ser uno de los tres definidos; el Supervisor debe tener área y turno seleccionados para ver datos; el Barista debe tener un trabajador propio seleccionado; las acciones no permitidas por rol se bloquean sin modificar datos; la corrección solo modifica el registro seleccionado; un trabajador sin asignación válida para el período no puede registrar productividad; si existen varias asignaciones que se superponen con el período, el usuario debe seleccionar la correspondiente.
 - En 002, `Document` representa un registro de productividad. Las liquidaciones quedan fuera de alcance. Si posteriormente conviven documentos de productividad y liquidaciones, deberá definirse cómo distinguir ambos tipos.
 - El contenido ingresado por el usuario debe mostrarse de forma segura, evitando la ejecución de scripts introducidos en campos de texto.
 
@@ -132,7 +217,7 @@ Se permiten extensiones aditivas de los archivos existentes del módulo ERP base
 
 - `localStorage`: datos en el equipo del navegador, sin sincronización multiusuario ni respaldo. Si el grupo requiere datos compartidos entre encargados, deberá evaluarse un backend en una ampliación futura.
 - Escala acotada: el módulo base garantiza agilidad hasta aproximadamente 500 registros de entidad. Con muchos trabajadores y períodos se debe verificar el rendimiento de listas y tablas.
-- Permisos: no hay autenticación real; la privacidad depende del control físico del equipo.
+- Permisos: no hay autenticación real; el rol activo acota la interfaz y los datos visibles, pero la privacidad final depende del control físico del equipo y del uso exclusivo de datos ficticios.
 
 **Distinción MVP vs. ampliaciones**: son obligatorias las seis funciones de §3 sobre el modelo existente; todo lo demás queda explícitamente fuera del alcance inicial.
 
@@ -140,17 +225,17 @@ Se permiten extensiones aditivas de los archivos existentes del módulo ERP base
 
 - `data-model.md` completado y alineado con el MER de 9 entidades, sin modificar el MER ni crear entidades nuevas.
 - Nombres de campos verificados contra las estructuras reales del módulo base.
-- `README.md` actualizado con el alcance de 002, datos ficticios, almacenamiento local y ausencia de autenticación.
-- Distribución de responsables para HU1–HU6 documentada y confirmada por el grupo (T084 completada).
+- `README.md` actualizado con el alcance de 002, datos ficticios, almacenamiento local, selector de roles demostrativo y ausencia de autenticación.
+- Distribución de responsables para HU1–HU6 documentada y confirmada por el grupo (T084 completada); la incorporación de roles no modifica esa asignación.
 - Manejo de errores de almacenamiento implementado y probado automáticamente; el texto de advertencia sobre datos ficticios fue aprobado y su presentación verificada (T072 completada).
-- Coherencia entre `spec.md`, `plan.md`, `data-model.md` y `tasks.md` revisada (T085).
-- `tasks.md` generado y actualizado con el estado real de implementación.
-- Instrucciones de ejecución y prueba documentadas en `README.md` y `tasks.md`.
-- Mantener los cambios en la rama `correccion-specs-002` hasta su revisión.
+- Coherencia entre `spec.md`, `plan.md`, `research.md`, `data-model.md`, `contracts/`, `quickstart.md` y `tasks.md` revisada e influida por FR-052 a FR-065 (T085 completada).
+- `tasks.md` generado y actualizado con el estado real de implementación, incluidas HU5/HU6 y la Fase 10 de control de acceso por rol.
+- Instrucciones de ejecución y validación por rol documentadas en `README.md`, `quickstart.md` y `tasks.md`.
+- Mantener los cambios de `correccion-specs-002` y `003-roles-acceso-cafeteria` hasta su revisión; la revisión final del grupo quedó aprobada el 25-11-2026.
 
 ## 10. Estado de tasks.md
 
-`tasks.md` contiene tareas concretas de implementación y pruebas por etapa. HU5 y HU6 se relacionan con funcionalidades y pruebas existentes; no agregan implementación. La implementación, las pruebas automatizadas, T076, T072, T083 y T084 están completadas. T085 y T086 están completadas; la revisión final del grupo fue aprobada el 25-11-2026.
+`tasks.md` contiene tareas concretas de implementación y pruebas por etapa. HU5 y HU6 se relacionan con funcionalidades y pruebas existentes; la Fase 10 (T106–T112) cubre FR-052 a FR-065. La implementación, las pruebas automatizadas (16 archivos, 180 pruebas; 14 archivos y 165 pruebas en la revisión previa), T072, T083, T084, T075 y T106–T112 están completadas; T076 está verificada. T085 y T086 están actualizadas con la documentación de roles; la revisión final del grupo fue aprobada el 25-11-2026 (la rama de roles aún la registraba pendiente antes de la integración).
 
 ---
 
@@ -159,7 +244,7 @@ Se permiten extensiones aditivas de los archivos existentes del módulo ERP base
 El almacenamiento actual es `localStorage`: una sola instancia de navegador, sin servidor, sin autenticación y sin sincronización. El contrato de persistencia aislado en `src/storage.js` permite migrar la solución sin reescribir la lógica de dominio. La evolución prevista, fuera del alcance de 002, comprende:
 
 1. **Base de datos centralizada:** sustituir las claves `erp_base_module:*` por tablas administradas por una API, conservando `entity_id`, `asignacionId` e `id_departamento` como claves de relación y manteniendo las validaciones de integridad referencial.
-2. **Autenticación por roles:** incorporar inicio de sesión, sesiones y permisos para encargado de RR. HH., jefatura de área y dirección. En el MVP estos perfiles solo expresan necesidades de uso; no existe control de acceso.
+2. **Autenticación por roles:** incorporar inicio de sesión, sesiones y permisos reales para encargado de RR. HH., jefatura de área y dirección. En el MVP 002 ya existe control de acceso por interfaz basado en rol activo demostrativo (FR-052 a FR-065), sin autenticación ni verificación de identidad; la autenticación con credenciales queda para una ampliación futura.
 3. **Trabajo simultáneo:** agregar versión de registro o `updatedAt`, detección de conflictos y transacciones para el recálculo de metas consolidadas, evitando que dos usuarios sobrescriban mediciones del mismo período.
 4. **Respaldos históricos:** establecer política de retención, copias programadas, restauración verificable y exportación. Hoy no hay respaldo: borrar los datos del navegador implica pérdida irreversible.
 
@@ -174,3 +259,7 @@ Ninguna de estas capacidades se implementa en el incremento 002 ni debe mostrars
 - Vitest — documentación oficial: https://vitest.dev/guide/
 - jsdom — documentación del proyecto: https://github.com/jsdom/jsdom
 - Documentación interna: `specs/001-erp-base-module/data-model.md` (MER de 9 entidades) y `specs/002-rrhh-productividad/mer.png` (MER de referencia del incremento).
+
+## Complexity Tracking
+
+No se requieren excepciones: la constitución se cumple sin violaciones. El control de acceso se resuelve con extensiones aditivas y estado de interfaz, sin nueva entidad del MER ni dependencias nuevas.

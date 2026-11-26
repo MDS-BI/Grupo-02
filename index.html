@@ -19,6 +19,31 @@
         <div class="brand">
           <span id="brand-name" class="brand-name">Cafetería Gestión de personal y evaluaciones</span>
         </div>
+
+        <div id="role-controls" class="role-controls" hidden>
+          <label for="role-select">Rol activo</label>
+          <select id="role-select" aria-label="Rol activo">
+            <option value="administrador">Administrador / Gerente de Cafetería</option>
+            <option value="supervisor">Jefe de Turno / Supervisor</option>
+            <option value="barista">Barista / Trabajador (Solo lectura)</option>
+          </select>
+          <label id="role-area-label" for="role-area" hidden>Área</label>
+          <select id="role-area" aria-label="Área del supervisor" hidden>
+            <option value="">-- Selecciona un área --</option>
+            <option value="Barra">Barra</option>
+            <option value="Cocina">Cocina</option>
+            <option value="Salón">Salón</option>
+          </select>
+          <label id="role-turn-label" for="role-turn" hidden>Turno</label>
+          <select id="role-turn" aria-label="Turno del supervisor" hidden>
+            <option value="">-- Selecciona un turno --</option>
+            <option value="Mañana">Mañana</option>
+            <option value="Tarde">Tarde</option>
+          </select>
+          <label id="role-worker-label" for="role-worker" hidden>Trabajador propio</label>
+          <select id="role-worker" aria-label="Trabajador propio del barista" hidden></select>
+          <span id="role-scope" class="role-scope" aria-live="polite"></span>
+        </div>
       </header>
 
       <aside class="sidebar">
@@ -84,6 +109,34 @@
               <span class="stat-label" id="stat-documents-label">Evaluaciones</span>
             </div>
           </div>
+
+          <section class="card" id="global-goal-card" aria-labelledby="global-goal-heading" hidden>
+            <h2 id="global-goal-heading">Configuración de metas globales de ventas</h2>
+            <form id="global-goal-form">
+              <div class="field-row">
+                <div>
+                  <label for="global-goal-area">Área</label>
+                  <select id="global-goal-area">
+                    <option value="Barra">Barra</option>
+                    <option value="Cocina">Cocina</option>
+                    <option value="Salón">Salón</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="global-goal-period">Período (AAAA-MM)</label>
+                  <input id="global-goal-period" type="month" />
+                </div>
+              </div>
+              <div>
+                <label for="global-goal-value">Meta global de ventas</label>
+                <input id="global-goal-value" type="number" min="0" step="any" />
+              </div>
+              <div class="error" id="global-goal-error" aria-live="polite"></div>
+              <div class="form-actions">
+                <button type="submit" id="global-goal-submit" class="primary">Guardar meta global</button>
+              </div>
+            </form>
+          </section>
 
           <h2 id="quick-actions-heading">Acciones rápidas</h2>
           <div class="action-grid">

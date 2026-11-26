@@ -3,10 +3,10 @@
 
 **Entrada:** `spec.md`, `plan.md` y `data-model.md` de `specs/002-rrhh-productividad/`  
 **Prerrequisitos:** Documentación de 002 y recuperación/verificación del módulo base (E0)  
-**Rama de trabajo:** `correccion-specs-002`  
-**Estado:** Las seis historias corresponden a funcionalidades existentes. Suite automatizada aprobada, T076 verificada en Edge aislado y T072, T083 y T084 completadas; el grupo confirmó la distribución de responsables. La revisión final del grupo fue aprobada el 25-11-2026.
+**Rama de trabajo:** `correccion-specs-002` integrada con `003-roles-acceso-cafeteria`  
+**Estado:** Las seis historias y los roles activos están implementados. Suite automatizada aprobada (16 archivos, 180 pruebas; 14 archivos y 165 pruebas en la corrección previa); T076 verificado en Edge aislado; T072, T083 y T084 completadas; T075 y T106–T112 cerrados; revisión final aprobada el 25-11-2026 (la rama de roles la registraba pendiente antes del merge).
 
-**Separación de trabajo:** T001–T009 (E0) recuperan y verifican el módulo base del incremento 001; no son funcionalidades nuevas de 002. T010–T070 cubren infraestructura y HU1–HU4. HU5 y HU6 se relacionan con tareas y pruebas ya existentes en las fases 2, 4, 7 y 8. T071–T086 registran las verificaciones, documentación y cierre.
+**Separación de trabajo:** T001–T009 (E0) recuperan y verifican el módulo base del incremento 001; no son funcionalidades nuevas de 002. T010–T070 cubren infraestructura y HU1–HU4. HU5 y HU6 se relacionan con tareas y pruebas ya existentes en las fases 2, 4, 7 y 8. T071–T086 registran las verificaciones, documentación y cierre. T087–T105 cubren la adaptación a cafetería y las metas consolidadas. T106–T112 cubren los roles activos y FR-052 a FR-065.
 
 **Regla de trabajo con IA:** Se permite utilizar OpenCode para crear, modificar y ejecutar código del proyecto, con supervisión de los integrantes del grupo. Los cambios deben revisarse y probarse antes de considerarse terminados. OpenCode no puede realizar commits, push, merge, eliminar datos existentes ni cambiar de rama sin autorización explícita.
 
@@ -26,6 +26,7 @@ Cada tarea utiliza el formato:
 - `[US4]`: historia de usuario 4.
 - `[US5]`: historia de usuario 5.
 - `[US6]`: historia de usuario 6.
+- `[ROLES]`: requisitos transversales FR-052 a FR-065 de control de acceso por rol activo.
 
 ## Responsables
 
@@ -39,8 +40,9 @@ Cada tarea utiliza el formato:
 | HU6 — Validación y protección de registros | Emilio Vejar | Aprobada por el grupo (T084) |
 | Especificaciones y documentación | Daphnne Hidalgo Mundaca | Asignación de apoyo aprobada previamente |
 | Implementación, integración y pruebas | Emilio Vejar Bravo | Asignación de apoyo aprobada previamente |
+| Soporte de roles, integración y pruebas (T075, T085, T106–T112) | Lucas Omar Soarzo Mancilla y Emilio Vejar Bravo | Asignado; verificación de FR-052 a FR-065 |
 
-La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T084). Se mantienen las asignaciones de apoyo previamente documentadas.
+La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T084) y se conserva en `spec.md` §14.1. Se mantienen las asignaciones de apoyo previamente documentadas; la incorporación de roles activos no modifica esta asignación ni inventa historias adicionales.
 
 ## Resumen de fases
 
@@ -54,8 +56,9 @@ La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T08
 | 6 | HU4: visualización de evolución | T063–T070 | 8 |
 | 7 | Pruebas, documentación y cierre | T071–T086 | 16 |
 | 8 | Adaptación registro de productividad — cafetería | T087–T095 | 9 |
-| 9 | Metas consolidadas por departamento y período | T096–T100 | 5 |
-| **Total** | | **T001–T100** | **100** |
+| 9 | Metas consolidadas por departamento y período | T096–T105 (T096–T100 en la corrección previa) | 10 |
+| 10 | Control de acceso por rol activo | T106–T112 | 7 |
+| **Total** | | **T001–T112** | **112** |
 
 ---
 
@@ -65,7 +68,7 @@ La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T08
 
 **Importante:** Esta fase debe completarse antes de comenzar la implementación.
 
-- [x] T001 Verificar que la rama activa sea `correccion-specs-002` y comprobar el estado de `src/`, `index.html` y `tests/`, sin cambiar de rama ni crear ramas nuevas.
+- [x] T001 Verificar que la rama activa en ese momento fuera `correccion-specs-002` y comprobar el estado de `src/`, `index.html` y `tests/`, sin cambiar de rama ni crear ramas nuevas.
 
 - [x] T002 Identificar en el historial de Git el commit recuperable `a0062c0^` y listar los archivos disponibles de `src/`, `index.html` y `tests/`.
 
@@ -299,15 +302,15 @@ La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T08
 
 **Propósito:** Verificar requisitos transversales, revisar la documentación y comprobar el funcionamiento completo del incremento 002.
 
-- [x] T071 [P] Actualizar `README.md` con el alcance de 002, uso de datos ficticios, almacenamiento local, ausencia de autenticación y conservación de la documentación de planilla.
+- [x] T071 [P] Actualizar `README.md` con el alcance de 002, uso de datos ficticios, almacenamiento local, selector de roles demostrativo, ausencia de autenticación y conservación de la documentación de planilla.
 
-- [x] T072 [P] Confirmar con el grupo el texto definitivo de la advertencia de uso exclusivo de datos ficticios, actualizarlo si corresponde y verificar que se muestre correctamente. El grupo aprobó el texto y se verificó su presentación.
+- [x] T072 [P] Confirmar con el grupo el texto definitivo de la advertencia de uso exclusivo de datos ficticios, actualizarlo si corresponde y verificar que se muestre correctamente. Texto aprobado: "Aviso: Este módulo funciona exclusivamente en almacenamiento local con fines académicos. Ingrese únicamente datos ficticios; no registre información personal ni laboral real." El grupo aprobó el texto y se verificó su presentación.
 
 - [x] T073 [P] Verificar el renderizado seguro del contenido ingresado por el usuario, evitando la ejecución de scripts desde campos de texto.
 
 - [x] T074 [P] [US6] Verificar el comportamiento ante `localStorage` lleno, bloqueado o no disponible, sin mostrar confirmaciones falsas de guardado.
 
-- [x] T075 [P] Verificar que la aplicación no presente autenticación, roles ni control de acceso como funcionalidades implementadas.
+- [x] T075 [P] Verificar que la aplicación no presente autenticación con credenciales ni verificación de identidad real, y que el selector de rol activo se presente como control demostrativo de interfaz con tres opciones.
 
 - [x] T076 [P] Verificar el rendimiento y la usabilidad del módulo con al menos 500 registros de productividad. En Edge headless y perfil temporal aislado se cargaron exactamente 500 mediciones ficticias: Historial renderizó 500 filas en 113.7 ms; Evolución, 500 filas en 113.5 ms; navegación por cuatro vistas, 145.4 ms. Sin errores de JavaScript ni mensajes de error de interfaz; perfil temporal eliminado. Esta prueba técnica no sustituye SC-004 con usuarios reales.
 
@@ -319,17 +322,17 @@ La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T08
 
 - [x] T080 [P] Verificar que el MER original de nueve entidades permanezca sin modificaciones, no se agreguen entidades y exista `specs/001-erp-base-module/mer.png` con PK, FK y cardinalidades. También se generó `specs/002-rrhh-productividad/mer.png` como copia de referencia del incremento, con las mismas 9 entidades y relaciones.
 
-- [x] T081 Ejecutar la suite completa de pruebas unitarias y de integración. Resultado automatizado: 14 archivos y 165 pruebas aprobadas. Además, ejecutar las comprobaciones de linting, formato y análisis estático exigidas por la constitución del proyecto, utilizando las herramientas configuradas o documentando las que falten. Registrar fallos y correcciones.
+- [x] T081 Ejecutar la suite completa de pruebas unitarias y de integración. Resultado automatizado: 16 archivos y 180 pruebas aprobadas (14 archivos y 165 pruebas en la corrección previa; se añaden las pruebas de roles). Además, ejecutar las comprobaciones de linting, formato y análisis estático exigidas por la constitución del proyecto, utilizando las herramientas configuradas o documentando las que falten. Registrar fallos y correcciones.
 
 - [x] T082 Ejecutar la compilación de producción y comprobar que se completa sin errores. Registrar el resultado junto con el estado de las comprobaciones de calidad de código.
 
 - [x] T083 Completada — Aprobada: prueba manual de extremo a extremo HU3 → HU1 → HU2 → HU4 con datos ficticios. **Resultados manuales reportados por el grupo:** creación de departamentos y trabajadores; asignaciones y cambios de departamento; registro y consulta de productividad; evolución entre dos períodos; conservación del departamento histórico; persistencia tras recargar la página. SC-001, SC-002 y SC-003 se probaron manualmente; las funciones respondieron rápidamente y no se reportaron fallos. Para SC-004, los 6 integrantes completaron las tareas de registro y consulta sin ayuda (6/6, 100%); criterio aprobado. La medición técnica de renderizado de 500 filas en Edge también queda registrada como referencia.
 
-- [x] T084 Completada — Aprobada por el grupo. Distribución confirmada: HU1 Bruno Cabalin; HU2 Lucas Soarzo; HU3 Consuelo Hidalgo; HU4 Bastián Reinado; HU5 Daphnne Hidalgo; HU6 Emilio Vejar.
+- [x] T084 Completada — Aprobada por el grupo. Distribución confirmada: HU1 Bruno Cabalin; HU2 Lucas Soarzo; HU3 Consuelo Hidalgo; HU4 Bastián Reinado; HU5 Daphnne Hidalgo; HU6 Emilio Vejar. Registrada en `spec.md` §14.1 y en la tabla de responsables de `tasks.md`; la incorporación de roles activos no modifica esta asignación.
 
-- [x] T085 Revisar la coherencia de Spec Kit (`spec.md`, `plan.md`, `research.md`, `data-model.md`, `quickstart.md`, `contracts/` y `tasks.md`), README e imagen MER, sin alterar funcionalidades.
+- [x] T085 Revisar la coherencia de Spec Kit (`spec.md`, `plan.md`, `research.md`, `data-model.md`, `quickstart.md`, `contracts/` y `tasks.md`), README e imagen MER, incluyendo FR-052 a FR-065, sin alterar funcionalidades.
 
-- [x] T086 Preparar el resumen final de cambios para revisión del grupo, manteniendo el trabajo en `correccion-specs-002`, sin commits ni push automáticos por parte de OpenCode.
+- [x] T086 Preparar el resumen final de cambios para revisión del grupo, manteniendo el trabajo en `003-roles-acceso-cafeteria`, sin commits ni push automáticos por parte de OpenCode.
 
 **Punto de control:** HU1–HU4 están integradas y probadas manualmente; HU5 y HU6 se relacionan con funcionalidades y tareas existentes.
 
@@ -346,6 +349,9 @@ La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T08
 5. **Fase 5 — HU2:** Depende de HU1.
 6. **Fase 6 — HU4:** Depende de HU2.
 7. **Fase 7:** Revisión final de HU1–HU4 y de las funcionalidades existentes vinculadas a HU5 y HU6.
+8. **Fase 8:** Adaptación a cafetería; depende de la Fase 4.
+9. **Fase 9:** Metas consolidadas; depende de la Fase 8.
+10. **Fase 10:** Control de acceso por rol activo; depende de las Fases 7, 8 y 9 porque filtra vistas y datos ya existentes.
 
 ### Tareas paralelizables
 
@@ -369,7 +375,8 @@ Las tareas de restauración T003, T004 y T005 también pueden prepararse por sep
 5. Validar el flujo mínimo de trabajador → asignación → medición.
 6. Implementar HU2: historial cronológico.
 7. Implementar HU4: evolución de productividad.
-8. Completar pruebas, documentación y revisión final.
+8. Completar pruebas, documentación y revisión final de las cuatro historias.
+9. Incorporar el selector de roles y verificar los tres alcances con FR-052 a FR-065.
 
 ### Reglas de avance
 
@@ -390,6 +397,8 @@ Las tareas de restauración T003, T004 y T005 también pueden prepararse por sep
 | FR-024 a FR-027 | Fase 5: T055–T062 |
 | FR-028 a FR-031 | Fase 6: T063–T070 |
 | FR-032 a FR-035 | Fases 2 y 7 |
+| FR-036 a FR-051 | Fases 8 y 9 |
+| FR-052 a FR-065 | Fase 10: T106–T112 |
 | HU1 | Fase 4 |
 | HU2 | Fase 5 |
 | HU3 | Fase 3 |
@@ -407,7 +416,7 @@ El incremento 002 no debe implementar:
 - Comparaciones de productividad entre trabajadores o departamentos.
 - Catálogo avanzado de indicadores y fórmulas.
 - Puntuación única automática de productividad.
-- Autenticación, inicio de sesión, roles o control de acceso.
+- Autenticación con credenciales, inicio de sesión y verificación de identidad real. El selector de roles y el control de acceso por interfaz SÍ están en alcance mediante FR-052 a FR-065.
 - Auditoría de modificaciones.
 - Exportación, respaldo central o sincronización multiusuario.
 - Backend o base de datos remota.
@@ -438,15 +447,15 @@ El incremento 002 se considera finalizado cuando:
 - [x] Se utilizan exclusivamente datos ficticios.
 - [x] No se implementaron funcionalidades fuera de alcance.
 - [x] Se ejecutaron y documentaron las pruebas.
-- [x] Se verificó la coherencia final de `spec.md`, `plan.md`, `data-model.md` y `tasks.md`.
-- [x] Se aprobó el texto de la advertencia y se verificó su presentación (T072).
-- [x] T083 se completó y aprobó conforme a los criterios establecidos.
-- [x] Se confirmó la distribución de responsables para las seis historias (T084).
-- [x] El grupo revisó los cambios antes de integrarlos. Revisión final aprobada el 25-11-2026.
+- [x] Se verificó la coherencia final de `spec.md`, `plan.md`, `data-model.md`, `contracts/`, `quickstart.md` y `tasks.md`, incluidos FR-052 a FR-065.
+- [x] Se aprobaron el texto de advertencia T072 y la asignación de responsables T084 (HU1–HU6).
+- [x] Se implementan y verifican los tres roles activos y la matriz rol-acción (T075, T106–T112).
+- [x] T083 se completó y aprobó conforme a los criterios establecidos (SC-001 a SC-004; 6/6 usuarios, 100 %).
+- [x] El grupo revisó los cambios antes de integrarlos; revisión final aprobada el 25-11-2026 (la rama de roles aún la dejaba pendiente antes del merge).
 
 ---
 
-**Nota final:** La implementación técnica, la suite automatizada, T072, T076 (500 registros en Edge aislado), T083, T084 y la compilación están completadas. HU5 y HU6 corresponden a funcionalidades vinculadas con tareas y pruebas existentes. La revisión final del grupo fue aprobada el 25-11-2026. T085, T086, T087–T095 y T096–T100 están completadas.
+**Nota final:** La implementación técnica, los roles activos FR-052 a FR-065, la suite automatizada (16 archivos, 180 pruebas; 14 archivos y 165 pruebas en la revisión previa), T072, T076 (500 registros en Edge aislado), T083, T084, T075 y T106–T112 y la compilación están completadas. HU5 y HU6 corresponden a funcionalidades vinculadas con tareas y pruebas existentes. T085, T086, T087–T095, T096–T105 y T106–T112 están completadas. La revisión final del grupo fue aprobada el 25-11-2026. No se realizaron commits ni push automáticos.
 
 ---
 
@@ -477,6 +486,38 @@ El incremento 002 se considera finalizado cuando:
 - [x] T098 Llamar a `calcularMetasConsolidadas` automáticamente en `addDocument`, `updateDocument`, `deleteDocument` y `deleteDocumentsForEntity`.
 - [x] T099 Agregar pruebas unitarias para metas consolidadas en `tests/unit/rrhh-storage.test.js` (14 pruebas).
 - [x] T100 Actualizar documentación: `spec.md` (requisitos FR-043 a FR-051, casos límite 26-33), `data-model.md` (sección 4.6), `tasks.md` (Fase 9), `contracts/storage.md` (clave `erp_base_module:metas_consolidadas`).
+
+---
+
+## Fase 10: Control de acceso por rol activo
+
+**Propósito:** incorporar el selector de tres roles activos y hacer que vistas, botones, acciones y datos visibles se ajusten al rol, sin implementar autenticación con credenciales.
+
+**Prioridad:** P1 — MVP según FR-052 a FR-065.
+
+**Dependencia:** Fase 7 y documentación de cafetería/metas consolidadas (Fases 8 y 9).
+
+**Prueba independiente:** cambiar entre los tres roles y comprobar que el Administrador ve todas las gestiones, el Supervisor solo opera su área y turno, y el Barista solo consulta su propio desempeño.
+
+### Pruebas de roles
+
+- [x] T106 [P] [ROLES] Agregar pruebas unitarias para el estado de rol activo: tres opciones válidas, valor predeterminado de Administrador, contexto obligatorio de Supervisor y Barista, cambio inmediato y ausencia de mutación de datos de negocio (FR-052, FR-053, FR-063).
+
+- [x] T107 [P] [ROLES] Agregar pruebas unitarias para derivar el alcance: Administrador sin filtro, Supervisor por departamento histórico y turno, Barista por `entity_id` propio, y bloqueo de acciones no permitidas (FR-057 a FR-061, FR-064).
+
+### Implementación de roles
+
+- [x] T108 [ROLES] Implementar el selector visible de rol activo con las tres opciones exactas, el valor predeterminado y la actualización inmediata de vistas, botones y datos al cambiar de rol (FR-052, FR-053, FR-063, FR-065).
+
+- [x] T109 [ROLES] Habilitar para Administrador / Gerente de Cafetería todas las vistas y acciones: trabajadores, departamentos Barra/Cocina/Salón, asignaciones, turnos Mañana/Tarde, metas de ventas globales, registro y corrección de mediciones, historial y evolución de cualquier trabajador (FR-054, FR-055, FR-062).
+
+- [x] T110 [ROLES] Habilitar para Jefe de Turno / Supervisor únicamente Medición, Historial por área/turno y Evolución por área/turno; exigir selección de área y turno; permitir registro y corrección de mediciones dentro del alcance; ocultar o deshabilitar gestión de trabajadores, departamentos, asignaciones, turnos y metas globales (FR-056 a FR-058).
+
+- [x] T111 [ROLES] Habilitar para Barista / Trabajador (Solo lectura) únicamente Mi desempeño y Mi evolución; exigir selección del trabajador propio; ocultar formularios de registro, corrección, gestión y cualquier dato de otros trabajadores (FR-059, FR-060).
+
+- [x] T112 [P] [ROLES] Agregar pruebas de integración y validación manual para la matriz completa rol-acción, mensajes de bloqueo, SC-010, SC-016, SC-017 y SC-018; documentar resultados en `quickstart.md` y `tasks.md`.
+
+**Punto de control:** los tres roles activos son seleccionables, reproducibles desde `spec.md` y no otorgan una identidad autenticada.
 
 ---
 

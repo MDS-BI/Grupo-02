@@ -3,12 +3,28 @@ import {
   loadEntities, entityDisplayName, addEntity, updateEntity, deleteEntity, validateEntity, searchEntities, canDeleteEntity,
   loadDocuments, addDocument, updateDocument, deleteDocument, validateDocument, findDuplicateProductivity,
   getDocumentPeriod, getProductivityHistory, getComparableMeasurements, getIndicatorsForEntity, getUnitsForEntity,
+  getDepartmentForDocument,
   loadDepartments, addDepartment, updateDepartment, deleteDepartment, validateDepartment,
   loadDepartmentHistory, addDepartmentAssignment, updateDepartmentAssignment, deleteDepartmentAssignment,
   validateDepartmentAssignment, changeDepartment, getAssignmentsForEntity, getAssignmentsOverlapping,
   getCurrentAssignment, monthBounds, saveEntities, loadDemoData,
-  getStorageError, clearStorageError, inspectDocumentsForRRHH
+  getStorageError, clearStorageError, inspectDocumentsForRRHH,
+  loadGlobalGoals, upsertGlobalGoal
 } from './storage.js';
+import {
+  ROLES,
+  defaultRoleState,
+  loadRoleState,
+  saveRoleState,
+  normalizeRoleState,
+  allowedModules,
+  canPerform,
+  filterEntities,
+  filterDocuments,
+  isAssignmentInScope,
+  scopeDescription,
+  roleLabel
+} from './roles.js';
 import { clearEntityForm, startEntityEdit, collectEntityPayload, showEntityErrors, refreshEntityCustomFields, nextEmployeeCode, rememberEmployeeCode } from './components/entity-form.js';
 import { createEntityItem } from './components/entity-list.js';
 import { clearDocumentForm, startDocumentEdit, collectDocumentPayload, showDocumentErrors } from './components/document-form.js';
@@ -48,6 +64,8 @@ const VIEWS = {
 
 let wired = false;
 let entitySubTab = 'add';
+let roleState = defaultRoleState();
+let currentModule = 'dashboard';
 
 function setOptions(select, options, previousValue, placeholder){
   if(!select) return;
@@ -115,8 +133,44 @@ function setEntitySubTab(tab, options = {}){
   }
 }
 
+function departmentNameForAssignment(assignment){
+  return loadDepartments().find(d => d.id_departamento === assignment?.id_departamento)?.nombre || '';
+}
+
+function visibleEntities(){
+  const entities = loadEntities();
+  if(!isRRHHMode()) return entities;
+  return filterEntities(roleState, entities, loadDepartmentHistory(), loadDepartments());
+}
+
+function visibleDocuments(){
+  const documents = loadDocuments();
+  if(!isRRHHMode()) return documents;
+  return filterDocuments(roleState, documents, document_ => getDepartmentForDocument(document_)?.nombre || '');
+}
+
+function visibleAssignments(){
+  const assignments = loadDepartmentHistory();
+  if(!isRRHHMode()) return assignments;
+  return assignments.filter(assignment => isAssignmentInScope(roleState, assignment, loadDepartments()));
+}
+
+function showRoleDenied(action){
+  const message = `La acción «${action}» no está permitida para ${roleLabel(roleState.rolActivo)}.`;
+  const banner = qs('storage-error');
+  if(banner){
+    banner.textContent = message;
+    banner.hidden = false;
+  }
+  return message;
+}
+
 function showModule(name, opts = {}){
   if(!MODULES.includes(name)) name = 'dashboard';
+  if(isRRHHMode() && !allowedModules(roleState).includes(name)){
+    name = allowedModules(roleState)[0] || 'dashboard';
+  }
+  currentModule = name;
   MODULES.forEach(m => { qs(VIEWS[m]).hidden = m !== name; });
   setActiveModule(name);
   setSidebarSubNav(name === 'entities');
@@ -174,14 +228,14 @@ function showModule(name, opts = {}){
 function populateDocumentEntitySelect(){
   const select = qs('document-entity');
   const prev = select.value;
-  const entities = loadEntities();
+  const entities = visibleEntities();
   setOptions(select, entities.map(e => ({ value: e.entity_id, label: entityDisplayName(e) })), prev, isRRHHMode() ? '-- Selecciona personal --' : undefined);
 }
 
 function populateEditEntitySelect(){
   const select = qs('edit-entity');
   const prev = select.value;
-  const entities = loadEntities();
+  const entities = visibleEntities();
   setOptions(select, entities.map(e => ({ value: e.id, label: `${entityDisplayName(e)} — ${e.code}` })), prev, `-- Selecciona ${articulo(labelFor('entity'))} ${labelFor('entity').toLowerCase()} --`);
 }
 
@@ -189,7 +243,7 @@ function populateEditDocumentSelect(){
   const select = qs('edit-document');
   const prev = select.value;
   const entities = loadEntities();
-  const options = loadDocuments().map(d => {
+  const options = visibleDocuments().map(d => {
     const entity = entities.find(e => e.entity_id === d.entity_id);
     const label = isRRHHMode()
       ? `${entity ? entityDisplayName(entity) : 'Personal no identificado'} · ${getDocumentPeriod(d) || ''} · ${d.indicador || ''}`
@@ -224,7 +278,7 @@ function populateEditAssignmentSelect(){
 }
 
 function populateAssignmentSelects(){
-  const entities = loadEntities();
+  const entities = visibleEntities();
   const departments = loadDepartments();
   const entityPrev = qs('assignment-entity')?.value;
   const departmentPrev = qs('assignment-department')?.value;
@@ -251,7 +305,7 @@ function refreshDepartments(){
 function refreshAssignments(){
   populateAssignmentSelects();
   const filter = qs('assignment-entity-filter')?.value || '';
-  const all = loadDepartmentHistory();
+  const all = visibleAssignments();
   const assignments = (filter ? all.filter(a => a.entity_id === filter) : all)
     .slice()
     .sort((a, b) => a.fecha_inicio.localeCompare(b.fecha_inicio));
@@ -306,6 +360,7 @@ function syncEntityCurrentDepartment(entityId){
 }
 
 function handleDeleteSelectedEntity(){
+  if(!canPerform(roleState, 'entity:write')){ showRoleDenied('crear o editar trabajadores'); return; }
   const id = qs('edit-entity').value;
   if(!id){ qs('error-edit-entity').textContent = `Selecciona ${articulo(labelFor('entity'))} ${labelFor('entity').toLowerCase()} para eliminar.`; return; }
   const check = canDeleteEntity(id);
@@ -330,6 +385,7 @@ function handleDeleteSelectedEntity(){
 }
 
 function handleDeactivateSelectedEntity(){
+  if(!canPerform(roleState, 'entity:write')){ showRoleDenied('marcar trabajadores como Inactivos'); return; }
   const id = qs('edit-entity').value;
   if(!id){ qs('error-edit-entity').textContent = 'Selecciona personal para marcarlo como Inactivo.'; return; }
   try{
@@ -354,6 +410,7 @@ function onEditDocumentChange(){
 }
 
 function handleDeleteSelectedDocument(){
+  if(!canPerform(roleState, 'document:delete')){ showRoleDenied('eliminar registros de productividad'); return; }
   const id = qs('edit-document').value;
   if(!id){ qs('error-edit-document').textContent = `Selecciona ${articulo(labelFor('document'))} ${labelFor('document').toLowerCase()} para eliminar.`; return; }
   if(!confirm(`¿Eliminar ${demostrativo(labelFor('document'))} ${labelFor('document').toLowerCase()}?`)) return;
@@ -380,6 +437,7 @@ function afterSaveRefresh(){
 
 function handleEntitySubmit(ev){
   ev.preventDefault();
+  if(!canPerform(roleState, 'entity:write')){ showRoleDenied('crear o editar trabajadores'); return; }
   const id = qs('entity-id').value;
   const payload = collectEntityPayload();
   if(isRRHHMode() && !id && loadEntities().some(entity => String(entity.code ?? '').trim() === String(payload.code ?? '').trim())){
@@ -426,10 +484,18 @@ function showDuplicateWarning(payload, id){
 
 function handleDocumentSubmit(ev){
   ev.preventDefault();
+  if(!canPerform(roleState, 'measurement:write')){ showRoleDenied('registrar o corregir mediciones'); return; }
   const id = qs('document-id').value;
   const payload = collectDocumentPayload();
 
   if(isRRHHMode()){
+    if(roleState.rolActivo === ROLES.SUPERVISOR){
+      const assignment = loadDepartmentHistory().find(item => item.id_historial === payload.asignacionId);
+      if(!isAssignmentInScope(roleState, assignment, loadDepartments()) || payload.turno !== roleState.supervisorTurno){
+        showRoleDenied('registrar una medición fuera del área o turno seleccionados');
+        return;
+      }
+    }
     const hasDuplicate = showDuplicateWarning(payload, id);
     const { valid, errors } = validateDocument(payload);
     showDocumentErrors(errors);
@@ -527,6 +593,7 @@ function suggestIndicatorsForEntity(){
 
 function handleDepartmentSubmit(ev){
   ev.preventDefault();
+  if(!canPerform(roleState, 'department:write')){ showRoleDenied('crear o editar departamentos'); return; }
   const id = qs('department-id').value;
   const payload = collectDepartmentPayload();
   const { valid, errors } = validateDepartment(payload, id || undefined);
@@ -552,6 +619,7 @@ function onEditDepartmentChange(){
 }
 
 function handleDeleteSelectedDepartment(){
+  if(!canPerform(roleState, 'department:write')){ showRoleDenied('crear o editar departamentos'); return; }
   const id = qs('edit-department').value;
   if(!id){ qs('error-edit-department').textContent = 'Selecciona un área de trabajo para eliminar.'; return; }
   if(!confirm('¿Eliminar el área de trabajo seleccionada?')) return;
@@ -568,6 +636,7 @@ function handleDeleteSelectedDepartment(){
 
 function handleAssignmentSubmit(ev){
   ev.preventDefault();
+  if(!canPerform(roleState, 'assignment:write')){ showRoleDenied('crear o editar asignaciones'); return; }
   const id = qs('assignment-id').value;
   const payload = collectAssignmentPayload();
 
@@ -624,6 +693,7 @@ function onEditAssignmentChange(){
 }
 
 function handleDeleteSelectedAssignment(){
+  if(!canPerform(roleState, 'assignment:write')){ showRoleDenied('crear o editar asignaciones'); return; }
   const id = qs('edit-assignment').value;
   if(!id){ qs('error-edit-assignment').textContent = 'Selecciona una asignación de área para eliminar.'; return; }
   if(!confirm('¿Eliminar la asignación de área seleccionada?')) return;
@@ -638,26 +708,59 @@ function handleDeleteSelectedAssignment(){
   }
 }
 
+function handleGlobalGoalSubmit(ev){
+  ev.preventDefault();
+  if(!canPerform(roleState, 'global-goal:write')){ showRoleDenied('configurar metas globales de ventas'); return; }
+  const error = qs('global-goal-error');
+  if(error) error.textContent = '';
+  try{
+    upsertGlobalGoal({
+      area: qs('global-goal-area').value,
+      periodo: qs('global-goal-period').value,
+      metaGlobal: qs('global-goal-value').value
+    });
+  }catch(e){
+    if(error) error.textContent = e.message;
+    showStorageFailure(e);
+  }
+}
+
 function populateHistoryEntitySelect(){
   const select = qs('history-entity');
   const prev = select?.value;
-  setOptions(select, loadEntities().map(e => ({ value: e.entity_id, label: entityDisplayName(e) })), prev, '-- Selecciona personal --');
+  setOptions(select, visibleEntities().map(e => ({ value: e.entity_id, label: entityDisplayName(e) })), prev, '-- Selecciona personal --');
+  if(roleState.rolActivo === ROLES.BARISTA && roleState.baristaEntityId && [...select.options].some(option => option.value === roleState.baristaEntityId)){
+    select.value = roleState.baristaEntityId;
+  }
 }
 
 function renderHistory(){
   const entityId = qs('history-entity')?.value;
-  const measurements = entityId ? getProductivityHistory(entityId) : [];
+  const measurements = entityId
+    ? filterDocuments(roleState, getProductivityHistory(entityId), document_ => document_.departamento || getDepartmentForDocument(document_)?.nombre || '')
+    : [];
   renderHistoryTable(qs('history-body'), qs('history-empty'), measurements);
   if(!entityId && qs('history-empty')){
     qs('history-empty').hidden = false;
     qs('history-empty').textContent = 'Selecciona personal para consultar su historial de evaluaciones.';
+  }
+  if(measurements.length === 0 && roleState.rolActivo === ROLES.SUPERVISOR && qs('history-empty')){
+    qs('history-empty').hidden = false;
+    qs('history-empty').textContent = 'Selecciona área y turno para consultar el historial de tu alcance.';
+  }
+  if(measurements.length === 0 && roleState.rolActivo === ROLES.BARISTA && qs('history-empty')){
+    qs('history-empty').hidden = false;
+    qs('history-empty').textContent = 'Selecciona tu trabajador para consultar tu desempeño.';
   }
 }
 
 function populateEvolutionEntitySelect(){
   const select = qs('evolution-entity');
   const prev = select?.value;
-  setOptions(select, loadEntities().map(e => ({ value: e.entity_id, label: entityDisplayName(e) })), prev, '-- Selecciona personal --');
+  setOptions(select, visibleEntities().map(e => ({ value: e.entity_id, label: entityDisplayName(e) })), prev, '-- Selecciona personal --');
+  if(roleState.rolActivo === ROLES.BARISTA && roleState.baristaEntityId && [...select.options].some(option => option.value === roleState.baristaEntityId)){
+    select.value = roleState.baristaEntityId;
+  }
 }
 
 function populateEvolutionFilters(){
@@ -666,9 +769,10 @@ function populateEvolutionFilters(){
   const unitSelect = qs('evolution-unit');
   const indicatorPrev = indicatorSelect?.value;
   const unitPrev = unitSelect?.value;
-  const indicators = entityId ? getIndicatorsForEntity(entityId) : [];
+  const source = visibleDocuments();
+  const indicators = entityId ? getIndicatorsForEntity(entityId, source) : [];
   setOptions(indicatorSelect, indicators.map(i => ({ value: i, label: i })), indicatorPrev, '-- Indicador de desempeño --');
-  const units = entityId ? getUnitsForEntity(entityId, indicatorSelect?.value || '') : [];
+  const units = entityId ? getUnitsForEntity(entityId, indicatorSelect?.value || '', source) : [];
   setOptions(unitSelect, units.map(u => ({ value: u, label: u })), unitPrev, '-- Unidad --');
   if(units.length === 1) unitSelect.value = units[0];
 }
@@ -677,14 +781,150 @@ function renderEvolution(){
   const entityId = qs('evolution-entity')?.value;
   const indicator = qs('evolution-indicator')?.value;
   const unit = qs('evolution-unit')?.value;
-  const measurements = entityId && indicator && unit
+  const comparable = entityId && indicator && unit
     ? getComparableMeasurements(entityId, indicator, unit)
     : [];
+  const measurements = filterDocuments(roleState, comparable, document_ => document_.departamento || getDepartmentForDocument(document_)?.nombre || '');
   renderEvolutionTable(qs('evolution-body'), qs('evolution-message'), measurements);
   if(!entityId && qs('evolution-message')){
     qs('evolution-message').hidden = false;
     qs('evolution-message').textContent = 'Selecciona personal para visualizar la evolución del desempeño.';
   }
+  if(measurements.length === 0 && roleState.rolActivo === ROLES.SUPERVISOR && qs('evolution-message')){
+    qs('evolution-message').hidden = false;
+    qs('evolution-message').textContent = 'Selecciona área y turno para visualizar la evolución de tu alcance.';
+  }
+  if(measurements.length === 0 && roleState.rolActivo === ROLES.BARISTA && qs('evolution-message')){
+    qs('evolution-message').hidden = false;
+    qs('evolution-message').textContent = 'Selecciona tu trabajador para visualizar tu evolución.';
+  }
+}
+
+function populateRoleWorkerSelect(){
+  const select = qs('role-worker');
+  if(!select) return;
+  const entities = loadEntities();
+  setOptions(select, entities.map(entity => ({ value: entity.entity_id, label: entityDisplayName(entity) })), roleState.baristaEntityId, '-- Selecciona tu trabajador --');
+}
+
+function applyRoleControls(){
+  const controls = qs('role-controls');
+  if(!controls) return;
+  controls.hidden = !isRRHHMode();
+  if(!isRRHHMode()) return;
+
+  qs('role-select').value = roleState.rolActivo;
+  const supervisor = roleState.rolActivo === ROLES.SUPERVISOR;
+  const barista = roleState.rolActivo === ROLES.BARISTA;
+  for(const id of ['role-area', 'role-area-label', 'role-turn', 'role-turn-label']) qs(id).hidden = !supervisor;
+  for(const id of ['role-worker', 'role-worker-label']) qs(id).hidden = !barista;
+  if(supervisor){
+    qs('role-area').value = roleState.supervisorArea;
+    qs('role-turn').value = roleState.supervisorTurno;
+  }
+  if(barista){
+    populateRoleWorkerSelect();
+  }
+  const selectedWorker = loadEntities().find(entity => entity.entity_id === roleState.baristaEntityId);
+  const workerName = selectedWorker ? entityDisplayName(selectedWorker) : '';
+  qs('role-scope').textContent = `Rol activo: ${roleLabel(roleState.rolActivo)} · ${scopeDescription(roleState, workerName)}`;
+}
+
+function applyRolePermissions(){
+  if(!isRRHHMode()) return;
+  const allowed = allowedModules(roleState);
+  document.querySelectorAll('.side-nav [data-module]').forEach(button => {
+    button.hidden = !allowed.includes(button.dataset.module);
+  });
+
+  const canManageEntities = canPerform(roleState, 'entity:write');
+  const canManageDepartments = canPerform(roleState, 'department:write');
+  const canManageAssignments = canPerform(roleState, 'assignment:write');
+  const canWriteMeasurement = canPerform(roleState, 'measurement:write');
+  const canManageGoals = canPerform(roleState, 'global-goal:write');
+
+  qs('action-new-entity').hidden = !canManageEntities;
+  qs('action-open-entities').hidden = !canManageEntities;
+  qs('action-new-document').hidden = !canWriteMeasurement;
+  qs('action-find').hidden = !allowed.includes('search');
+  qs('entity-form').closest('section').hidden = !canManageEntities;
+  qs('edit-entity').closest('section').hidden = !canManageEntities;
+  qs('document-form').closest('section').hidden = !canWriteMeasurement;
+  qs('delete-document').hidden = !canPerform(roleState, 'document:delete');
+  qs('deactivate-entity').hidden = !canManageEntities;
+  qs('department-form').closest('section').hidden = !canManageDepartments;
+  qs('edit-department').closest('section').hidden = !canManageDepartments;
+  qs('assignment-form').closest('section').hidden = !canManageAssignments;
+  qs('edit-assignment').closest('section').hidden = !canManageAssignments;
+  qs('global-goal-card').hidden = !canManageGoals;
+
+  const navDocumentsLabel = qs('nav-documents-label');
+  const navHistoryLabel = qs('nav-history-label');
+  const navEvolutionLabel = qs('nav-evolution-label');
+  if(navDocumentsLabel){
+    navDocumentsLabel.textContent = roleState.rolActivo === ROLES.SUPERVISOR
+      ? 'Medición'
+      : roleState.rolActivo === ROLES.BARISTA ? 'Mis evaluaciones' : labelFor('documents');
+  }
+  if(navHistoryLabel) navHistoryLabel.textContent = roleState.rolActivo === ROLES.BARISTA
+    ? 'Mi desempeño'
+    : roleState.rolActivo === ROLES.SUPERVISOR ? 'Historial por área/turno' : 'Historial';
+  if(navEvolutionLabel) navEvolutionLabel.textContent = roleState.rolActivo === ROLES.BARISTA
+    ? 'Mi evolución'
+    : roleState.rolActivo === ROLES.SUPERVISOR ? 'Evolución por área/turno' : 'Evolución';
+
+  qs('history-view-heading').textContent = roleState.rolActivo === ROLES.BARISTA
+    ? 'Mi desempeño'
+    : roleState.rolActivo === ROLES.SUPERVISOR ? 'Historial por área/turno' : 'Historial de Productividad';
+  qs('evolution-view-heading').textContent = roleState.rolActivo === ROLES.BARISTA
+    ? 'Mi evolución'
+    : roleState.rolActivo === ROLES.SUPERVISOR ? 'Evolución por área/turno' : 'Evolución de Productividad';
+  qs('documents-view-heading').textContent = roleState.rolActivo === ROLES.SUPERVISOR
+    ? 'Medición'
+    : roleState.rolActivo === ROLES.BARISTA ? 'Mis evaluaciones' : labelFor('documents');
+}
+
+function refreshAfterRoleChange(){
+  populateDocumentEntitySelect();
+  populateEditEntitySelect();
+  populateEditDocumentSelect();
+  refreshDepartments();
+  refreshAssignments();
+  populateHistoryEntitySelect();
+  populateEvolutionEntitySelect();
+  populateEvolutionFilters();
+  showModule(currentModule);
+}
+
+function handleRoleChange(){
+  const next = defaultRoleState();
+  next.rolActivo = qs('role-select').value;
+  if(next.rolActivo === ROLES.SUPERVISOR){
+    next.supervisorArea = qs('role-area').value;
+    next.supervisorTurno = qs('role-turn').value;
+  }
+  if(next.rolActivo === ROLES.BARISTA){
+    next.baristaEntityId = qs('role-worker').value;
+  }
+  roleState = saveRoleState(normalizeRoleState(next));
+  applyRoleControls();
+  applyRolePermissions();
+  refreshAfterRoleChange();
+}
+
+function handleRoleContextChange(){
+  const next = { ...roleState };
+  if(next.rolActivo === ROLES.SUPERVISOR){
+    next.supervisorArea = qs('role-area').value;
+    next.supervisorTurno = qs('role-turn').value;
+  }
+  if(next.rolActivo === ROLES.BARISTA){
+    next.baristaEntityId = qs('role-worker').value;
+  }
+  roleState = saveRoleState(normalizeRoleState(next));
+  applyRoleControls();
+  applyRolePermissions();
+  refreshAfterRoleChange();
 }
 
 function applyLabels(config){
@@ -828,12 +1068,17 @@ function handleLoadDemoData(){
 function wireEvents(){
   if(wired) return;
   wired = true;
-  document.querySelectorAll('.nav-module').forEach(btn => {
+  document.querySelectorAll('.side-nav [data-module]').forEach(btn => {
     btn.addEventListener('click', () => showModule(btn.dataset.module));
   });
   document.querySelectorAll('.nav-sub').forEach(btn => {
     btn.addEventListener('click', () => showModule('entities', { entityTab: btn.dataset.entityTab }));
   });
+  qs('role-select').addEventListener('change', handleRoleChange);
+  qs('role-area').addEventListener('change', handleRoleContextChange);
+  qs('role-turn').addEventListener('change', handleRoleContextChange);
+  qs('role-worker').addEventListener('change', handleRoleContextChange);
+  qs('global-goal-form').addEventListener('submit', handleGlobalGoalSubmit);
   qs('action-new-entity').addEventListener('click', () => showModule('entities', { newRecord: true, focusForm: true }));
   qs('action-new-document').addEventListener('click', () => showModule('documents', { newRecord: true, focusForm: true }));
   qs('action-open-entities').addEventListener('click', () => showModule('entities'));
@@ -887,10 +1132,13 @@ export function initApp(resolved){
   clearStorageError();
   showConfigErrors(resolved.errors);
   setActiveConfig(resolved.config);
+  roleState = loadRoleState();
   applyTheme(resolved.config);
   renderLogo(qs('logo-mark'));
   setupSidebarToggle(qs('logo-mark'));
   applyLabels(resolved.config);
+  applyRoleControls();
+  applyRolePermissions();
   wireEvents();
   clearEntityForm();
   clearDocumentForm();
