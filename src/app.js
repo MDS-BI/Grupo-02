@@ -622,7 +622,7 @@ function populateProductivityAssignments(preferredAssignmentId){
   select.innerHTML = '';
   const blank = document.createElement('option');
   blank.value = '';
-  blank.textContent = '-- Selecciona una asignaci?n de ?rea --';
+    blank.textContent = '-- Selecciona una asignaci?n de ?rea --';
   select.appendChild(blank);
   if(!entityId || !bounds) {
     const err = qs('error-cf-asignacionId');
@@ -635,7 +635,7 @@ function populateProductivityAssignments(preferredAssignmentId){
     const department = loadDepartments().find(d => d.id_departamento === assignment.id_departamento);
     const opt = document.createElement('option');
     opt.value = assignment.id_historial;
-    opt.textContent = `${department ? department.nombre : '?rea de trabajo'} ? ${assignment.fecha_inicio} ? ${assignmentEndLabel(assignment)}`;
+      opt.textContent = `${department ? department.nombre : '?rea de trabajo'} ? ${assignment.fecha_inicio} ? ${assignmentEndLabel(assignment)}`;
     select.appendChild(opt);
   }
   if(assignments.length === 1){

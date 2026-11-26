@@ -283,7 +283,7 @@ function ensureChartFilters(container){
   PERIOD_OPTIONS.forEach(n => {
     const opt = document.createElement('option');
     opt.value = String(n);
-    opt.textContent = `?ltimos ${n} meses`;
+    opt.textContent = `?ltimos ${n} meses`; 
     if(n === selectedPeriodCount) opt.selected = true;
     periodSelect.appendChild(opt);
   });
@@ -310,7 +310,7 @@ function populateChartFilters(){
   const deptSelect = document.getElementById('dashboard-chart-department');
   if(deptSelect){
     const prev = selectedDepartmentId || '';
-    deptSelect.innerHTML = '<option value="">Todas las ?reas</option>';
+    deptSelect.innerHTML = '<option value="">Todas las ?reas</option>'; 
     loadDepartments().slice().sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||'','es')).forEach(d => {
       const opt = document.createElement('option');
       opt.value = d.id_departamento;
@@ -334,7 +334,7 @@ function renderLineChart(months, resultSeries, metaSeries){
   const points = months.map((m, i) => ({ month: m, result: resultSeries[i], meta: metaSeries[i] }));
   const hasAny = points.some(p => Number.isFinite(p.result) || Number.isFinite(p.meta));
   if(!hasAny){
-    container.appendChild(element('p', 'empty chart-empty-state', 'A?n no hay evaluaciones para mostrar la evoluci?n del desempe?o.'));
+    container.appendChild(element('p', 'empty chart-empty-state', 'A?n no hay evaluaciones para mostrar la evoluci?n del desempe?o.')); 
     return;
   }
   const comparable = points.filter(p => Number.isFinite(p.result));
@@ -421,9 +421,9 @@ function renderLineChart(months, resultSeries, metaSeries){
     const first = comparable[0], last = comparable[comparable.length-1];
     const diff = Number(last.result) - Number(first.result);
     const trend = diff > 0 ? 'alza' : diff < 0 ? 'baja' : 'estable';
-    summary.textContent = `Comparaci?n: ${formatResult(first.result)} (${first.month}) ? ${formatResult(last.result)} (${last.month}) ? Tendencia ${trend}${diff !== 0 ? ` (${diff>0?'+':''}${formatResult(diff)})` : ''}.`;
+    summary.textContent = `Comparaci?n: ${formatResult(first.result)} (${first.month}) ? ${formatResult(last.result)} (${last.month}) ? Tendencia ${trend}${diff !== 0 ? ` (${diff>0?'+':''}${formatResult(diff)})` : ''}.`; 
   } else {
-    summary.textContent = 'Hay datos disponibles, pero se necesitan evaluaciones en al menos dos per?odos para comparar la evoluci?n.';
+    summary.textContent = 'Hay datos disponibles, pero se necesitan evaluaciones en al menos dos per?odos para comparar la evoluci?n.'; 
   }
   container.appendChild(summary);
 }
@@ -443,7 +443,7 @@ function renderDistribution(){
   const inactiveCount = Math.max(0, entities.length - activeCount);
 
   if(entities.length === 0 && departments.length === 0){
-    container.appendChild(element('p', 'empty activity-empty', 'No hay informaci?n de personal disponible para mostrar la distribuci?n.'));
+    container.appendChild(element('p', 'empty activity-empty', 'No hay informaci?n de personal disponible para mostrar la distribuci?n.')); 
     return;
   }
 
@@ -465,7 +465,7 @@ function renderDistribution(){
     return { name: dep.nombre || '?rea', workers, current };
   });
   if(rows.length === 0){
-    container.appendChild(element('p','empty activity-empty','No hay ?reas de trabajo registradas.'));
+    container.appendChild(element('p','empty activity-empty','No hay ?reas de trabajo registradas.')); 
     return;
   }
   const max = Math.max(1, ...rows.map(r => Math.max(r.workers, r.current)));
@@ -500,7 +500,7 @@ function renderRecentActivity(records){
   const table = element('table', 'data-table activity-table');
   table.setAttribute('aria-label', 'Actividad reciente de evaluaciones');
   const thead = document.createElement('thead');
-  thead.innerHTML = '<tr><th>Trabajador</th><th>Fecha</th><th>Per?odo</th><th>Resultado / indicador</th></tr>';
+  thead.innerHTML = '<tr><th>Trabajador</th><th>Fecha</th><th>Per?odo</th><th>Resultado / indicador</th></tr>'; 
   const tbody = document.createElement('tbody');
   records.forEach(record => {
     const tr = document.createElement('tr');
@@ -509,7 +509,7 @@ function renderRecentActivity(records){
       tr.dataset.documentId = record.id;
       tr.tabIndex = 0;
       tr.setAttribute('role', 'link');
-      tr.setAttribute('aria-label', `Abrir evaluaci?n de ${record.worker}`);
+      tr.setAttribute('aria-label', `Abrir evaluaci?n de ${record.worker}`); 
     }
     const worker = document.createElement('td');
     const avatar = document.createElement('span'); avatar.className='activity-avatar'; avatar.textContent=initials(record.worker);
