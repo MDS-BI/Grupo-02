@@ -13,23 +13,15 @@ let jefatura;
 let operaciones;
 
 function chartSelect(){
-  return document.querySelector('.chart-title-select');
+  return document.getElementById('dashboard-chart-department');
 }
-
-function chevron(){
-  return document.querySelector('.chart-title-chevron');
+function periodSelect(){
+  return document.getElementById('dashboard-chart-period');
 }
-
-function instructionMessage(){
-  return [...document.querySelectorAll('#dashboard-chart p')]
-    .find(p => p.textContent.includes('Seleccione un área de trabajo para visualizar'));
-}
-
 function selectedLabel(){
   const select = chartSelect();
   return select.options[select.selectedIndex].textContent;
 }
-
 function selectDepartment(id){
   const select = chartSelect();
   select.value = id;
@@ -65,43 +57,29 @@ afterEach(() => {
 });
 
 describe('Panel line chart - selector y leyenda', () => {
-  it('A: sin selección muestra el placeholder, la flecha completa y sin mensaje inferior', () => {
+  it('A: sin selecci?n muestra todas las ?reas, filtro de per?odo y estado vac?o', () => {
     const select = chartSelect();
+    expect(select).not.toBeNull();
     expect(select.value).toBe('');
-    expect(select.options[0].textContent).toBe('Seleccione un área de trabajo');
-    expect(chartSelect().closest('.chart-title-container')).not.toBeNull();
-
-    const icon = chevron();
-    expect(icon).not.toBeNull();
-    expect(icon.getAttribute('aria-hidden')).toBe('true');
-    expect(icon.querySelector('path').getAttribute('d')).toBe('m6 9 6 6 6-6');
-
+    expect(select.options[0].textContent).toBe('Todas las ?reas');
+    expect(periodSelect()).not.toBeNull();
+    expect([...periodSelect().options].map(o => o.textContent)).toEqual(['?ltimos 3 meses', '?ltimos 6 meses', '?ltimos 12 meses']);
     expect([...select.options].map(option => option.value)).toContain(departments.cafe.id_departamento);
-    expect([...select.options].map(option => option.value)).toContain(departments.jefatura.id_departamento);
-    expect([...select.options].map(option => option.value)).toContain(departments.operaciones.id_departamento);
-    expect(instructionMessage()).toBeUndefined();
-    expect([...document.querySelectorAll('.legend-label')].map(node => node.textContent))
-      .toEqual(['Meta esperada', 'Resultado']);
+    expect(document.querySelector('#dashboard-chart .chart-empty-state')?.textContent).toContain('A?n no hay evaluaciones');
   });
 
-  it('B: con selección conserva el nombre, la flecha y el desplegable', () => {
+  it('B: con selecci?n conserva el nombre y persiste el ?rea', () => {
     selectDepartment(departments.cafe.id_departamento);
-
     expect(selectedLabel()).toBe('Team cafe');
-    expect(chevron()).not.toBeNull();
-    expect(chevron().querySelector('path').getAttribute('d')).toBe('m6 9 6 6 6-6');
-    expect([...chartSelect().options].some(option => option.textContent === 'Jefatura')).toBe(true);
-    expect(instructionMessage()).toBeUndefined();
     expect(localStorage.getItem('erp_dashboard_department')).toBe(departments.cafe.id_departamento);
   });
 
-  it('C: la flecha permanece igual al cambiar entre departamentos', () => {
+  it('C: permite cambiar entre departamentos sin romper el gr?fico', () => {
     for(const department of [departments.cafe, departments.jefatura, departments.operaciones, departments.cafe]){
       selectDepartment(department.id_departamento);
       expect(selectedLabel()).toBe(department.nombre);
-      expect(chevron()).not.toBeNull();
-      expect(chevron().querySelector('path').getAttribute('d')).toBe('m6 9 6 6 6-6');
-      expect(instructionMessage()).toBeUndefined();
+      expect(chartSelect()).not.toBeNull();
+      expect(periodSelect()).not.toBeNull();
     }
   });
 });

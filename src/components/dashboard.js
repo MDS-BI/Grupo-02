@@ -13,6 +13,7 @@ import {
 
 const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 const SVG_NS = 'http://www.w3.org/2000/svg';
+const PERIOD_OPTIONS = [3, 6, 12];
 
 const ICONS = {
   users: [
@@ -33,6 +34,7 @@ const ICONS = {
 };
 
 let selectedDepartmentId = null;
+let selectedPeriodCount = 6;
 
 function element(tag, className, text){
   const node = document.createElement(tag);
@@ -258,168 +260,166 @@ function ensureLayout(view){
   decorateActionButtons(actionGrid);
 }
 
-function renderLineChart(months, metaSeries, resultSeries, departmentName){
-  const container = document.getElementById('dashboard-chart');
-  if(!container) return;
+function ensureChartFilters(container){
+  let filters = container.querySelector('.chart-filters');
+  if(filters) return filters;
+  filters = element('div', 'chart-filters');
+  const deptWrap = element('label', 'chart-filter');
+  deptWrap.appendChild(element('span','chart-filter-label','?rea de trabajo'));
+  const deptSelect = element('select','chart-select');
+  deptSelect.id = 'dashboard-chart-department';
+  deptWrap.appendChild(deptSelect);
 
-  // Mantener el select de título, solo limpiar el contenido del gráfico (SVG + leyenda)
-  let titleSelect = container.querySelector('.chart-title-select');
-  if(!titleSelect){
-    const titleContainer = element('div', 'chart-title-container');
-    titleSelect = element('select', 'chart-title-select');
-    titleSelect.innerHTML = '<option value="">Seleccione un área de trabajo</option>';
-    const departments = loadDepartments();
-    departments.forEach(d=>{
+  const periodWrap = element('label', 'chart-filter');
+  periodWrap.appendChild(element('span','chart-filter-label','Per?odo'));
+  const periodSelect = element('select','chart-select');
+  periodSelect.id = 'dashboard-chart-period';
+  PERIOD_OPTIONS.forEach(n => {
+    const opt = document.createElement('option');
+    opt.value = String(n);
+    opt.textContent = `?ltimos ${n} meses`;
+    if(n === selectedPeriodCount) opt.selected = true;
+    periodSelect.appendChild(opt);
+  });
+  periodWrap.appendChild(periodSelect);
+
+  deptSelect.addEventListener('change', (e) => {
+    selectedDepartmentId = e.target.value || null;
+    if(selectedDepartmentId) localStorage.setItem('erp_dashboard_department', selectedDepartmentId);
+    else localStorage.removeItem('erp_dashboard_department');
+    renderDashboard();
+  });
+  periodSelect.addEventListener('change', (e) => {
+    const n = Number(e.target.value);
+    selectedPeriodCount = PERIOD_OPTIONS.includes(n) ? n : 6;
+    renderDashboard();
+  });
+
+  filters.append(deptWrap, periodWrap);
+  container.prepend(filters);
+  return filters;
+}
+
+function populateChartFilters(){
+  const deptSelect = document.getElementById('dashboard-chart-department');
+  if(deptSelect){
+    const prev = selectedDepartmentId || '';
+    deptSelect.innerHTML = '<option value="">Todas las ?reas</option>';
+    loadDepartments().slice().sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||'','es')).forEach(d => {
       const opt = document.createElement('option');
       opt.value = d.id_departamento;
       opt.textContent = d.nombre;
-      if(selectedDepartmentId === d.id_departamento) opt.selected = true;
-      titleSelect.appendChild(opt);
+      deptSelect.appendChild(opt);
     });
-    titleSelect.addEventListener('change', (e) => {
-      selectedDepartmentId = e.target.value || null;
-      if(selectedDepartmentId){
-        localStorage.setItem('erp_dashboard_department', selectedDepartmentId);
-      } else {
-        localStorage.removeItem('erp_dashboard_department');
-      }
-      renderDashboard();
-    });
-    titleContainer.append(titleSelect, icon('chevronDown', 'chart-title-chevron'));
-    container.prepend(titleContainer);
+    if(prev && [...deptSelect.options].some(o => o.value === prev)) deptSelect.value = prev;
+    else { selectedDepartmentId = null; deptSelect.value = ''; }
   }
-  container.querySelectorAll('svg.line-chart, .chart-legend, .empty, p.empty').forEach(el => el.remove());
+  const periodSelect = document.getElementById('dashboard-chart-period');
+  if(periodSelect) periodSelect.value = String(selectedPeriodCount);
+}
 
-  const allValues = [...metaSeries, ...resultSeries].filter(v => v !== null && v !== undefined);
-  const maxValue = allValues.length > 0 ? Math.max(...allValues) : 1;
-  const yMax = Math.max(maxValue, 1);
+function renderLineChart(months, resultSeries, metaSeries){
+  const container = document.getElementById('dashboard-chart');
+  if(!container) return;
+  ensureChartFilters(container);
+  populateChartFilters();
+  container.querySelectorAll('svg.line-chart, .chart-legend, .empty, .chart-summary, .chart-tooltip').forEach(el => el.remove());
 
-  const chartWidth = container.clientWidth || 400;
-  const chartHeight = 180;
-  const margin = { top: 30, right: 40, bottom: 40, left: 50 };
+  const points = months.map((m, i) => ({ month: m, result: resultSeries[i], meta: metaSeries[i] }));
+  const hasAny = points.some(p => Number.isFinite(p.result) || Number.isFinite(p.meta));
+  if(!hasAny){
+    container.appendChild(element('p', 'empty chart-empty-state', 'A?n no hay evaluaciones para mostrar la evoluci?n del desempe?o.'));
+    return;
+  }
+  const comparable = points.filter(p => Number.isFinite(p.result));
+  const hasComparison = comparable.length >= 2;
+
+  const allValues = points.flatMap(p => [p.result, p.meta]).filter(v => Number.isFinite(v));
+  const maxValue = Math.max(1, ...allValues);
+  const yMax = Math.ceil(maxValue * 1.15 * 10) / 10;
+  const chartWidth = Math.max(320, container.clientWidth || 400);
+  const chartHeight = 220;
+  const margin = { top: 24, right: 20, bottom: 38, left: 44 };
   const width = chartWidth - margin.left - margin.right;
   const height = chartHeight - margin.top - margin.bottom;
+  const xFor = i => margin.left + (points.length === 1 ? width / 2 : (i * width / (points.length - 1)));
+  const yFor = v => margin.top + height - (v / yMax) * height;
 
   const svg = document.createElementNS(SVG_NS, 'svg');
-  svg.setAttribute('width', chartWidth);
-  svg.setAttribute('height', chartHeight);
+  svg.setAttribute('viewBox', `0 0 ${chartWidth} ${chartHeight}`);
+  svg.setAttribute('width', '100%');
+  svg.setAttribute('height', String(chartHeight));
   svg.setAttribute('class', 'line-chart');
+  svg.setAttribute('role', 'img');
+  svg.setAttribute('aria-label', 'Evoluci?n del desempe?o por per?odo');
 
-  const group = document.createElementNS(SVG_NS, 'g');
-  group.setAttribute('transform', `translate(${margin.left},${margin.top})`);
-
-  // Ejes
-  const xStep = width / (months.length - 1);
-  const monthsShort = months.map(m => m.slice(5, 7));
-
-  // Línea de meta esperada
-  const metaLine = document.createElementNS(SVG_NS, 'polyline');
-  const metaPoints = months.map((m, i) => {
-    const x = i * xStep;
-    const y = height - (metaSeries[i] || 0) / yMax * height;
-    return `${x},${y}`;
-  }).join(' ');
-  metaLine.setAttribute('points', metaPoints);
-  metaLine.setAttribute('fill', 'none');
-  metaLine.setAttribute('stroke', '#9D9167');
-  metaLine.setAttribute('stroke-width', '2.5');
-  group.appendChild(metaLine);
-
-  // Línea de resultado
-  const resultLine = document.createElementNS(SVG_NS, 'polyline');
-  const resultPoints = months.map((m, i) => {
-    const x = i * xStep;
-    const y = height - (resultSeries[i] || 0) / yMax * height;
-    return `${x},${y}`;
-  }).join(' ');
-  resultLine.setAttribute('points', resultPoints);
-  resultLine.setAttribute('fill', 'none');
-  resultLine.setAttribute('stroke', '#84592B');
-  resultLine.setAttribute('stroke-width', '2.5');
-  group.appendChild(resultLine);
-
-  // Marcadores y etiquetas para meta
-  months.forEach((m, i) => {
-    const x = i * xStep;
-    const y = height - (metaSeries[i] || 0) / yMax * height;
-    const circle = document.createElementNS(SVG_NS, 'circle');
-    circle.setAttribute('cx', x);
-    circle.setAttribute('cy', y);
-    circle.setAttribute('r', '4');
-    circle.setAttribute('fill', '#9D9167');
-    circle.setAttribute('stroke', '#ffffff');
-    circle.setAttribute('stroke-width', '2');
-    circle.setAttribute('class', 'chart-point');
-    circle.setAttribute('data-month', m);
-    circle.setAttribute('data-series', 'meta');
-    circle.setAttribute('data-value', metaSeries[i] || 0);
-    group.appendChild(circle);
-  });
-
-  // Marcadores y etiquetas para resultado
-  months.forEach((m, i) => {
-    const x = i * xStep;
-    const y = height - (resultSeries[i] || 0) / yMax * height;
-    const circle = document.createElementNS(SVG_NS, 'circle');
-    circle.setAttribute('cx', x);
-    circle.setAttribute('cy', y);
-    circle.setAttribute('r', '4');
-    circle.setAttribute('fill', '#84592B');
-    circle.setAttribute('stroke', '#ffffff');
-    circle.setAttribute('stroke-width', '2');
-    circle.setAttribute('class', 'chart-point');
-    circle.setAttribute('data-month', m);
-    circle.setAttribute('data-series', 'resultado');
-    circle.setAttribute('data-value', resultSeries[i] || 0);
-    group.appendChild(circle);
-  });
-
-  // Etiquetas del eje X
-  months.forEach((m, i) => {
-    const x = i * xStep;
-    const label = document.createElementNS(SVG_NS, 'text');
-    label.setAttribute('x', x);
-    label.setAttribute('y', height + 25);
-    label.setAttribute('text-anchor', 'middle');
-    label.setAttribute('font-size', '11');
-    label.setAttribute('fill', '#442D1C');
-    label.textContent = monthsShort[i] || '';
-    group.appendChild(label);
-  });
-
-  // Etiquetas del eje Y
-  for(let i = 0; i <= 5; i++){
-    const value = Math.round((yMax * i) / 5);
-    const y = height - (i / 5) * height;
-    const label = document.createElementNS(SVG_NS, 'text');
-    label.setAttribute('x', -10);
-    label.setAttribute('y', y + 4);
-    label.setAttribute('text-anchor', 'end');
-    label.setAttribute('font-size', '10');
-    label.setAttribute('fill', '#442D1C');
-    label.textContent = value;
-    group.appendChild(label);
+  for(let i = 0; i <= 4; i++){
+    const y = margin.top + (i/4)*height;
+    const line = document.createElementNS(SVG_NS, 'line');
+    line.setAttribute('x1', margin.left); line.setAttribute('x2', margin.left + width);
+    line.setAttribute('y1', y); line.setAttribute('y2', y);
+    line.setAttribute('stroke', 'var(--border)'); line.setAttribute('stroke-dasharray', '4 4');
+    svg.appendChild(line);
+    const lbl = document.createElementNS(SVG_NS, 'text');
+    lbl.setAttribute('x', margin.left - 8); lbl.setAttribute('y', y + 4);
+    lbl.setAttribute('text-anchor','end'); lbl.setAttribute('font-size','10'); lbl.setAttribute('fill','var(--muted)');
+    lbl.textContent = formatResult((yMax * (4-i)) / 4);
+    svg.appendChild(lbl);
   }
 
-  svg.appendChild(group);
+  const drawSeries = (key, color, dash) => {
+    const valid = points.map((p,i)=>({ ...p, i })).filter(p => Number.isFinite(p[key]));
+    if(valid.length === 0) return;
+    if(valid.length >= 2){
+      const pl = document.createElementNS(SVG_NS, 'polyline');
+      pl.setAttribute('fill','none'); pl.setAttribute('stroke', color); pl.setAttribute('stroke-width','2.5');
+      if(dash) pl.setAttribute('stroke-dasharray', dash);
+      pl.setAttribute('points', valid.map(p => `${xFor(p.i)},${yFor(p[key])}`).join(' '));
+      svg.appendChild(pl);
+    }
+    valid.forEach(p => {
+      const c = document.createElementNS(SVG_NS, 'circle');
+      c.setAttribute('cx', xFor(p.i)); c.setAttribute('cy', yFor(p[key]));
+      c.setAttribute('r', '4.5'); c.setAttribute('fill', color); c.setAttribute('stroke', '#fff'); c.setAttribute('stroke-width','2');
+      c.setAttribute('class','chart-point');
+      c.dataset.period = p.month; c.dataset.value = String(p[key]); c.dataset.series = key;
+      svg.appendChild(c);
+      const t = document.createElementNS(SVG_NS, 'text');
+      t.setAttribute('x', xFor(p.i)); t.setAttribute('y', yFor(p[key]) - 10);
+      t.setAttribute('text-anchor','middle'); t.setAttribute('font-size','10'); t.setAttribute('fill', color);
+      t.textContent = formatResult(p[key]);
+      svg.appendChild(t);
+    });
+  };
+
+  const hasMeta = points.some(p => Number.isFinite(p.meta));
+  if(hasMeta) drawSeries('meta', '#9D9167', '6 4');
+  drawSeries('result', '#84592B', '');
+
+  points.forEach((p,i) => {
+    const label = document.createElementNS(SVG_NS, 'text');
+    label.setAttribute('x', xFor(i)); label.setAttribute('y', chartHeight - 10);
+    label.setAttribute('text-anchor','middle'); label.setAttribute('font-size','11'); label.setAttribute('fill','var(--muted)');
+    label.textContent = `${MONTHS[Number(p.month.slice(5))-1]} ${p.month.slice(2,4)}`;
+    svg.appendChild(label);
+  });
+
   container.appendChild(svg);
-
-  // Configurar el valor seleccionado del departamento
-  if(selectedDepartmentId){
-    titleSelect.value = selectedDepartmentId;
-  } else {
-    titleSelect.value = '';
-  }
-
-  // Leyenda
-  const legend = element('div', 'chart-legend');
-  const metaItem = element('div', 'legend-item');
-  metaItem.innerHTML = `<span class="legend-color" style="background:#9D9167"></span><span class="legend-label">Meta esperada</span>`;
-  const resultItem = element('div', 'legend-item');
-  resultItem.innerHTML = `<span class="legend-color" style="background:#84592B"></span><span class="legend-label">Resultado</span>`;
-  legend.appendChild(metaItem);
-  legend.appendChild(resultItem);
+  const legend = element('div','chart-legend');
+  legend.innerHTML = `<div class="legend-item"><span class="legend-color" style="background:#84592B"></span><span class="legend-label">Resultado</span></div>` +
+    (hasMeta ? `<div class="legend-item"><span class="legend-color legend-color-meta"></span><span class="legend-label">Meta de desempe?o</span></div>` : '');
   container.appendChild(legend);
+
+  const summary = element('div','chart-summary');
+  if(hasComparison){
+    const first = comparable[0], last = comparable[comparable.length-1];
+    const diff = Number(last.result) - Number(first.result);
+    const trend = diff > 0 ? 'alza' : diff < 0 ? 'baja' : 'estable';
+    summary.textContent = `Comparaci?n: ${formatResult(first.result)} (${first.month}) ? ${formatResult(last.result)} (${last.month}) ? Tendencia ${trend}${diff !== 0 ? ` (${diff>0?'+':''}${formatResult(diff)})` : ''}.`;
+  } else {
+    summary.textContent = 'Hay datos disponibles, pero se necesitan evaluaciones en al menos dos per?odos para comparar la evoluci?n.';
+  }
+  container.appendChild(summary);
 }
 
 function renderRecentActivity(records){
@@ -481,43 +481,40 @@ export function renderDashboard(){
   setText('stat-assignments', String(currentAssignmentCount()));
   setText('stat-assignments-label', 'Asignaciones de área vigentes');
 
-  // Recargar selección del departamento guardada
   if(!selectedDepartmentId){
     const saved = localStorage.getItem('erp_dashboard_department');
-    if(saved){
-      selectedDepartmentId = saved;
-    }
+    if(saved) selectedDepartmentId = saved;
   }
-
-  // Asegurar que las metas consolidadas estén actualizadas
   calcularMetasConsolidadas();
 
-  const months = monthKeys();
+  const months = monthKeys(selectedPeriodCount);
   const consolidations = loadMetasConsolidadas();
-
-  let metaSeries = months.map(() => 0);
-  let resultSeries = months.map(() => 0);
-  let departmentName = null;
-
-  if(selectedDepartmentId){
-    const department = loadDepartments().find(d => d.id_departamento === selectedDepartmentId);
-    if(department){
-      departmentName = department.nombre;
-      consolidations.forEach(c=>{
-        if(c.departamentoId === selectedDepartmentId){
-          const monthIndex = months.findIndex(m => m === c.periodo);
-          if(monthIndex >= 0){
-            metaSeries[monthIndex] = c.metaConsolidada || 0;
-            resultSeries[monthIndex] = c.resultadoConsolidado || 0;
-          }
-        }
-      });
-    } else {
-      selectedDepartmentId = null;
-      localStorage.removeItem('erp_dashboard_department');
+  const docs = loadDocuments().filter(d => isRRHHMode() ? d && (d.indicador || d.resultado !== undefined) : true);
+  const monthMap = new Map(months.map(m => [m, { resultSum:0, resultCount:0, metaSum:0, metaCount:0 }]));
+  docs.forEach(doc => {
+    const period = recordPeriod(doc);
+    if(!period || !monthMap.has(period)) return;
+    if(selectedDepartmentId){
+      const dept = getDepartmentForDocument(doc);
+      if(!dept || dept.id_departamento !== selectedDepartmentId) return;
     }
+    const r = Number(doc.resultado);
+    const m = Number(doc.meta);
+    const bucket = monthMap.get(period);
+    if(Number.isFinite(r)) { bucket.resultSum += r; bucket.resultCount += 1; }
+    if(Number.isFinite(m)) { bucket.metaSum += m; bucket.metaCount += 1; }
+  });
+  if(selectedDepartmentId){
+    consolidations.forEach(c => {
+      if(c.departamentoId !== selectedDepartmentId) return;
+      const bucket = monthMap.get(c.periodo);
+      if(!bucket) return;
+      if(bucket.metaCount === 0 && Number.isFinite(Number(c.metaConsolidada))) { bucket.metaSum = Number(c.metaConsolidada); bucket.metaCount = 1; }
+      if(bucket.resultCount === 0 && Number.isFinite(Number(c.resultadoConsolidado))) { bucket.resultSum = Number(c.resultadoConsolidado); bucket.resultCount = 1; }
+    });
   }
-
-  renderLineChart(months, metaSeries, resultSeries, departmentName);
+  const resultSeries = months.map(m => { const b = monthMap.get(m); return b.resultCount ? b.resultSum / b.resultCount : null; });
+  const metaSeries = months.map(m => { const b = monthMap.get(m); return b.metaCount ? b.metaSum / b.metaCount : null; });
+  renderLineChart(months, resultSeries, metaSeries);
   renderRecentActivity(recentRecords(loadDocuments(), loadEntities()));
 }
