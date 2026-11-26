@@ -932,6 +932,8 @@ function applyRolePermissions(){
   qs('action-open-entities').hidden = !canManageEntities;
   qs('action-new-document').hidden = !canWriteMeasurement;
   qs('action-find').hidden = !allowed.includes('search');
+  const historyAction = qs('action-open-history');
+  if(historyAction) historyAction.hidden = !allowed.includes('history');
   qs('entity-form').closest('section').hidden = !canManageEntities;
   qs('edit-entity').closest('section').hidden = !canManageEntities;
   qs('document-form').closest('section').hidden = !canWriteMeasurement;
@@ -1168,6 +1170,7 @@ function wireEvents(){
   qs('action-new-document').addEventListener('click', () => showModule('documents', { newRecord: true, focusForm: true }));
   qs('action-open-entities').addEventListener('click', () => showModule('entities'));
   qs('action-find').addEventListener('click', () => showModule('search', { focusSearch: true }));
+  qs('action-open-history')?.addEventListener('click', () => showModule('history'));
   qs('view-dashboard')?.addEventListener('click', (ev) => {
     const card = ev.target.closest('.stat-card-link[data-module-target]');
     if(card){
