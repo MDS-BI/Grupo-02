@@ -16,6 +16,11 @@ let dom;
 let department;
 
 function qs(id){ return document.getElementById(id); }
+function nextVisibleSibling(el){
+  let current = el.nextElementSibling;
+  while(current && current.hidden) current = current.nextElementSibling;
+  return current;
+}
 function change(id){ qs(id).dispatchEvent(new dom.window.Event('change', { bubbles: true })); }
 function submit(id){ qs(id).dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true })); }
 
@@ -225,7 +230,7 @@ describe('Reorganización de navegación - módulo Trabajadores', () => {
       'Fecha de ingreso *',
       'Estado laboral *'
     ]);
-    expect(laboral.nextElementSibling.querySelector('label').textContent).toBe('Categoría');
+    expect(nextVisibleSibling(laboral).textContent).toBe('Información adicional');
   });
 
   it('G: genera códigos EMP consecutivos, evita duplicados y conserva el código al editar', () => {
@@ -266,5 +271,41 @@ describe('Reorganización de navegación - módulo Trabajadores', () => {
     selectWorkerForEdit(third);
     qs('delete-entity').click();
     expect(qs('code').value).toBe('EMP-004');
+  });
+
+  it('H: la sección adicional guarda contacto y observaciones, y los recupera al editar', () => {
+    qs('nav-entities').click();
+
+    const additional = qs('entity-additional-custom-fields');
+    expect([...additional.querySelectorAll('label')].map(label => label.textContent)).toEqual([
+      'Nombre del contacto de emergencia',
+      'Teléfono del contacto de emergencia'
+    ]);
+    expect(qs('description-label').textContent).toBe('Observaciones');
+    expect(nextVisibleSibling(additional).querySelector('textarea')).toBe(qs('description'));
+    ['category', 'targetDate', 'creditLimit', 'paymentTerms'].forEach(id => {
+      expect(qs(id).closest('[data-base-entity]').hidden).toBe(true);
+    });
+
+    qs('name').value = 'Ana';
+    qs('surname').value = 'Torres';
+    qs('cf-cargo').value = 'Barista';
+    qs('cf-departamentoId').value = department.id_departamento;
+    qs('cf-fechaIngreso').value = '2026-01-15';
+    qs('cf-estadoLaboral').value = 'Activo';
+    qs('cf-contactoEmergenciaNombre').value = 'Laura';
+    qs('cf-contactoEmergenciaTelefono').value = '+56 9 1234 5678';
+    qs('description').value = 'Alergia a la lactosa';
+    submit('entity-form');
+
+    const worker = loadEntities()[0];
+    expect(worker.contactoEmergenciaNombre).toBe('Laura');
+    expect(worker.contactoEmergenciaTelefono).toBe('+56 9 1234 5678');
+    expect(worker.description).toBe('Alergia a la lactosa');
+
+    selectWorkerForEdit(worker);
+    expect(qs('cf-contactoEmergenciaNombre').value).toBe('Laura');
+    expect(qs('cf-contactoEmergenciaTelefono').value).toBe('+56 9 1234 5678');
+    expect(qs('description').value).toBe('Alergia a la lactosa');
   });
 });

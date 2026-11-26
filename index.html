@@ -155,15 +155,17 @@
                   <div class="error" id="error-code" aria-live="polite"></div>
                 </div>
                 <div id="entity-laboral-custom-fields" data-rrhh-only hidden></div>
-                <div>
+                <h3 class="section-title" data-rrhh-only hidden>Información adicional</h3>
+                <div id="entity-additional-custom-fields" data-rrhh-only hidden></div>
+                <div data-base-entity>
                   <label for="category">Categoría</label>
                   <input id="category" name="category" />
                 </div>
                 <div>
-                  <label for="description">Descripción</label>
+                  <label for="description" id="description-label">Descripción</label>
                   <textarea id="description" name="description" rows="3"></textarea>
                 </div>
-                <div>
+                <div data-base-entity>
                   <label for="targetDate">Fecha objetivo</label>
                   <input id="targetDate" name="targetDate" type="date" />
                   <div class="error" id="error-targetDate" aria-live="polite"></div>

@@ -15,6 +15,11 @@ export function declaredFieldsFor(target){
   return getConfig().customFields.filter(f => f.target === target);
 }
 
+function fieldsFor(target, keys){
+  const fields = declaredFieldsFor(target);
+  return keys ? fields.filter(f => keys.includes(f.key)) : fields;
+}
+
 function dynamicOptionsFor(field, options){
   if(!options || !field.optionsSource) return null;
   if(typeof options === 'function') return options(field) || null;
@@ -23,9 +28,9 @@ function dynamicOptionsFor(field, options){
   return null;
 }
 
-export function renderCustomFields(container, target, values = {}, options = null){
+export function renderCustomFields(container, target, values = {}, options = null, keys = null){
   container.innerHTML = '';
-  const fields = declaredFieldsFor(target);
+  const fields = fieldsFor(target, keys);
   if(fields.length === 0){
     container.hidden = true;
     return;
@@ -57,9 +62,9 @@ export function renderCustomFields(container, target, values = {}, options = nul
   }
 }
 
-export function collectCustomFields(container, target){
+export function collectCustomFields(container, target, keys = null){
   const values = {};
-  for(const f of declaredFieldsFor(target)){
+  for(const f of fieldsFor(target, keys)){
     const input = container.querySelector(`#cf-${f.key}`);
     if(!input) continue;
     const raw = input.value;
@@ -69,8 +74,8 @@ export function collectCustomFields(container, target){
   return values;
 }
 
-export function showCustomFieldErrors(container, target, errors = {}){
-  for(const f of declaredFieldsFor(target)){
+export function showCustomFieldErrors(container, target, errors = {}, keys = null){
+  for(const f of fieldsFor(target, keys)){
     const errEl = container.querySelector(`#error-cf-${f.key}`);
     if(errEl) errEl.textContent = errors[f.key] || '';
   }

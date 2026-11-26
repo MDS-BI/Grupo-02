@@ -10,8 +10,17 @@ function qs(id){ return document.getElementById(id); }
 
 const issuedEmployeeCodes = new Set();
 
-function customFieldsContainer(){
-  return isRRHHMode() ? qs('entity-laboral-custom-fields') : qs('entity-custom-fields');
+const RRHH_CUSTOM_FIELD_GROUPS = [
+  { containerId: 'entity-laboral-custom-fields', keys: ['cargo', 'departamentoId', 'fechaIngreso', 'estadoLaboral'] },
+  { containerId: 'entity-additional-custom-fields', keys: ['contactoEmergenciaNombre', 'contactoEmergenciaTelefono'] }
+];
+
+function customFieldTargets(){
+  if(!isRRHHMode()) return [{ container: qs('entity-custom-fields'), keys: null }];
+  return RRHH_CUSTOM_FIELD_GROUPS.map(group => ({
+    container: qs(group.containerId),
+    keys: group.keys
+  }));
 }
 
 export function rememberEmployeeCode(code){
@@ -57,8 +66,11 @@ function selectPhonePrefix(dial){
 }
 
 export function refreshEntityCustomFields(values = {}){
-  renderCustomFields(customFieldsContainer(), 'entity', values, {
+  const options = {
     departments: loadDepartments().map(d => ({ value: d.id_departamento, label: d.nombre }))
+  };
+  customFieldTargets().forEach(({ container, keys }) => {
+    renderCustomFields(container, 'entity', values, options, keys);
   });
 }
 
@@ -82,14 +94,16 @@ export function clearEntityForm(){
   qs('creditLimit').value = '';
   qs('paymentTerms').value = '';
   clearEntityErrors();
-  renderEntityCustomFields(isRRHHMode() ? { estadoLaboral: 'Activo' } : {});
+  renderEntityCustomFields(isRRHHMode()
+    ? { estadoLaboral: 'Activo', contactoEmergenciaNombre: '', contactoEmergenciaTelefono: '' }
+    : {});
   qs('cancel-edit').hidden = true;
   qs('submit-button').textContent = 'Guardar';
 }
 
 export function clearEntityErrors(){
   ['name', 'surname', 'code', 'email', 'targetDate', 'creditLimit'].forEach(f => { qs(`error-${f}`).textContent = ''; });
-  clearCustomFieldErrors(customFieldsContainer());
+  customFieldTargets().forEach(({ container }) => clearCustomFieldErrors(container));
 }
 
 export function startEntityEdit(entity){
@@ -117,6 +131,10 @@ export function startEntityEdit(entity){
 }
 
 export function collectEntityPayload(){
+  const customValues = {};
+  customFieldTargets().forEach(({ container, keys }) => {
+    Object.assign(customValues, collectCustomFields(container, 'entity', keys));
+  });
   return {
     name: qs('name').value,
     surname: qs('surname').value,
@@ -130,7 +148,7 @@ export function collectEntityPayload(){
     targetDate: qs('targetDate').value,
     creditLimit: qs('creditLimit').value,
     paymentTerms: qs('paymentTerms').value,
-    ...collectCustomFields(customFieldsContainer(), 'entity')
+    ...customValues
   };
 }
 
@@ -141,5 +159,7 @@ export function showEntityErrors(errors){
   qs('error-email').textContent = errors.email || '';
   qs('error-targetDate').textContent = errors.targetDate || '';
   qs('error-creditLimit').textContent = errors.creditLimit || '';
-  showCustomFieldErrors(customFieldsContainer(), 'entity', errors);
+  customFieldTargets().forEach(({ container, keys }) => {
+    showCustomFieldErrors(container, 'entity', errors, keys);
+  });
 }

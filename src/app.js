@@ -720,6 +720,7 @@ function applyLabels(config){
   qs('code-label').textContent = rrhh ? 'Código de empleado (automático)' : 'Código *';
   qs('code').readOnly = rrhh;
   qs('code').placeholder = rrhh ? 'Se genera automáticamente' : '';
+  qs('description-label').textContent = rrhh ? 'Observaciones' : 'Descripción';
   qs('nav-entities-add-label').textContent = 'Agregar';
   qs('nav-entities-edit-label').textContent = `Editar o eliminar ${entity.toLowerCase()}`;
   qs('edit-entity-heading').textContent = `Editar o eliminar ${articulo(entity)} ${entity.toLowerCase()}`;
