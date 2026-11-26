@@ -428,34 +428,46 @@ function renderRecentActivity(records){
   container.replaceChildren();
 
   if(records.length === 0){
-    container.appendChild(element('p', 'empty', 'Aún no hay evaluaciones de desempeño recientes.'));
+    container.appendChild(element('p', 'empty activity-empty', 'No hay evaluaciones recientes registradas.'));
     return;
   }
 
-  const list = element('ul', 'activity-list');
+  const wrap = element('div', 'table-wrap activity-table-wrap');
+  const table = element('table', 'data-table activity-table');
+  table.setAttribute('aria-label', 'Actividad reciente de evaluaciones');
+  const thead = document.createElement('thead');
+  thead.innerHTML = '<tr><th>Trabajador</th><th>Fecha</th><th>Per?odo</th><th>Resultado / indicador</th></tr>';
+  const tbody = document.createElement('tbody');
   records.forEach(record => {
-    const item = element('li', 'activity-item');
-    const body = element('div', 'activity-body');
-    const top = element('div', 'activity-top');
-    top.append(
-      element('strong', 'activity-worker', record.worker),
-      element('span', 'activity-period', record.period || '—')
-    );
-    const meta = element('div', 'activity-meta');
-    const resultText = record.unit
-      ? `${formatResult(record.result)} ${record.unit}`
-      : formatResult(record.result);
-    const turnoText = record.turno ? ` | Turno: ${record.turno}` : '';
-    const metaText = record.meta !== null ? ` | Meta: ${formatResult(record.meta)}` : '';
-    meta.append(
-      element('span', 'activity-indicator', record.indicator || 'Sin indicador de desempeño'),
-      element('span', 'activity-result', resultText + turnoText + metaText)
-    );
-    body.append(top, meta);
-    item.append(element('span', 'activity-avatar', initials(record.worker)), body);
-    list.appendChild(item);
+    const tr = document.createElement('tr');
+    tr.className = 'activity-row';
+    if(record.id){
+      tr.dataset.documentId = record.id;
+      tr.tabIndex = 0;
+      tr.setAttribute('role', 'link');
+      tr.setAttribute('aria-label', `Abrir evaluaci?n de ${record.worker}`);
+    }
+    const worker = document.createElement('td');
+    const avatar = document.createElement('span'); avatar.className='activity-avatar'; avatar.textContent=initials(record.worker);
+    const name = document.createElement('span'); name.className='activity-worker-name'; name.textContent=record.worker;
+    const wcell = document.createElement('div'); wcell.className='activity-worker-cell'; wcell.append(avatar,name); worker.appendChild(wcell);
+    const date = document.createElement('td'); date.textContent = formatDate(record.date);
+    const period = document.createElement('td'); period.textContent = record.period || '?';
+    const result = document.createElement('td');
+    const rcell = document.createElement('div'); rcell.className='activity-result-cell';
+    const strong = document.createElement('strong');
+    strong.textContent = record.result !== undefined && record.result !== null && record.result !== ''
+      ? (record.unit ? `${formatResult(record.result)} ${record.unit}` : formatResult(record.result))
+      : '?';
+    rcell.appendChild(strong);
+    if(record.indicator){ const ind=document.createElement('span'); ind.className='activity-indicator'; ind.textContent=record.indicator; rcell.appendChild(ind); }
+    result.appendChild(rcell);
+    tr.append(worker, date, period, result);
+    tbody.appendChild(tr);
   });
-  container.appendChild(list);
+  table.append(thead, tbody);
+  wrap.appendChild(table);
+  container.appendChild(wrap);
 }
 
 export function recordCounts(){

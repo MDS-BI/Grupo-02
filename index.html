@@ -116,27 +116,37 @@
             </div>
           </div>
 
-          <h2 id="quick-actions-heading">Acciones rápidas</h2>
+          <div class="dashboard-section-head"><h2 id="quick-actions-heading">Acciones r?pidas</h2></div>
           <div class="action-grid">
             <button type="button" class="action-card" id="action-new-entity">
-              <strong id="action-new-entity-title">Nuevo personal</strong>
-              <span class="muted" id="action-new-entity-sub">Ingresar personal al sistema</span>
+              <span class="action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg></span>
+              <span class="action-body"><strong id="action-new-entity-title">Nuevo personal</strong><span class="muted" id="action-new-entity-sub">Ingresar personal al sistema</span></span>
+              <span class="action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
             </button>
             <button type="button" class="action-card" id="action-new-document">
-              <strong id="action-new-document-title">Nueva evaluación</strong>
-              <span class="muted" id="action-new-document-sub">Registrar una evaluación</span>
+              <span class="action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15h6"/></svg></span>
+              <span class="action-body"><strong id="action-new-document-title">Nueva evaluaci?n</strong><span class="muted" id="action-new-document-sub">Registrar una evaluaci?n</span></span>
+              <span class="action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
             </button>
             <button type="button" class="action-card" id="action-open-entities">
-              <strong id="action-open-entities-title">Personal</strong>
-              <span class="muted" id="action-open-entities-sub">Abrir la gestión de personal</span>
+              <span class="action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+              <span class="action-body"><strong id="action-open-entities-title">Personal</strong><span class="muted" id="action-open-entities-sub">Abrir la gesti?n de personal</span></span>
+              <span class="action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
             </button>
             <button type="button" class="action-card" id="action-find">
-              <strong id="action-find-title">Buscar personal</strong>
-              <span class="muted" id="action-find-sub">Buscar por nombre, código o cargo</span>
+              <span class="action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+              <span class="action-body"><strong id="action-find-title">Buscar personal</strong><span class="muted" id="action-find-sub">Buscar por nombre, c?digo o cargo</span></span>
+              <span class="action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
+            </button>
+            <button type="button" class="action-card" id="action-open-history">
+              <span class="action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
+              <span class="action-body"><strong id="action-open-history-title">Historial</strong><span class="muted" id="action-open-history-sub">Consultar evaluaciones registradas</span></span>
+              <span class="action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
             </button>
             <button type="button" class="action-card" id="action-load-demo" hidden>
-              <strong id="action-load-demo-title">Cargar datos de demostración</strong>
-              <span class="muted" id="action-load-demo-sub">Poblar con personal y evaluaciones ficticias</span>
+              <span class="action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/></svg></span>
+              <span class="action-body"><strong id="action-load-demo-title">Cargar datos de demostraci?n</strong><span class="muted" id="action-load-demo-sub">Poblar con personal y evaluaciones ficticias</span></span>
+              <span class="action-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
             </button>
           </div>
         </section>

@@ -1170,9 +1170,24 @@ function wireEvents(){
   qs('action-find').addEventListener('click', () => showModule('search', { focusSearch: true }));
   qs('view-dashboard')?.addEventListener('click', (ev) => {
     const card = ev.target.closest('.stat-card-link[data-module-target]');
-    if(!card) return;
-    const mod = card.dataset.moduleTarget;
-    if(mod && (!isRRHHMode() || allowedModules(roleState).includes(mod))) showModule(mod);
+    if(card){
+      const mod = card.dataset.moduleTarget;
+      if(mod && (!isRRHHMode() || allowedModules(roleState).includes(mod))) showModule(mod);
+      return;
+    }
+    const activityRow = ev.target.closest('.activity-row[data-document-id]');
+    if(activityRow && (!isRRHHMode() || allowedModules(roleState).includes('documents'))){
+      showModule('documents', { editDocumentId: activityRow.dataset.documentId, focusForm: true });
+    }
+  });
+  qs('view-dashboard')?.addEventListener('keydown', (ev) => {
+    if(ev.key !== 'Enter' && ev.key !== ' ') return;
+    const row = ev.target.closest('.activity-row[data-document-id]');
+    if(!row) return;
+    ev.preventDefault();
+    if(!isRRHHMode() || allowedModules(roleState).includes('documents')){
+      showModule('documents', { editDocumentId: row.dataset.documentId, focusForm: true });
+    }
   });
   qs('view-dashboard')?.addEventListener('keydown', (ev) => {
     if(ev.key !== 'Enter' && ev.key !== ' ') return;
