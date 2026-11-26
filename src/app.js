@@ -9,7 +9,7 @@ import {
   getCurrentAssignment, monthBounds, saveEntities,
   getStorageError, clearStorageError, inspectDocumentsForRRHH
 } from './storage.js';
-import { clearEntityForm, startEntityEdit, collectEntityPayload, showEntityErrors, refreshEntityCustomFields } from './components/entity-form.js';
+import { clearEntityForm, startEntityEdit, collectEntityPayload, showEntityErrors, refreshEntityCustomFields, nextEmployeeCode, rememberEmployeeCode } from './components/entity-form.js';
 import { createEntityItem } from './components/entity-list.js';
 import { clearDocumentForm, startDocumentEdit, collectDocumentPayload, showDocumentErrors } from './components/document-form.js';
 import { folioLabel } from './components/document-list.js';
@@ -376,6 +376,10 @@ function handleEntitySubmit(ev){
   ev.preventDefault();
   const id = qs('entity-id').value;
   const payload = collectEntityPayload();
+  if(isRRHHMode() && !id && loadEntities().some(entity => String(entity.code ?? '').trim() === String(payload.code ?? '').trim())){
+    qs('code').value = nextEmployeeCode();
+    payload.code = qs('code').value;
+  }
   const { valid, errors } = validateEntity(payload);
   showEntityErrors(errors);
   if(!valid) return;
@@ -384,6 +388,7 @@ function handleEntitySubmit(ev){
       updateEntity(id, payload);
     }else{
       addEntity(payload);
+      if(isRRHHMode()) rememberEmployeeCode(payload.code);
     }
     if(id){
       const saved = loadEntities().find(entity => entity.id === id);
@@ -712,6 +717,9 @@ function applyLabels(config){
   qs('entity-form-heading').textContent = rrhh
     ? `Agregar ${entity.toLowerCase()}`
     : `Agregar / Editar ${entity}`;
+  qs('code-label').textContent = rrhh ? 'Código de empleado (automático)' : 'Código *';
+  qs('code').readOnly = rrhh;
+  qs('code').placeholder = rrhh ? 'Se genera automáticamente' : '';
   qs('nav-entities-add-label').textContent = 'Agregar';
   qs('nav-entities-edit-label').textContent = `Editar o eliminar ${entity.toLowerCase()}`;
   qs('edit-entity-heading').textContent = `Editar o eliminar ${articulo(entity)} ${entity.toLowerCase()}`;

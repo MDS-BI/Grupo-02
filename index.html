@@ -148,11 +148,13 @@
                     <input id="address" name="address" />
                   </div>
                 </div>
+                <h3 class="section-title" data-rrhh-only hidden>Información laboral</h3>
                 <div>
-                  <label for="code">Código *</label>
+                  <label for="code" id="code-label">Código *</label>
                   <input id="code" name="code" required />
                   <div class="error" id="error-code" aria-live="polite"></div>
                 </div>
+                <div id="entity-laboral-custom-fields" data-rrhh-only hidden></div>
                 <div>
                   <label for="category">Categoría</label>
                   <input id="category" name="category" />
@@ -175,7 +177,7 @@
                   <label for="paymentTerms">Condiciones de pago</label>
                   <input id="paymentTerms" name="paymentTerms" placeholder="p. ej., contado, neto 30" />
                 </div>
-                <div id="entity-custom-fields"></div>
+                <div id="entity-custom-fields" data-base-entity></div>
                 <div class="form-actions">
                   <button type="submit" id="submit-button" class="primary">Guardar</button>
                   <button type="button" id="cancel-edit" class="secondary" hidden>Cancelar edición</button>

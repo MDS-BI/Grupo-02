@@ -210,4 +210,61 @@ describe('Reorganización de navegación - módulo Trabajadores', () => {
     qs('nav-dashboard').click();
     expect(qs('stat-active').textContent).toBe('0');
   });
+
+  it('F: la sección laboral usa los campos personalizados existentes en el orden solicitado', () => {
+    qs('nav-entities').click();
+
+    expect(qs('code-label').textContent).toBe('Código de empleado (automático)');
+    expect(qs('code').readOnly).toBe(true);
+
+    const laboral = qs('entity-laboral-custom-fields');
+    expect(qs('code').parentElement.nextElementSibling).toBe(laboral);
+    expect([...laboral.querySelectorAll('label')].map(label => label.textContent)).toEqual([
+      'Cargo *',
+      'Área de trabajo *',
+      'Fecha de ingreso *',
+      'Estado laboral *'
+    ]);
+    expect(laboral.nextElementSibling.querySelector('label').textContent).toBe('Categoría');
+  });
+
+  it('G: genera códigos EMP consecutivos, evita duplicados y conserva el código al editar', () => {
+    function fillWorker(){
+      qs('name').value = 'Ana';
+      qs('surname').value = 'Torres';
+      qs('cf-cargo').value = 'Barista';
+      qs('cf-departamentoId').value = department.id_departamento;
+      qs('cf-fechaIngreso').value = '2026-01-15';
+      qs('cf-estadoLaboral').value = 'Activo';
+    }
+
+    qs('nav-entities').click();
+    expect(qs('code').value).toBe('EMP-001');
+
+    fillWorker();
+    submit('entity-form');
+    const first = loadEntities().find(entity => entity.code === 'EMP-001');
+    expect(first).toBeTruthy();
+    expect(qs('code').value).toBe('EMP-002');
+
+    fillWorker();
+    submit('entity-form');
+    expect(loadEntities().map(entity => entity.code)).toEqual(['EMP-001', 'EMP-002']);
+
+    qs('code').value = 'EMP-002';
+    fillWorker();
+    submit('entity-form');
+    expect(loadEntities().map(entity => entity.code)).toEqual(['EMP-001', 'EMP-002', 'EMP-003']);
+    const third = loadEntities().find(entity => entity.code === 'EMP-003');
+
+    selectWorkerForEdit(first);
+    expect(qs('code').value).toBe('EMP-001');
+    qs('name').value = 'Ana Editada';
+    submit('entity-form');
+    expect(loadEntities().find(entity => entity.id === first.id).code).toBe('EMP-001');
+
+    selectWorkerForEdit(third);
+    qs('delete-entity').click();
+    expect(qs('code').value).toBe('EMP-004');
+  });
 });

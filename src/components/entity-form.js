@@ -1,5 +1,5 @@
 import { renderCustomFields, collectCustomFields, showCustomFieldErrors, clearCustomFieldErrors } from './custom-fields.js';
-import { loadDepartments } from '../storage.js';
+import { loadDepartments, loadEntities } from '../storage.js';
 import { isRRHHMode } from '../module-config.js';
 import {
   PHONE_CODES, phoneCodeLabel, phoneCodeForDial, phoneDialForCode,
@@ -7,6 +7,32 @@ import {
 } from '../phone-codes.js';
 
 function qs(id){ return document.getElementById(id); }
+
+const issuedEmployeeCodes = new Set();
+
+function customFieldsContainer(){
+  return isRRHHMode() ? qs('entity-laboral-custom-fields') : qs('entity-custom-fields');
+}
+
+export function rememberEmployeeCode(code){
+  const normalized = String(code ?? '').trim();
+  if(/^EMP-\d+$/.test(normalized)) issuedEmployeeCodes.add(normalized);
+}
+
+export function nextEmployeeCode(){
+  const entities = loadEntities();
+  const used = new Set([
+    ...issuedEmployeeCodes,
+    ...entities.map(entity => String(entity.code ?? '').trim())
+  ]);
+  const max = [...used].reduce((highest, code) => {
+    const match = /^EMP-(\d+)$/.exec(code);
+    return match ? Math.max(highest, Number(match[1])) : highest;
+  }, 0);
+  let candidate = max + 1;
+  while(used.has(`EMP-${String(candidate).padStart(3, '0')}`)) candidate += 1;
+  return `EMP-${String(candidate).padStart(3, '0')}`;
+}
 
 function splitLegacyName(fullName){
   const parts = String(fullName || '').trim().split(/\s+/).filter(Boolean);
@@ -31,7 +57,7 @@ function selectPhonePrefix(dial){
 }
 
 export function refreshEntityCustomFields(values = {}){
-  renderCustomFields(qs('entity-custom-fields'), 'entity', values, {
+  renderCustomFields(customFieldsContainer(), 'entity', values, {
     departments: loadDepartments().map(d => ({ value: d.id_departamento, label: d.nombre }))
   });
 }
@@ -44,7 +70,7 @@ export function clearEntityForm(){
   qs('entity-id').value = '';
   qs('name').value = '';
   qs('surname').value = '';
-  qs('code').value = '';
+  qs('code').value = isRRHHMode() ? nextEmployeeCode() : '';
   qs('taxId').value = '';
   qs('email').value = '';
   qs('phone').value = '';
@@ -63,7 +89,7 @@ export function clearEntityForm(){
 
 export function clearEntityErrors(){
   ['name', 'surname', 'code', 'email', 'targetDate', 'creditLimit'].forEach(f => { qs(`error-${f}`).textContent = ''; });
-  clearCustomFieldErrors(qs('entity-custom-fields'));
+  clearCustomFieldErrors(customFieldsContainer());
 }
 
 export function startEntityEdit(entity){
@@ -104,7 +130,7 @@ export function collectEntityPayload(){
     targetDate: qs('targetDate').value,
     creditLimit: qs('creditLimit').value,
     paymentTerms: qs('paymentTerms').value,
-    ...collectCustomFields(qs('entity-custom-fields'), 'entity')
+    ...collectCustomFields(customFieldsContainer(), 'entity')
   };
 }
 
@@ -115,5 +141,5 @@ export function showEntityErrors(errors){
   qs('error-email').textContent = errors.email || '';
   qs('error-targetDate').textContent = errors.targetDate || '';
   qs('error-creditLimit').textContent = errors.creditLimit || '';
-  showCustomFieldErrors(qs('entity-custom-fields'), 'entity', errors);
+  showCustomFieldErrors(customFieldsContainer(), 'entity', errors);
 }

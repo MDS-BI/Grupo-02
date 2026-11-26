@@ -33,9 +33,9 @@ export const RRHH_CONFIG = Object.freeze({
   }),
   customFields: Object.freeze([
     { target: 'entity', key: 'cargo', label: 'Cargo', type: 'text', required: true },
+    { target: 'entity', key: 'departamentoId', label: 'Área de trabajo', type: 'text', required: true, optionsSource: 'departments' },
     { target: 'entity', key: 'fechaIngreso', label: 'Fecha de ingreso', type: 'date', required: true },
     { target: 'entity', key: 'estadoLaboral', label: 'Estado laboral', type: 'select', required: true, options: Object.freeze(['Activo', 'Inactivo']) },
-    { target: 'entity', key: 'departamentoId', label: 'Área de trabajo', type: 'text', required: false, optionsSource: 'departments' },
     { target: 'document', key: 'indicador', label: 'Indicador de desempeño', type: 'text', required: true },
     { target: 'document', key: 'resultado', label: 'Resultado obtenido', type: 'number', required: true },
     { target: 'document', key: 'unidad', label: 'Unidad', type: 'text', required: true },
