@@ -941,7 +941,7 @@ function applyRolePermissions(){
   qs('edit-department').closest('section').hidden = !canManageDepartments;
   qs('assignment-form').closest('section').hidden = !canManageAssignments;
   qs('edit-assignment').closest('section').hidden = !canManageAssignments;
-  qs('global-goal-card').hidden = !canManageGoals;
+  const goalCard = qs('global-goal-card'); if(goalCard) goalCard.hidden = !canManageGoals;
 
   const navDocumentsLabel = qs('nav-documents-label');
   const navHistoryLabel = qs('nav-history-label');
@@ -1163,11 +1163,25 @@ function wireEvents(){
   qs('role-area').addEventListener('change', handleRoleContextChange);
   qs('role-turn').addEventListener('change', handleRoleContextChange);
   qs('role-worker').addEventListener('change', handleRoleContextChange);
-  qs('global-goal-form').addEventListener('submit', handleGlobalGoalSubmit);
+  qs('global-goal-form')?.addEventListener('submit', handleGlobalGoalSubmit);
   qs('action-new-entity').addEventListener('click', () => showModule('entities', { newRecord: true, focusForm: true }));
   qs('action-new-document').addEventListener('click', () => showModule('documents', { newRecord: true, focusForm: true }));
   qs('action-open-entities').addEventListener('click', () => showModule('entities'));
   qs('action-find').addEventListener('click', () => showModule('search', { focusSearch: true }));
+  qs('view-dashboard')?.addEventListener('click', (ev) => {
+    const card = ev.target.closest('.stat-card-link[data-module-target]');
+    if(!card) return;
+    const mod = card.dataset.moduleTarget;
+    if(mod && (!isRRHHMode() || allowedModules(roleState).includes(mod))) showModule(mod);
+  });
+  qs('view-dashboard')?.addEventListener('keydown', (ev) => {
+    if(ev.key !== 'Enter' && ev.key !== ' ') return;
+    const card = ev.target.closest('.stat-card-link[data-module-target]');
+    if(!card) return;
+    ev.preventDefault();
+    const mod = card.dataset.moduleTarget;
+    if(mod && (!isRRHHMode() || allowedModules(roleState).includes(mod))) showModule(mod);
+  });
   qs('action-load-demo').addEventListener('click', handleLoadDemoData);
   qs('entity-form').addEventListener('submit', handleEntitySubmit);
   qs('cancel-edit').addEventListener('click', handleCancelEntityEdit);

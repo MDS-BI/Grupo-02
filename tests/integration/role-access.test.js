@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { JSDOM } from 'jsdom';
 import {
   addDepartment, addEntity, addDepartmentAssignment, addDocument,
-  loadEntities, loadDocuments, loadGlobalGoals, ROLE_STORAGE_KEY
+  loadEntities, loadDocuments, ROLE_STORAGE_KEY
 } from '../../src/storage.js';
 import { RRHH_CONFIG, setActiveConfig } from '../../src/module-config.js';
 
@@ -116,7 +116,7 @@ describe('T112 - integración del control de acceso por rol', () => {
     expect(qs('role-select').value).toBe('administrador');
     expect(qs('nav-entities').hidden).toBe(false);
     expect(qs('nav-documents').hidden).toBe(false);
-    expect(qs('global-goal-card').hidden).toBe(false);
+    expect(document.getElementById('global-goal-card')).toBeNull();
   });
 
   it('limita navegación y formularios del supervisor y exige área y turno', () => {
@@ -133,7 +133,7 @@ describe('T112 - integración del control de acceso por rol', () => {
     expect(qs('nav-assignments').hidden).toBe(true);
     expect(qs('nav-search').hidden).toBe(true);
     expect(qs('entity-form').closest('section').hidden).toBe(true);
-    expect(qs('global-goal-card').hidden).toBe(true);
+    expect(document.getElementById('global-goal-card')).toBeNull();
     expect(qs('delete-document').hidden).toBe(true);
   });
 
@@ -162,8 +162,7 @@ describe('T112 - integración del control de acceso por rol', () => {
     submit('entity-form');
     submit('department-form');
     submit('assignment-form');
-    submit('global-goal-form');
-
+    
     expect(storageSnapshot()).toEqual(before);
     expect(qs('storage-error').hidden).toBe(false);
     expect(qs('storage-error').textContent).toContain('Jefe de Turno / Supervisor');
@@ -180,7 +179,7 @@ describe('T112 - integración del control de acceso por rol', () => {
     expect(qs('nav-documents').hidden).toBe(true);
     expect(qs('nav-entities').hidden).toBe(true);
     expect(qs('document-form').closest('section').hidden).toBe(true);
-    expect(qs('global-goal-card').hidden).toBe(true);
+    expect(document.getElementById('global-goal-card')).toBeNull();
 
     const ownOption = [...qs('role-worker').options].some(option => option.value === ana.entity_id && option.textContent === 'Ana Torres');
     expect(ownOption).toBe(true);
@@ -210,6 +209,5 @@ describe('T112 - integración del control de acceso por rol', () => {
       rolActivo: 'barista',
       baristaEntityId: ana.entity_id
     });
-    expect(loadGlobalGoals()).toEqual([]);
-  });
+      });
 });

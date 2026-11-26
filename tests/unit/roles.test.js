@@ -82,7 +82,7 @@ describe('T106 - estado de rol activo', () => {
     const admin = normalizeRoleState({ rolActivo: ROLES.ADMINISTRADOR });
     const supervisor = normalizeRoleState({ rolActivo: ROLES.SUPERVISOR });
     const barista = normalizeRoleState({ rolActivo: ROLES.BARISTA });
-    const actions = ['entity:write', 'department:write', 'assignment:write', 'global-goal:write', 'measurement:write'];
+    const actions = ['entity:write', 'department:write', 'assignment:write', 'measurement:write'];
 
     expect(actions.every(action => canPerform(admin, action))).toBe(true);
     expect(actions.filter(action => canPerform(supervisor, action))).toEqual(['measurement:write']);

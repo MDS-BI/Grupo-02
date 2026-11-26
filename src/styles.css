@@ -423,6 +423,9 @@ textarea:focus-visible {
 }
 
 .stat-label { color: var(--muted); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.01em; }
+.stat-desc { color: var(--muted); font-size: 0.74rem; line-height: 1.35; margin-top: 2px; max-width: 22ch; }
+.stat-card-link { cursor: pointer; }
+.stat-card-link:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft), var(--shadow-md); }
 
 .dashboard-panels {
   display: grid;

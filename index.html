@@ -96,47 +96,25 @@
 
       <main class="content" id="app">
         <section id="view-dashboard" aria-labelledby="dashboard-heading">
-          <h1 id="dashboard-heading" hidden></h1>
-          <p id="dashboard-subtitle" class="muted" hidden></p>
-
-          <div class="stat-grid">
-            <div class="stat-card">
-              <span class="stat-value" id="stat-entities">0</span>
-              <span class="stat-label" id="stat-entities-label">Personal</span>
-            </div>
-            <div class="stat-card">
-              <span class="stat-value" id="stat-documents">0</span>
-              <span class="stat-label" id="stat-documents-label">Evaluaciones</span>
+          <div class="dashboard-header">
+            <div>
+              <h1 id="dashboard-heading">Panel de gestión</h1>
+              <p id="dashboard-subtitle" class="muted">Resumen general de la gestión del personal y desempeño</p>
             </div>
           </div>
 
-          <section class="card" id="global-goal-card" aria-labelledby="global-goal-heading" hidden>
-            <h2 id="global-goal-heading">Configuración de metas globales de ventas</h2>
-            <form id="global-goal-form">
-              <div class="field-row">
-                <div>
-                  <label for="global-goal-area">Área</label>
-                  <select id="global-goal-area">
-                    <option value="Barra">Barra</option>
-                    <option value="Cocina">Cocina</option>
-                    <option value="Salón">Salón</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="global-goal-period">Período (AAAA-MM)</label>
-                  <input id="global-goal-period" type="month" />
-                </div>
-              </div>
-              <div>
-                <label for="global-goal-value">Meta global de ventas</label>
-                <input id="global-goal-value" type="number" min="0" step="any" />
-              </div>
-              <div class="error" id="global-goal-error" aria-live="polite"></div>
-              <div class="form-actions">
-                <button type="submit" id="global-goal-submit" class="primary">Guardar meta global</button>
-              </div>
-            </form>
-          </section>
+          <div class="stat-grid">
+            <div class="stat-card stat-card-link" data-module-target="entities" role="button" tabindex="0">
+              <span class="stat-value" id="stat-entities">0</span>
+              <span class="stat-label" id="stat-entities-label">Total de trabajadores</span>
+              <span class="stat-desc" id="stat-entities-desc">Trabajadores registrados en el sistema</span>
+            </div>
+            <div class="stat-card stat-card-link" data-module-target="documents" role="button" tabindex="0">
+              <span class="stat-value" id="stat-documents">0</span>
+              <span class="stat-label" id="stat-documents-label">Evaluaciones de desempeño</span>
+              <span class="stat-desc" id="stat-documents-desc">Evaluaciones registradas</span>
+            </div>
+          </div>
 
           <h2 id="quick-actions-heading">Acciones rápidas</h2>
           <div class="action-grid">
