@@ -329,31 +329,63 @@
                   <div class="error" id="error-cf-meta" aria-live="polite"></div>
                 </div>
 
-                <div class="field-row">
-                  <div>
-                    <label for="cf-evaluacionCalidad">Calidad (1-5) *</label>
-                    <input id="cf-evaluacionCalidad" name="cf-evaluacionCalidad" type="number" min="1" max="5" step="1" />
-                    <div class="error" id="error-cf-evaluacionCalidad" aria-live="polite"></div>
+                <section class="form-section" aria-labelledby="evaluation-indicators-heading">
+                  <h3 id="evaluation-indicators-heading" class="form-section-title">Indicadores de desempeño</h3>
+                  <p class="rating-scale-ref">1 = Deficiente, 2 = Insuficiente, 3 = Bueno, 4 = Muy bueno, 5 = Excelente.</p>
+                  <div class="field-row">
+                    <div class="rating-field">
+                      <label id="label-cf-evaluacionCalidad" for="cf-evaluacionCalidad">Calidad (1-5) *</label>
+                      <input id="cf-evaluacionCalidad" name="cf-evaluacionCalidad" type="hidden" value="" />
+                      <div class="rating-group" role="radiogroup" aria-required="true" aria-labelledby="label-cf-evaluacionCalidad">
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionCalidad" value="1" /><span>1</span></label>
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionCalidad" value="2" /><span>2</span></label>
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionCalidad" value="3" /><span>3</span></label>
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionCalidad" value="4" /><span>4</span></label>
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionCalidad" value="5" /><span>5</span></label>
+                      </div>
+                      <div class="error" id="error-cf-evaluacionCalidad" aria-live="polite"></div>
+                    </div>
+                    <div class="rating-field">
+                      <label id="label-cf-evaluacionResponsabilidad" for="cf-evaluacionResponsabilidad">Responsabilidad (1-5) *</label>
+                      <input id="cf-evaluacionResponsabilidad" name="cf-evaluacionResponsabilidad" type="hidden" value="" />
+                      <div class="rating-group" role="radiogroup" aria-required="true" aria-labelledby="label-cf-evaluacionResponsabilidad">
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionResponsabilidad" value="1" /><span>1</span></label>
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionResponsabilidad" value="2" /><span>2</span></label>
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionResponsabilidad" value="3" /><span>3</span></label>
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionResponsabilidad" value="4" /><span>4</span></label>
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionResponsabilidad" value="5" /><span>5</span></label>
+                      </div>
+                      <div class="error" id="error-cf-evaluacionResponsabilidad" aria-live="polite"></div>
+                    </div>
                   </div>
-                  <div>
-                    <label for="cf-evaluacionResponsabilidad">Responsabilidad (1-5) *</label>
-                    <input id="cf-evaluacionResponsabilidad" name="cf-evaluacionResponsabilidad" type="number" min="1" max="5" step="1" />
-                    <div class="error" id="error-cf-evaluacionResponsabilidad" aria-live="polite"></div>
-                  </div>
-                </div>
 
-                <div class="field-row">
-                  <div>
-                    <label for="cf-evaluacionCumplimiento">Cumplimiento de procedimientos (1-5) *</label>
-                    <input id="cf-evaluacionCumplimiento" name="cf-evaluacionCumplimiento" type="number" min="1" max="5" step="1" />
-                    <div class="error" id="error-cf-evaluacionCumplimiento" aria-live="polite"></div>
+                  <div class="field-row">
+                    <div class="rating-field">
+                      <label id="label-cf-evaluacionCumplimiento" for="cf-evaluacionCumplimiento">Cumplimiento de procedimientos (1-5) *</label>
+                      <input id="cf-evaluacionCumplimiento" name="cf-evaluacionCumplimiento" type="hidden" value="" />
+                      <div class="rating-group" role="radiogroup" aria-required="true" aria-labelledby="label-cf-evaluacionCumplimiento">
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionCumplimiento" value="1" /><span>1</span></label>
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionCumplimiento" value="2" /><span>2</span></label>
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionCumplimiento" value="3" /><span>3</span></label>
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionCumplimiento" value="4" /><span>4</span></label>
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionCumplimiento" value="5" /><span>5</span></label>
+                      </div>
+                      <div class="error" id="error-cf-evaluacionCumplimiento" aria-live="polite"></div>
+                    </div>
+                    <div class="rating-field">
+                      <label id="label-cf-evaluacionColaboracion" for="cf-evaluacionColaboracion">Colaboración (1-5) *</label>
+                      <input id="cf-evaluacionColaboracion" name="cf-evaluacionColaboracion" type="hidden" value="" />
+                      <div class="rating-group" role="radiogroup" aria-required="true" aria-labelledby="label-cf-evaluacionColaboracion">
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionColaboracion" value="1" /><span>1</span></label>
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionColaboracion" value="2" /><span>2</span></label>
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionColaboracion" value="3" /><span>3</span></label>
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionColaboracion" value="4" /><span>4</span></label>
+                        <label class="rating-option"><input type="radio" name="rating-evaluacionColaboracion" value="5" /><span>5</span></label>
+                      </div>
+                      <div class="error" id="error-cf-evaluacionColaboracion" aria-live="polite"></div>
+                    </div>
                   </div>
-                  <div>
-                    <label for="cf-evaluacionColaboracion">Colaboración (1-5) *</label>
-                    <input id="cf-evaluacionColaboracion" name="cf-evaluacionColaboracion" type="number" min="1" max="5" step="1" />
-                    <div class="error" id="error-cf-evaluacionColaboracion" aria-live="polite"></div>
-                  </div>
-                </div>
+                </section>
 
                 <div>
                   <label for="cf-observaciones">Observaciones</label>

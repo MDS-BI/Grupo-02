@@ -56,6 +56,27 @@ export function renderStatusControl(currentStatus){
   container.appendChild(wrap);
 }
 
+
+const EVAL_FIELDS = ['evaluacionCalidad','evaluacionResponsabilidad','evaluacionCumplimiento','evaluacionColaboracion'];
+
+function setRatingValue(field, value){
+  const hidden = qs('cf-' + field);
+  if(hidden) hidden.value = value === undefined || value === null ? '' : String(value);
+  document.querySelectorAll(`input[name="rating-${field}"]`).forEach(r => { r.checked = String(value) === r.value; });
+}
+
+function initRatingInputs(){
+  EVAL_FIELDS.forEach(field => {
+    document.querySelectorAll(`input[name="rating-${field}"]`).forEach(radio => {
+      if(radio.dataset.bound === '1') return;
+      radio.dataset.bound = '1';
+      radio.addEventListener('change', () => {
+        const hidden = qs('cf-' + field);
+        if(hidden) hidden.value = radio.value;
+      });
+    });
+  });
+}
 function clearProductivityFields(){
   const period = qs('productivity-period');
   if(period) period.value = '';
