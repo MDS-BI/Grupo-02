@@ -476,16 +476,25 @@
             </form>
           </section>
 
-          <section class="card" aria-labelledby="edit-document-heading">
-            <h2 id="edit-document-heading">Editar o eliminar la evaluación</h2>
+                    <section class="card" aria-labelledby="edit-document-heading">
+            <h2 id="edit-document-heading">Historial de evaluaciones</h2>
             <div>
-              <label for="edit-document">Selecciona una evaluación</label>
+              <label for="document-history-search">Buscar por trabajador</label>
+              <input id="document-history-search" name="document-history-search" type="search" placeholder="Nombre o c?digo del trabajador" />
+            </div>
+            <div class="table-wrap">
+              <table class="data-table" aria-label="Historial de evaluaciones">
+                <thead><tr><th>Trabajador</th><th>Per?odo</th><th>Indicador o promedio</th><th>Acciones</th></tr></thead>
+                <tbody id="document-history-body"></tbody>
+              </table>
+            </div>
+            <div id="document-history-empty" class="empty" hidden>No hay evaluaciones registradas.</div>
+            <div class="sr-only" aria-hidden="true">
+              <label for="edit-document">Selecciona una evaluaci?n</label>
               <select id="edit-document"></select>
-              <div class="error" id="error-edit-document" aria-live="polite"></div>
+              <button type="button" id="delete-document" class="danger">Eliminar la evaluaci?n seleccionada</button>
             </div>
-            <div class="form-actions">
-              <button type="button" id="delete-document" class="danger">Eliminar la evaluación seleccionada</button>
-            </div>
+            <div class="error" id="error-edit-document" aria-live="polite"></div>
           </section>
         </section>
 

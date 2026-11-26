@@ -40,6 +40,8 @@ import { renderHistoryTable } from './components/history-view.js';
 import { renderEvolutionTable } from './components/evolution-view.js';
 
 function qs(id){ return document.getElementById(id); }
+function normalizeKey(value){ return String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
+function escapeHtml(s){ return String(s ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
 
 // Ayudantes de género gramatical para etiquetas configurables en español.
 // El género se deduce de la primera palabra (p. ej., "Pedido de Venta" → masculino)
@@ -200,7 +202,7 @@ function showModule(name, opts = {}){
     populateEditDocumentSelect();
     if(opts.newRecord) clearDocumentForm();
     if(isRRHHMode()) populateProductivityAssignments();
-    if(opts.focusForm) qs('document-entity').focus();
+    if(opts.focusForm) { const el = qs('document-entity'); if(el){ el.focus(); setTimeout(() => el.focus(), 0); } }
   }
   if(name === 'history'){
     populateHistoryEntitySelect();
@@ -239,6 +241,57 @@ function populateEditEntitySelect(){
   setOptions(select, entities.map(e => ({ value: e.id, label: `${entityDisplayName(e)} — ${e.code}` })), prev, `-- Selecciona ${articulo(labelFor('entity'))} ${labelFor('entity').toLowerCase()} --`);
 }
 
+function evaluationSummary(doc){
+  const indicador = (doc.indicador || '').trim();
+  const vals = [doc.evaluacionCalidad, doc.evaluacionResponsabilidad, doc.evaluacionCumplimiento, doc.evaluacionColaboracion]
+    .map(v => Number(v)).filter(n => Number.isFinite(n));
+  const avg = vals.length === 4 ? (vals.reduce((a,b)=>a+b,0)/4) : null;
+  const avgText = avg !== null ? `Promedio: ${Number.isInteger(avg)?String(avg):avg.toFixed(2).replace(/\.?0+$/,'')} / 5` : '';
+  if(indicador && avgText) return `${indicador} (${avgText})`;
+  return indicador || avgText || '?';
+}
+
+function renderDocumentHistoryTable(){
+  const body = qs('document-history-body');
+  const empty = qs('document-history-empty');
+  if(!body) return;
+  const entities = loadEntities();
+  const query = normalizeKey((qs('document-history-search')?.value || '').trim());
+  const docs = visibleDocuments().slice().sort((a,b) => String(getDocumentPeriod(b)||b.startDate||'').localeCompare(String(getDocumentPeriod(a)||a.startDate||'')));
+  const filtered = query ? docs.filter(d => {
+    const entity = entities.find(e => e.entity_id === d.entity_id);
+    return entity && (normalizeKey(entityDisplayName(entity)).includes(query) || normalizeKey(String(entity.code||'')).includes(query));
+  }) : docs;
+  body.innerHTML = '';
+  if(empty){
+    empty.hidden = filtered.length > 0;
+    empty.textContent = docs.length === 0 ? 'No hay evaluaciones registradas.' : 'No se encontraron evaluaciones para la b?squeda.';
+  }
+  for(const d of filtered){
+    const entity = entities.find(e => e.entity_id === d.entity_id);
+    const tr = document.createElement('tr');
+    const worker = entity ? `${entityDisplayName(entity)}${entity.code ? ' ('+entity.code+')' : ''}` : 'Personal no identificado';
+    const period = getDocumentPeriod(d) || d.startDate || '?';
+    tr.innerHTML = `<td>${escapeHtml(worker)}</td><td>${escapeHtml(String(period))}</td><td>${escapeHtml(evaluationSummary(d))}</td><td class="row-actions"></td>`;
+    const actions = tr.querySelector('.row-actions');
+    const editBtn = document.createElement('button');
+    editBtn.type = 'button';
+    editBtn.className = 'secondary small';
+    editBtn.textContent = 'Editar';
+    editBtn.dataset.action = 'edit-document';
+    editBtn.dataset.id = d.id;
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'danger small';
+    delBtn.textContent = 'Eliminar';
+    delBtn.dataset.action = 'delete-document';
+    delBtn.dataset.id = d.id;
+    delBtn.hidden = !canPerform(roleState, 'document:delete');
+    actions.append(editBtn, delBtn);
+    body.appendChild(tr);
+  }
+}
+
 function populateEditDocumentSelect(){
   const select = qs('edit-document');
   const prev = select.value;
@@ -246,11 +299,12 @@ function populateEditDocumentSelect(){
   const options = visibleDocuments().map(d => {
     const entity = entities.find(e => e.entity_id === d.entity_id);
     const label = isRRHHMode()
-      ? `${entity ? entityDisplayName(entity) : 'Personal no identificado'} · ${getDocumentPeriod(d) || ''} · ${d.indicador || ''}`
-      : `${entity ? entityDisplayName(entity) : 'Personal no identificado'} · ${folioLabel(d)} · ${d.startDate} → ${d.endDate}`;
+      ? `${entity ? entityDisplayName(entity) : 'Personal no identificado'} ? ${getDocumentPeriod(d) || ''} ? ${d.indicador || ''}`
+      : `${entity ? entityDisplayName(entity) : 'Personal no identificado'} ? ${folioLabel(d)} ? ${d.startDate} ? ${d.endDate}`;
     return { value: d.id, label };
   });
   setOptions(select, options, prev, `-- Selecciona ${articulo(labelFor('document'))} ${labelFor('document').toLowerCase()} --`);
+  renderDocumentHistoryTable();
 }
 
 function populateEditDepartmentSelect(){
@@ -1005,7 +1059,7 @@ function applyLabels(config){
   qs('edit-entity-heading').textContent = `Editar o eliminar ${articulo(entity)} ${entity.toLowerCase()}`;
   qs('edit-entity-label').textContent = `Selecciona ${articulo(entity)} ${entity.toLowerCase()}`;
   qs('document-form-heading').textContent = `Agregar / Editar ${document_}`;
-  qs('edit-document-heading').textContent = `Editar o eliminar ${articulo(document_)} ${document_.toLowerCase()}`;
+  qs('edit-document-heading').textContent = isRRHHMode() ? 'Historial de evaluaciones' : `Editar o eliminar ${articulo(document_)} ${document_.toLowerCase()}`;
   qs('search-view-heading').textContent = `Buscar ${entities}`;
   qs('search-heading').textContent = `Buscar ${articulo(entity)} ${entity.toLowerCase()}`;
   qs('search-input').placeholder = rrhh ? 'Buscar por nombre, código, cargo o área de trabajo...' : 'Buscar por nombre, código o categoría...';
@@ -1122,6 +1176,20 @@ function wireEvents(){
   setupSearchBar(qs('search-input'), () => refreshSearch());
   qs('edit-entity').addEventListener('change', onEditEntityChange);
   qs('edit-document').addEventListener('change', onEditDocumentChange);
+  qs('document-history-search')?.addEventListener('input', renderDocumentHistoryTable);
+  qs('document-history-body')?.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('button[data-action]');
+    if(!btn) return;
+    const id = btn.dataset.id;
+    if(btn.dataset.action === 'edit-document'){
+      qs('edit-document').value = id;
+      onEditDocumentChange();
+      qs('document-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if(btn.dataset.action === 'delete-document'){
+      qs('edit-document').value = id;
+      handleDeleteSelectedDocument();
+    }
+  });
   qs('delete-entity').addEventListener('click', handleDeleteSelectedEntity);
   qs('deactivate-entity').addEventListener('click', handleDeactivateSelectedEntity);
   qs('delete-document').addEventListener('click', handleDeleteSelectedDocument);

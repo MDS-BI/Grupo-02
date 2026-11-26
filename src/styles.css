@@ -823,6 +823,9 @@ input:focus, textarea:focus, select:focus {
 }
 
 .form-actions { display: flex; gap: 10px; margin-top: 14px; }
+.row-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+button.small { padding: 6px 10px; font-size: 0.82rem; border-radius: 8px; }
+.table-wrap { overflow-x: auto; }
 
 button {
   padding: 10px 16px;

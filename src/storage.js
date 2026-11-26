@@ -834,13 +834,12 @@ export function nextFolio(){
 
 export function findDuplicateProductivity(payload, excludeId){
   const normalized = normalizeProductivityDocument(payload);
-  if(!normalized.entityId || !normalized.startDate || !normalized.indicador) return [];
+  if(!normalized.entityId || !normalized.startDate) return [];
   return loadDocuments().filter(d =>
     d.id !== excludeId
     && d.entity_id === normalized.entityId
     && d.startDate === normalized.startDate
     && d.endDate === normalized.endDate
-    && normalizeKey(d.indicador) === normalizeKey(normalized.indicador)
   );
 }
 
