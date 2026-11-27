@@ -521,6 +521,28 @@ El incremento 002 se considera finalizado cuando:
 
 ---
 
+## Fuera de alcance – Historia de Usuario 7
+
+**Estado:** Diferida. Según `spec.md` §4 y §6, la HU7 no se implementa en el incremento 002 y no define claves de `localStorage`, campos ni interfaz en esta entrega. Las tareas T113–T119 quedan pendientes para un incremento posterior, no se incluyen en el total de T001–T112 y no deben ejecutarse al reconstruir 002.
+
+**Prueba independiente diferida:** registrar un trabajador ficticio con una licencia médica de tres días de reposo total en estado pendiente, consultar su historial y la planificación de turnos, y comprobar que aparecen trabajador, fechas, tipo de reposo y estado sin diagnóstico, enfermedad, exámenes, tratamientos ni antecedentes clínicos (`spec.md`, HU7).
+
+- [ ] T113 [US7] Diferido: definir en `contracts/storage.md`, para el incremento posterior, la persistencia local de licencias médicas ficticias con trabajador (`entity_id`), fecha de inicio, fecha de término, tipo de reposo (total o parcial) y estado (pendiente, autorizada, rechazada o finalizada), verificando que no se crean claves ni campos en `src/storage.js` durante 002 (HU7, escenario 1).
+
+- [ ] T114 [US7] Diferido: definir en `src/module-config.js` y en el formulario de licencia que se cree en ese incremento los únicos campos permitidos —trabajador, fechas, tipo de reposo y estado— y una validación que rechace diagnósticos, enfermedades, exámenes, tratamientos o antecedentes clínicos en observaciones u otros campos libres (HU7, escenarios 2 y 8).
+
+- [ ] T115 [US7] Diferido: definir en `src/components/history-view.js` y en la vista de planificación de turnos que corresponda a ese incremento la visualización de trabajador, fechas, tipo de reposo y estado, comprobando que no se muestre información clínica alguna (HU7, escenarios 3 y 10).
+
+- [ ] T116 [US7] Diferido: definir en `src/app.js` y en el formulario de medición (`src/components/document-form.js`) las reglas de ausencia justificada: una licencia autorizada que coincida con turno Mañana o Tarde se muestra como ausencia en esas fechas y no genera mediciones de productividad; una licencia pendiente no se presenta como autorizada; un reposo parcial solo reduce la jornada en las fechas indicadas (HU7, escenarios 4, 5 y 6).
+
+- [ ] T117 [US7] Diferido: definir en `src/storage.js` la conservación del registro original al cambiar el estado de una licencia y la compatibilidad con trabajadores y registros creados antes de HU7, sin exigirles información de licencias médicas (HU7, escenarios 7 y 9).
+
+- [ ] T118 [US7] Diferido: definir en `src/app.js` la revisión, corrección o supresión de licencias sobre datos ficticios por parte del responsable del registro, manteniendo visible la advertencia de datos ficticios y sin comparar ausencias entre trabajadores ni usarlas como indicador de productividad, evaluación o sanción (HU7, escenarios 10, 11 y 12).
+
+- [ ] T119 [US7] Diferido: verificar en ese incremento, con pruebas unitarias en `tests/unit/`, pruebas de integración en `tests/integration/` y la guía `quickstart.md`, que la HU7 no almacena ni expone diagnósticos ni antecedentes clínicos y que trabajadores, asignaciones y mediciones del incremento 002 permanecen sin cambios.
+
+---
+
 ## Aclaraciones posteriores al análisis de Spec Kit
 
 - Se permiten extensiones aditivas de los archivos existentes del ERP base siempre que se mantengan sus contratos y compatibilidad.
@@ -535,12 +557,3 @@ El incremento 002 se considera finalizado cuando:
 - Los criterios de éxito SC-001 a SC-004 deberán verificarse mediante mediciones o evaluaciones documentadas.
 - Las modificaciones realizadas con ayuda de OpenCode deben ser revisadas y comprendidas por integrantes del grupo, conforme a la regla de trabajo con IA indicada al inicio de este documento.
 
-
------
-
-## Fuera de alcance – Historia de Usuario 7
-
-La HU7 se conserva en `spec.md` solo como contexto de privacidad. No tiene claves de almacenamiento, campos, interfaz ni pruebas en el MVP 002; las tareas siguientes no deben ejecutarse para reconstruir la entrega actual.
-
-- [ ] Diferido: definir tareas de registro, consulta, privacidad y validación de licencias médicas ficticias en un incremento posterior.
-- [ ] Diferido: verificar en ese incremento que la implementación no almacene ni exponga diagnósticos ni antecedentes clínicos.
