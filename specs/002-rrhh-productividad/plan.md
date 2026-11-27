@@ -1,8 +1,8 @@
 # Implementation Plan: Módulo de RR. HH. — Historial de Productividad Laboral
 
-**Rama**: `correccion-specs-002` integrada con `003-roles-acceso-cafeteria` | **Fecha**: 2026-11-26 | **Especificación**: `specs/002-rrhh-productividad/spec.md` | **Estado**: Las seis historias corresponden a funcionalidades implementadas. Suite automatizada aprobada (16 archivos, 180 pruebas; 14 archivos y 165 pruebas en la corrección previa), prueba técnica con 500 registros (T076), pruebas manuales SC-001 a SC-004 aprobadas (T083), T072 y T084 completadas, roles FR-052 a FR-065 verificados (T075, T106–T112); revisión final aprobada el 25-11-2026.
+**Rama**: `correccion-specs-002` integrada con `003-roles-acceso-cafeteria` | **Fecha**: 2026-11-26 | **Especificación**: `specs/002-rrhh-productividad/spec.md` | **Estado**: Las seis historias en alcance (HU1–HU6) corresponden a funcionalidades implementadas; HU7 se conserva fuera de alcance. Suite automatizada aprobada (16 archivos, 180 pruebas; 14 archivos y 165 pruebas en la corrección previa), prueba técnica con 500 registros (T076), pruebas manuales SC-001 a SC-004 aprobadas (T083), T072 y T084 completadas, roles FR-052 a FR-065 verificados (T075, T106–T112); revisión final aprobada el 25-11-2026.
 
-**Entrada**: Especificación 002 con sus 6 historias de usuario, los requisitos FR-052 a FR-065 de control de acceso por rol activo y decisiones de alcance aprobadas, y MER de 9 entidades documentado en `specs/001-erp-base-module/data-model.md` como referencia. **Rol de planificación y tareas**.
+**Entrada**: Especificación 002 con sus 6 historias de usuario en alcance (HU1–HU6) y HU7 documentada como fuera de alcance, los requisitos FR-052 a FR-065 de control de acceso por rol activo y decisiones de alcance aprobadas, y MER de 9 entidades documentado en `specs/001-erp-base-module/data-model.md` como referencia. **Rol de planificación y tareas**.
 
 **Nota sobre el modelo de datos**: El MER de 9 entidades de 001 se conserva sin modificaciones y se utiliza como referencia. El incremento 002 se apoya en `Entity`/Trabajador, `Departamento`, `Historial_Departamento` y `Document`. `specs/002-rrhh-productividad/data-model.md` está completado y verificado contra el MER; sirvió de entrada para generar `tasks.md`. No se crean entidades nuevas; el rol activo es un estado de interfaz, no una entidad del MER.
 
@@ -137,7 +137,7 @@ Las funcionalidades de planilla y liquidaciones permanecen documentadas en el mo
 | Etapa | Contenido | Depende de | Estado |
 |---|---|---|---|
 | E0 - Recuperación/verificación del módulo base | Restaurado y verificado en el árbol de trabajo; `src/`, `index.html` y `tests/` están operativos. | - | Completada |
-| E1 - Especificación funcional | `spec.md` con problema, usuarios, alcance, 6 historias de usuario, criterios de aceptación, reglas de validación y criterios de éxito. | - | Completada |
+| E1 - Especificación funcional | `spec.md` con problema, usuarios, alcance, 6 historias de usuario en alcance (HU1–HU6), HU7 como contexto fuera de alcance, criterios de aceptación, reglas de validación y criterios de éxito. | - | Completada |
 | E2 - Modelo de datos 002 | `data-model.md` alineado con el MER de 9 entidades de 001; sin entidades nuevas; verificación de campos y relaciones. | E1 | Completada |
 | E3 - Planificación y tareas | `plan.md` y `tasks.md` con alcance, etapas, dependencias, tareas, pruebas y riesgos. | E1, E2 | Completada |
 | E4 - Gestión de trabajadores, departamentos y asignaciones | Formularios de trabajadores y departamentos, asignaciones históricas, validaciones y vista del departamento actual con asignaciones anteriores. | E0, E2, E3 | Completada |
@@ -235,7 +235,7 @@ Se permiten extensiones aditivas de los archivos existentes del módulo ERP base
 
 ## 10. Estado de tasks.md
 
-`tasks.md` contiene tareas concretas de implementación y pruebas por etapa. HU5 y HU6 se relacionan con funcionalidades y pruebas existentes; la Fase 10 (T106–T112) cubre FR-052 a FR-065. La implementación, las pruebas automatizadas (16 archivos, 180 pruebas; 14 archivos y 165 pruebas en la revisión previa), T072, T083, T084, T075 y T106–T112 están completadas; T076 está verificada. T085 y T086 están actualizadas con la documentación de roles; la revisión final del grupo fue aprobada el 25-11-2026 (la rama de roles aún la registraba pendiente antes de la integración).
+`tasks.md` contiene tareas concretas de implementación y pruebas por etapa. HU5 y HU6 se relacionan con funcionalidades y pruebas existentes; la Fase 10 (T106–T112) cubre FR-052 a FR-065. La sección de HU7 registra T113–T119 como tareas diferidas, sin fase ejecutable en 002. La implementación, las pruebas automatizadas (16 archivos, 180 pruebas; 14 archivos y 165 pruebas en la revisión previa), T072, T083, T084, T075 y T106–T112 están completadas; T076 está verificada. T085 y T086 están actualizadas con la documentación de roles; la revisión final del grupo fue aprobada el 25-11-2026 (la rama de roles aún la registraba pendiente antes de la integración).
 
 ---
 

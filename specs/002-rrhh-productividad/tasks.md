@@ -4,9 +4,9 @@
 **Entrada:** `spec.md`, `plan.md` y `data-model.md` de `specs/002-rrhh-productividad/`  
 **Prerrequisitos:** Documentación de 002 y recuperación/verificación del módulo base (E0)  
 **Rama de trabajo:** `correccion-specs-002` integrada con `003-roles-acceso-cafeteria`  
-**Estado:** Las seis historias y los roles activos están implementados. Suite automatizada aprobada (16 archivos, 180 pruebas; 14 archivos y 165 pruebas en la corrección previa); T076 verificado en Edge aislado; T072, T083 y T084 completadas; T075 y T106–T112 cerrados; revisión final aprobada el 25-11-2026 (la rama de roles la registraba pendiente antes del merge).
+**Estado:** Las seis historias en alcance (HU1–HU6) y los roles activos están implementados; HU7 permanece fuera de alcance con tareas diferidas T113–T119. Suite automatizada aprobada (16 archivos, 180 pruebas; 14 archivos y 165 pruebas en la corrección previa); T076 verificado en Edge aislado; T072, T083 y T084 completadas; T075 y T106–T112 cerrados; revisión final aprobada el 25-11-2026 (la rama de roles la registraba pendiente antes del merge).
 
-**Separación de trabajo:** T001–T009 (E0) recuperan y verifican el módulo base del incremento 001; no son funcionalidades nuevas de 002. T010–T070 cubren infraestructura y HU1–HU4. HU5 y HU6 se relacionan con tareas y pruebas ya existentes en las fases 2, 4, 7 y 8. T071–T086 registran las verificaciones, documentación y cierre. T087–T105 cubren la adaptación a cafetería y las metas consolidadas. T106–T112 cubren los roles activos y FR-052 a FR-065.
+**Separación de trabajo:** T001–T009 (E0) recuperan y verifican el módulo base del incremento 001; no son funcionalidades nuevas de 002. T010–T070 cubren infraestructura y HU1–HU4. HU5 y HU6 se relacionan con tareas y pruebas ya existentes en las fases 2, 4, 7 y 8. T071–T086 registran las verificaciones, documentación y cierre. T087–T095 cubren la adaptación a cafetería y T096–T100 las metas consolidadas. T106–T112 cubren los roles activos y FR-052 a FR-065. T113–T119 son tareas diferidas de HU7, fuera del alcance de 002.
 
 **Regla de trabajo con IA:** Se permite utilizar OpenCode para crear, modificar y ejecutar código del proyecto, con supervisión de los integrantes del grupo. Los cambios deben revisarse y probarse antes de considerarse terminados. OpenCode no puede realizar commits, push, merge, eliminar datos existentes ni cambiar de rama sin autorización explícita.
 
@@ -26,6 +26,7 @@ Cada tarea utiliza el formato:
 - `[US4]`: historia de usuario 4.
 - `[US5]`: historia de usuario 5.
 - `[US6]`: historia de usuario 6.
+- `[US7]`: historia de usuario 7, documentada fuera de alcance; sus tareas están diferidas.
 - `[ROLES]`: requisitos transversales FR-052 a FR-065 de control de acceso por rol activo.
 
 ## Responsables
@@ -38,11 +39,12 @@ Cada tarea utiliza el formato:
 | HU4 — Visualización de la evolución | Bastián Ignacio Reinado Bravo | Aprobada por el grupo (T084) |
 | HU5 — Indicadores por cargo y turnos | Daphnne Hidalgo | Aprobada por el grupo (T084) |
 | HU6 — Validación y protección de registros | Emilio Vejar | Aprobada por el grupo (T084) |
+| HU7 — Confidencialidad de licencias médicas y ausencias justificadas | Consuelo Hidalgo | Diferida; fuera de alcance de 002 |
 | Especificaciones y documentación | Daphnne Hidalgo Mundaca | Asignación de apoyo aprobada previamente |
 | Implementación, integración y pruebas | Emilio Vejar Bravo | Asignación de apoyo aprobada previamente |
 | Soporte de roles, integración y pruebas (T075, T085, T106–T112) | Lucas Omar Soarzo Mancilla y Emilio Vejar Bravo | Asignado; verificación de FR-052 a FR-065 |
 
-La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T084) y se conserva en `spec.md` §14.1. Se mantienen las asignaciones de apoyo previamente documentadas; la incorporación de roles activos no modifica esta asignación ni inventa historias adicionales.
+La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T084) y se conserva en `spec.md` §14.1; HU7 se registra como referencia diferida y no forma parte de esa distribución ejecutable. Se mantienen las asignaciones de apoyo previamente documentadas; la incorporación de roles activos no modifica esta asignación ni inventa historias adicionales.
 
 ## Resumen de fases
 
@@ -56,9 +58,11 @@ La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T08
 | 6 | HU4: visualización de evolución | T063–T070 | 8 |
 | 7 | Pruebas, documentación y cierre | T071–T086 | 16 |
 | 8 | Adaptación registro de productividad — cafetería | T087–T095 | 9 |
-| 9 | Metas consolidadas por departamento y período | T096–T105 (T096–T100 en la corrección previa) | 10 |
+| 9 | Metas consolidadas por departamento y período | T096–T100 | 5 |
 | 10 | Control de acceso por rol activo | T106–T112 | 7 |
-| **Total** | | **T001–T112** | **112** |
+| **Total ejecutable** | | **T001–T100, T106–T112** | **107** |
+
+Las tareas T113–T119 de HU7 están diferidas y no se incluyen en este total.
 
 ---
 
@@ -158,9 +162,9 @@ La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T08
 
 - [x] T029 [P] [US3] Extender `src/components/entity-list.js` para mostrar información del trabajador, departamento actual y estado laboral.
 
-- [x] T030 [P] [US3] Crear los componentes de formulario y listado de departamentos. Confirmar sus nombres definitivos después de recuperar el módulo base.
+- [x] T030 [P] [US3] Crear los componentes de formulario y listado de departamentos integrados desde `src/app.js`.
 
-- [x] T031 [P] [US3] Crear los componentes de formulario y listado de asignaciones históricas. Confirmar sus nombres definitivos después de recuperar el módulo base.
+- [x] T031 [P] [US3] Crear los componentes de formulario y listado de asignaciones históricas integrados desde `src/app.js`.
 
 - [x] T032 [US3] Conectar el registro y edición de trabajadores con el almacenamiento en `src/app.js`.
 
@@ -252,7 +256,7 @@ La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T08
 
 ### Implementación de HU2
 
-- [x] T059 [US2] Crear la vista de historial o extender una vista existente, según la estructura recuperada del módulo base.
+- [x] T059 [US2] Crear la vista de historial en `src/components/history-view.js`, según la estructura recuperada del módulo base.
 
 - [x] T060 [US2] Conectar la selección de trabajador con la consulta de registros y su orden cronológico.
 
@@ -282,7 +286,7 @@ La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T08
 
 ### Implementación de HU4
 
-- [x] T065 [US4] Crear una vista de evolución o extender la vista de historial existente, según la estructura real del módulo base.
+- [x] T065 [US4] Crear la vista de evolución en `src/components/evolution-view.js`, según la estructura real del módulo base.
 
 - [x] T066 [US4] Conectar la selección de trabajador, indicador y unidad con la consulta de evolución.
 
@@ -336,126 +340,6 @@ La distribución de responsables para HU1–HU6 fue confirmada por el grupo (T08
 
 **Punto de control:** HU1–HU4 están integradas y probadas manualmente; HU5 y HU6 se relacionan con funcionalidades y tareas existentes.
 
----
-
-## Dependencias y orden de ejecución
-
-### Dependencias entre fases
-
-1. **Fase 1:** Recuperación y verificación del código base. Es prerrequisito de todo.
-2. **Fase 2:** Infraestructura fundacional. Depende de la Fase 1.
-3. **Fase 3 — HU3:** Depende de la Fase 2.
-4. **Fase 4 — HU1:** Depende de HU3.
-5. **Fase 5 — HU2:** Depende de HU1.
-6. **Fase 6 — HU4:** Depende de HU2.
-7. **Fase 7:** Revisión final de HU1–HU4 y de las funcionalidades existentes vinculadas a HU5 y HU6.
-8. **Fase 8:** Adaptación a cafetería; depende de la Fase 4.
-9. **Fase 9:** Metas consolidadas; depende de la Fase 8.
-10. **Fase 10:** Control de acceso por rol activo; depende de las Fases 7, 8 y 9 porque filtra vistas y datos ya existentes.
-
-### Tareas paralelizables
-
-Las tareas marcadas con `[P]` pueden desarrollarse en paralelo únicamente cuando:
-
-- Sus dependencias previas están resueltas.
-- No modifican simultáneamente el mismo archivo.
-- No generan conflictos de integración.
-- Los integrantes coordinan sus cambios antes de integrarlos.
-
-Las operaciones que modifican `src/storage.js` deben coordinarse y no editarse simultáneamente sin una estrategia acordada.
-
-Las tareas de restauración T003, T004 y T005 también pueden prepararse por separado, pero las pruebas de ejecución deben realizarse después de completar la recuperación del código necesario.
-
-### Orden recomendado de implementación
-
-1. Recuperar y verificar el módulo base.
-2. Implementar el almacenamiento y la configuración compartidos.
-3. Implementar HU3: trabajadores, departamentos y asignaciones.
-4. Implementar HU1: registro y corrección de productividad.
-5. Validar el flujo mínimo de trabajador → asignación → medición.
-6. Implementar HU2: historial cronológico.
-7. Implementar HU4: evolución de productividad.
-8. Completar pruebas, documentación y revisión final de las cuatro historias.
-9. Incorporar el selector de roles y verificar los tres alcances con FR-052 a FR-065.
-
-### Reglas de avance
-
-- No comenzar a implementar 002 antes de recuperar y verificar el código base.
-- Escribir y ejecutar las pruebas correspondientes antes de completar cada funcionalidad, cuando sea viable.
-- No marcar tareas como completadas sin verificación.
-- No agregar funcionalidades fuera del alcance de `spec.md`.
-- Mantener la documentación alineada con el código implementado.
-
----
-
-## Trazabilidad con requisitos
-
-| Requisitos | Fases y tareas |
-|---|---|
-| FR-001 a FR-011 | Fase 3: T023–T039 |
-| FR-012 a FR-023 | Fase 4: T040–T054 |
-| FR-024 a FR-027 | Fase 5: T055–T062 |
-| FR-028 a FR-031 | Fase 6: T063–T070 |
-| FR-032 a FR-035 | Fases 2 y 7 |
-| FR-036 a FR-051 | Fases 8 y 9 |
-| FR-052 a FR-065 | Fase 10: T106–T112 |
-| HU1 | Fase 4 |
-| HU2 | Fase 5 |
-| HU3 | Fase 3 |
-| HU4 | Fase 6 |
-| HU5 | Fase 8: T087–T094 |
-| HU6 | Fases 2, 4 y 7: T022, T040–T043, T049–T052, T074 y T079 |
-
----
-
-## Restricciones de alcance
-
-El incremento 002 no debe implementar:
-
-- Planilla, remuneraciones, contratos ni liquidaciones.
-- Comparaciones de productividad entre trabajadores o departamentos.
-- Catálogo avanzado de indicadores y fórmulas.
-- Puntuación única automática de productividad.
-- Autenticación con credenciales, inicio de sesión y verificación de identidad real. El selector de roles y el control de acceso por interfaz SÍ están en alcance mediante FR-052 a FR-065.
-- Auditoría de modificaciones.
-- Exportación, respaldo central o sincronización multiusuario.
-- Backend o base de datos remota.
-- Tratamiento de datos reales de trabajadores.
-- Entidades nuevas en el MER.
-- Gráficos, contadores, búsquedas o filtros adicionales que no estén exigidos en `spec.md`.
-
-La colección `erp_base_module:documents` se utilizará exclusivamente para productividad durante 002, después de verificar y tratar posibles datos anteriores.
-
----
-
-## Criterios de finalización
-
-El incremento 002 se considera finalizado cuando:
-
-- [x] Se recuperó y verificó el módulo base.
-- [x] Se conservó el MER original de nueve entidades.
-- [x] Se reutilizó `Entity` para trabajadores.
-- [x] Se reutilizó `Document` para productividad.
-- [x] Se implementaron `Departamento` e `Historial_Departamento`.
-- [x] HU1–HU4 funcionan con validación automatizada.
-- [x] HU5 y HU6 describen funcionalidades implementadas y trazadas a tareas y pruebas existentes.
-- [x] Las mediciones están asociadas a asignaciones históricas válidas.
-- [x] Los cambios de departamento no destruyen el historial anterior.
-- [x] Las correcciones de productividad no modifican registros distintos del seleccionado.
-- [x] Se aplican las validaciones definidas en `spec.md`.
-- [x] Se manejan correctamente los errores de almacenamiento.
-- [x] Se utilizan exclusivamente datos ficticios.
-- [x] No se implementaron funcionalidades fuera de alcance.
-- [x] Se ejecutaron y documentaron las pruebas.
-- [x] Se verificó la coherencia final de `spec.md`, `plan.md`, `data-model.md`, `contracts/`, `quickstart.md` y `tasks.md`, incluidos FR-052 a FR-065.
-- [x] Se aprobaron el texto de advertencia T072 y la asignación de responsables T084 (HU1–HU6).
-- [x] Se implementan y verifican los tres roles activos y la matriz rol-acción (T075, T106–T112).
-- [x] T083 se completó y aprobó conforme a los criterios establecidos (SC-001 a SC-004; 6/6 usuarios, 100 %).
-- [x] El grupo revisó los cambios antes de integrarlos; revisión final aprobada el 25-11-2026 (la rama de roles aún la dejaba pendiente antes del merge).
-
----
-
-**Nota final:** La implementación técnica, los roles activos FR-052 a FR-065, la suite automatizada (16 archivos, 180 pruebas; 14 archivos y 165 pruebas en la revisión previa), T072, T076 (500 registros en Edge aislado), T083, T084, T075 y T106–T112 y la compilación están completadas. HU5 y HU6 corresponden a funcionalidades vinculadas con tareas y pruebas existentes. T085, T086, T087–T095, T096–T105 y T106–T112 están completadas. La revisión final del grupo fue aprobada el 25-11-2026. No se realizaron commits ni push automáticos.
 
 ---
 
@@ -523,7 +407,7 @@ El incremento 002 se considera finalizado cuando:
 
 ## Fuera de alcance – Historia de Usuario 7
 
-**Estado:** Diferida. Según `spec.md` §4 y §6, la HU7 no se implementa en el incremento 002 y no define claves de `localStorage`, campos ni interfaz en esta entrega. Las tareas T113–T119 quedan pendientes para un incremento posterior, no se incluyen en el total de T001–T112 y no deben ejecutarse al reconstruir 002.
+**Estado:** Diferida. Según `spec.md` §4 y §6, la HU7 no se implementa en el incremento 002 y no define claves de `localStorage`, campos ni interfaz en esta entrega. No tiene dependencias con las Fases 1–10 y se registra después de la Fase 10 para conservar el orden de historias del spec sin crear una fase ejecutable. Las tareas T113–T119 quedan pendientes para un incremento posterior, no se incluyen en el total ejecutable de T001–T100 y T106–T112 y no deben ejecutarse al reconstruir 002.
 
 **Prueba independiente diferida:** registrar un trabajador ficticio con una licencia médica de tres días de reposo total en estado pendiente, consultar su historial y la planificación de turnos, y comprobar que aparecen trabajador, fechas, tipo de reposo y estado sin diagnóstico, enfermedad, exámenes, tratamientos ni antecedentes clínicos (`spec.md`, HU7).
 
@@ -531,7 +415,7 @@ El incremento 002 se considera finalizado cuando:
 
 - [ ] T114 [US7] Diferido: definir en `src/module-config.js` y en el formulario de licencia que se cree en ese incremento los únicos campos permitidos —trabajador, fechas, tipo de reposo y estado— y una validación que rechace diagnósticos, enfermedades, exámenes, tratamientos o antecedentes clínicos en observaciones u otros campos libres (HU7, escenarios 2 y 8).
 
-- [ ] T115 [US7] Diferido: definir en `src/components/history-view.js` y en la vista de planificación de turnos que corresponda a ese incremento la visualización de trabajador, fechas, tipo de reposo y estado, comprobando que no se muestre información clínica alguna (HU7, escenarios 3 y 10).
+- [ ] T115 [US7] Diferido: definir en `src/components/history-view.js` y en la vista de planificación de turnos que se defina en ese incremento (componente no identificado en el plan 002) la visualización de trabajador, fechas, tipo de reposo y estado, comprobando que no se muestre información clínica alguna (HU7, escenario 3).
 
 - [ ] T116 [US7] Diferido: definir en `src/app.js` y en el formulario de medición (`src/components/document-form.js`) las reglas de ausencia justificada: una licencia autorizada que coincida con turno Mañana o Tarde se muestra como ausencia en esas fechas y no genera mediciones de productividad; una licencia pendiente no se presenta como autorizada; un reposo parcial solo reduce la jornada en las fechas indicadas (HU7, escenarios 4, 5 y 6).
 
@@ -556,4 +440,128 @@ El incremento 002 se considera finalizado cuando:
 - La aprobación del texto de advertencia de datos ficticios (T072) y la distribución de responsables para HU1–HU6 confirmada por el grupo (T084) están completadas.
 - Los criterios de éxito SC-001 a SC-004 deberán verificarse mediante mediciones o evaluaciones documentadas.
 - Las modificaciones realizadas con ayuda de OpenCode deben ser revisadas y comprendidas por integrantes del grupo, conforme a la regla de trabajo con IA indicada al inicio de este documento.
+
+---
+
+## Dependencias y orden de ejecución
+
+### Dependencias entre fases
+
+1. **Fase 1:** Recuperación y verificación del código base. Es prerrequisito de todo.
+2. **Fase 2:** Infraestructura fundacional. Depende de la Fase 1.
+3. **Fase 3 — HU3:** Depende de la Fase 2.
+4. **Fase 4 — HU1:** Depende de HU3.
+5. **Fase 5 — HU2:** Depende de HU1.
+6. **Fase 6 — HU4:** Depende de HU2.
+7. **Fase 7:** Revisión final de HU1–HU4 y de las funcionalidades existentes vinculadas a HU5 y HU6.
+8. **Fase 8:** Adaptación a cafetería; depende de la Fase 4.
+9. **Fase 9:** Metas consolidadas; depende de la Fase 8.
+10. **Fase 10:** Control de acceso por rol activo; depende de las Fases 7, 8 y 9 porque filtra vistas y datos ya existentes.
+11. **HU7:** fuera de alcance; T113–T119 están diferidas para un incremento posterior y no dependen de las Fases 1–10.
+
+### Tareas paralelizables
+
+Las tareas marcadas con `[P]` pueden desarrollarse en paralelo únicamente cuando:
+
+- Sus dependencias previas están resueltas.
+- No modifican simultáneamente el mismo archivo.
+- No generan conflictos de integración.
+- Los integrantes coordinan sus cambios antes de integrarlos.
+
+Las operaciones que modifican `src/storage.js` deben coordinarse y no editarse simultáneamente sin una estrategia acordada.
+
+Las tareas de restauración T003, T004 y T005 también pueden prepararse por separado, pero las pruebas de ejecución deben realizarse después de completar la recuperación del código necesario.
+
+### Orden recomendado de implementación
+
+1. Recuperar y verificar el módulo base.
+2. Implementar el almacenamiento y la configuración compartidos.
+3. Implementar HU3: trabajadores, departamentos y asignaciones.
+4. Implementar HU1: registro y corrección de productividad.
+5. Validar el flujo mínimo de trabajador → asignación → medición.
+6. Implementar HU2: historial cronológico.
+7. Implementar HU4: evolución de productividad.
+8. Completar pruebas, documentación y revisión final de las cuatro historias.
+9. Incorporar el selector de roles y verificar los tres alcances con FR-052 a FR-065.
+
+### Reglas de avance
+
+- No comenzar a implementar 002 antes de recuperar y verificar el código base.
+- Escribir y ejecutar las pruebas correspondientes antes de completar cada funcionalidad, cuando sea viable.
+- No marcar tareas como completadas sin verificación.
+- No agregar funcionalidades fuera del alcance de `spec.md`.
+- Mantener la documentación alineada con el código implementado.
+
+---
+
+## Trazabilidad con requisitos
+
+| Requisitos | Fases y tareas |
+|---|---|
+| FR-001 a FR-011 | Fase 3: T023–T039 |
+| FR-012 a FR-023 | Fase 4: T040–T054 |
+| FR-024 a FR-027 | Fase 5: T055–T062 |
+| FR-028 a FR-031 | Fase 6: T063–T070 |
+| FR-032 a FR-035 | Fases 2 y 7 |
+| FR-036 a FR-051 | Fases 8 y 9 |
+| FR-052 a FR-065 | Fase 10: T106–T112 |
+| HU1 | Fase 4 |
+| HU2 | Fase 5 |
+| HU3 | Fase 3 |
+| HU4 | Fase 6 |
+| HU5 | Fase 8: T087–T094 |
+| HU6 | Fases 2, 4 y 7: T022, T040–T043, T049–T052, T074 y T079 |
+| HU7 | Fuera de alcance: T113–T119 diferidas, sin fase ejecutable en 002 |
+
+---
+
+## Restricciones de alcance
+
+El incremento 002 no debe implementar:
+
+- Planilla, remuneraciones, contratos ni liquidaciones.
+- Comparaciones de productividad entre trabajadores o departamentos.
+- Catálogo avanzado de indicadores y fórmulas.
+- Puntuación única automática de productividad.
+- Autenticación con credenciales, inicio de sesión y verificación de identidad real. El selector de roles y el control de acceso por interfaz SÍ están en alcance mediante FR-052 a FR-065.
+- Auditoría de modificaciones.
+- Exportación, respaldo central o sincronización multiusuario.
+- Backend o base de datos remota.
+- Tratamiento de datos reales de trabajadores.
+- Entidades nuevas en el MER.
+- Gráficos, contadores, búsquedas o filtros adicionales que no estén exigidos en `spec.md`.
+- Licencias médicas ni ausencias justificadas de HU7; sus tareas T113–T119 quedan diferidas.
+
+La colección `erp_base_module:documents` se utilizará exclusivamente para productividad durante 002, después de verificar y tratar posibles datos anteriores.
+
+---
+
+## Criterios de finalización
+
+El incremento 002 se considera finalizado cuando:
+
+- [x] Se recuperó y verificó el módulo base.
+- [x] Se conservó el MER original de nueve entidades.
+- [x] Se reutilizó `Entity` para trabajadores.
+- [x] Se reutilizó `Document` para productividad.
+- [x] Se implementaron `Departamento` e `Historial_Departamento`.
+- [x] HU1–HU4 funcionan con validación automatizada.
+- [x] HU5 y HU6 describen funcionalidades implementadas y trazadas a tareas y pruebas existentes.
+- [x] Las mediciones están asociadas a asignaciones históricas válidas.
+- [x] Los cambios de departamento no destruyen el historial anterior.
+- [x] Las correcciones de productividad no modifican registros distintos del seleccionado.
+- [x] Se aplican las validaciones definidas en `spec.md`.
+- [x] Se manejan correctamente los errores de almacenamiento.
+- [x] Se utilizan exclusivamente datos ficticios.
+- [x] No se implementaron funcionalidades fuera de alcance.
+- [x] Se ejecutaron y documentaron las pruebas.
+- [x] Se verificó la coherencia final de `spec.md`, `plan.md`, `data-model.md`, `contracts/`, `quickstart.md` y `tasks.md`, incluidos FR-052 a FR-065.
+- [x] Se aprobaron el texto de advertencia T072 y la asignación de responsables T084 (HU1–HU6).
+- [x] Se implementan y verifican los tres roles activos y la matriz rol-acción (T075, T106–T112).
+- La tarea T083 se completó y aprobó conforme a los criterios establecidos (SC-001 a SC-004; 6/6 usuarios, 100 %).
+- [x] El grupo revisó los cambios antes de integrarlos; revisión final aprobada el 25-11-2026 (la rama de roles aún la dejaba pendiente antes del merge).
+
+---
+
+**Nota final:** La implementación técnica, los roles activos FR-052 a FR-065, la suite automatizada (16 archivos, 180 pruebas; 14 archivos y 165 pruebas en la revisión previa), T072, T076 (500 registros en Edge aislado), T083, T084, T075 y T106–T112 y la compilación están completadas. HU5 y HU6 corresponden a funcionalidades vinculadas con tareas y pruebas existentes. T085, T086, T087–T095, T096–T100 y T106–T112 están completadas; T113–T119 permanecen diferidas y fuera del alcance de 002. La revisión final del grupo fue aprobada el 25-11-2026. No se realizaron commits ni push automáticos.
 

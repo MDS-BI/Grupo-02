@@ -381,7 +381,7 @@ El panel de RR. HH. incluye la acción **Cargar datos de demostración**, que re
 
 **Responsable:** Consuelo Hidalgo.
 
-**Estado de reconstrucción:** no implementada; excluida del alcance ejecutable del MVP 002. Los requisitos FR-010, FR-032, FR-034, FR-035, FR-040, FR-041 y FR-042 solo motivan la advertencia de datos ficticios y no se cubren con código ni pruebas en esta entrega.
+**Estado de reconstrucción:** no implementada; excluida del alcance ejecutable del MVP 002. Las menciones a FR-010, FR-032, FR-034, FR-035, FR-040, FR-041 y FR-042 en esta historia solo motivan la advertencia de datos ficticios y la protección de la información; HU7 no incorpora código, campos, claves ni pruebas en esta entrega. Esos requisitos se tratan, cuando corresponde, en las historias y tareas del alcance de 002.
 
 #### Escenarios de referencia (no ejecutables en el MVP 002)
 
@@ -458,6 +458,7 @@ La navegación entre secciones (Panel, Trabajadores, Departamentos, Asignaciones
 - **FR-016:** El sistema DEBE rechazar períodos anteriores al ingreso del trabajador.
 - **FR-017:** El sistema DEBE rechazar indicadores de menos de 3 o más de 60 caracteres.
 - **FR-018:** El sistema DEBE rechazar resultados negativos o no numéricos.
+- **Nota:** El identificador `FR-019` quedó sin efecto al aprobarse la unidad opcional en el formulario de cafetería; no se registra un requisito nuevo y la numeración de FR-020 en adelante se conserva por compatibilidad documental.
 - **FR-020:** El sistema DEBE validar los campos obligatorios antes de guardar.
 - **FR-021:** El sistema DEBE advertir sobre registros duplicados y permitir guardarlos si el usuario confirma.
 - **FR-022:** El sistema NO DEBE modificar registros de otros períodos al guardar uno nuevo.
@@ -618,6 +619,12 @@ Los comportamientos adicionales sobre errores de almacenamiento fueron validados
 
 ---
 
+## Clarifications
+
+- **Q: ¿A qué se refieren las "cinco áreas de trabajo" en la acción "Cargar datos de demostración" del panel de RR. HH.? → A: A los cinco cargos de trabajadores ya usados para sugerir indicadores (Barista, Cajero, Mesero, Cocinero y Encargado), no a áreas ni departamentos; los departamentos del incremento 002 siguen siendo solo Barra, Cocina y Salón.** La decisión queda registrada aquí; su aplicación al texto de datos simulados de la sección 5.2 queda pendiente para el responsable de esos datos y no se realiza en este paso para no modificar funcionalidades de otros integrantes.
+
+---
+
 ## 10. Criterios de éxito
 
 - **SC-001:** Un usuario puede registrar un trabajador y asignarle un departamento en menos de 2 minutos.
@@ -728,7 +735,7 @@ La aplicación está destinada a demostraciones académicas con datos ficticios.
 
 ### 14.1. Distribución confirmada de responsabilidades
 
-La distribución de responsables para las seis historias fue confirmada por el grupo (T084 completada). Se mantienen las asignaciones de apoyo previamente documentadas.
+La distribución de responsables para las seis historias en alcance (HU1–HU6) fue confirmada por el grupo (T084 completada). Se mantienen las asignaciones de apoyo previamente documentadas.
 
 | Historia o área de trabajo | Responsable | Estado |
 |---|---|---|
@@ -738,10 +745,11 @@ La distribución de responsables para las seis historias fue confirmada por el g
 | HU4 — Visualización de la evolución de productividad | Bastián Ignacio Reinado Bravo | Aprobada por el grupo (T084) |
 | HU5 — Indicadores por cargo y turnos | Daphnne Hidalgo | Aprobada por el grupo (T084) |
 | HU6 — Validación y protección de registros | Emilio Vejar | Aprobada por el grupo (T084) |
+| HU7 — Confidencialidad de licencias médicas y ausencias justificadas | Consuelo Hidalgo | Diferida; fuera de alcance de 002 |
 | Especificaciones y documentación | Daphnne Hidalgo Mundaca | Asignación de apoyo aprobada previamente |
 | Implementación, integración y pruebas | Emilio Vejar Bravo | Asignación de apoyo aprobada previamente |
 
-La distribución ampliada a seis historias está confirmada por el grupo.
+La distribución ampliada a las seis historias en alcance (HU1–HU6) está confirmada por el grupo; HU7 se conserva fuera de alcance y su responsable se registra únicamente como referencia de la historia diferida.
 
 La confirmación de la distribución ampliada completa T084.
 
