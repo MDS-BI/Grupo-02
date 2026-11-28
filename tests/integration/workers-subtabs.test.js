@@ -62,7 +62,7 @@ beforeEach(async () => {
   department = addDepartment({ nombre: 'Team cafe' });
 
   const { boot } = await import('../../src/app.js');
-  await boot(RRHH_CONFIG);
+  await boot(RRHH_CONFIG, { skipDemoSeed: true });
 });
 
 afterEach(() => {
@@ -307,5 +307,13 @@ describe('Reorganización de navegación - módulo Trabajadores', () => {
     expect(qs('cf-contactoEmergenciaNombre').value).toBe('Laura');
     expect(qs('cf-contactoEmergenciaTelefono').value).toBe('+56 9 1234 5678');
     expect(qs('description').value).toBe('Alergia a la lactosa');
+  });
+
+  it('muestra ayuda contextual en la vista de trabajadores y en el formulario', () => {
+    qs('nav-entities').click();
+    expect(qs('view-entities').getAttribute('title')).toContain('Trabajadores');
+    expect(qs('view-entities').nextElementSibling.classList.contains('help-text')).toBe(true);
+    expect(qs('entity-form').getAttribute('title')).toContain('personal');
+    expect(qs('entity-form').nextElementSibling.textContent).toContain('cafetería');
   });
 });

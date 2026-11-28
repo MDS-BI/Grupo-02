@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { JSDOM } from 'jsdom';
-import { normalizeConfig } from '../../src/module-config.js';
+import { normalizeConfig, RRHH_CONFIG } from '../../src/module-config.js';
 
 const html = fs.readFileSync(fileURLToPath(new URL('../../index.html', import.meta.url)), 'utf8');
 
@@ -29,7 +29,7 @@ afterEach(() => {
 async function bootWith(configOverride){
   vi.resetModules();
   const { initApp } = await import('../../src/app.js');
-  await initApp(normalizeConfig(configOverride));
+  await initApp(normalizeConfig(configOverride), { skipDemoSeed: true });
 }
 
 describe('User Story 6 - relabel screens from configuration', () => {
@@ -91,5 +91,23 @@ describe('User Story 6 - relabel screens from configuration', () => {
     const logo = qs('logo-mark').querySelector('.cafe-logo');
     expect(logo).not.toBeNull();
     expect(logo.getAttribute('src')).toBe('cafeteria-logo.svg');
+  });
+
+  it('usa terminología de cafetería y explica los tres roles en el modo RR. HH.', async () => {
+    await bootWith(RRHH_CONFIG);
+    expect(qs('nav-entities-label').textContent).toBe('Personal');
+    expect(qs('nav-documents-label').textContent).toBe('Evaluaciones de desempeño');
+    expect([...document.querySelectorAll('label')].map(label => label.textContent)).toContain('Área de trabajo');
+    qs('role-select').value = 'supervisor';
+    qs('role-select').dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+    expect(qs('nav-documents-label').textContent).toBe('Medición');
+    expect(qs('role-controls').hidden).toBe(false);
+    expect([...qs('role-select').options].map(option => option.value)).toEqual(['administrador', 'supervisor', 'barista']);
+    const roleHelp = qs('role-select').nextElementSibling.textContent;
+    expect(roleHelp).toContain('Administrador');
+    expect(roleHelp).toContain('Jefe de Turno');
+    expect(roleHelp).toContain('Barista');
+    expect(roleHelp).toContain('demostrativo');
+    expect(qs('data-warning').textContent).toContain('ficticios');
   });
 });

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { clearAll, loadEntities, addEntity, updateEntity, deleteEntity, validateEntity, searchEntities, loadDocuments, addDocument, updateDocument, deleteDocument, deleteDocumentsForEntity, validateDocument } from '../../src/storage.js';
-import { setActiveConfig } from '../../src/module-config.js';
+import { clearAll, loadEntities, addEntity, updateEntity, deleteEntity, validateEntity, searchEntities, loadDocuments, addDocument, updateDocument, deleteDocument, deleteDocumentsForEntity, validateDocument, upsertGlobalGoal, loadGlobalGoals } from '../../src/storage.js';
+import { setActiveConfig, RRHH_CONFIG } from '../../src/module-config.js';
+import { saveRoleState, ROLES } from '../../src/roles.js';
 
 const store = new Map();
 globalThis.localStorage = {
@@ -336,5 +337,19 @@ describe('clearAll', () => {
     clearAll();
     expect(loadEntities().length).toBe(0);
     expect(loadDocuments().length).toBe(0);
+  });
+});
+
+describe('global goals', () => {
+  it('allows only the administrator or cafe manager to save a global goal', () => {
+    setActiveConfig(RRHH_CONFIG);
+    saveRoleState({ rolActivo: ROLES.SUPERVISOR });
+    expect(() => upsertGlobalGoal({ area: 'Barra', periodo: '2026-06', metaGlobal: 90 }))
+      .toThrow(/Administrador/);
+    expect(loadGlobalGoals()).toHaveLength(0);
+
+    saveRoleState({ rolActivo: ROLES.ADMINISTRADOR });
+    upsertGlobalGoal({ area: 'Barra', periodo: '2026-06', metaGlobal: 90 });
+    expect(loadGlobalGoals()).toHaveLength(1);
   });
 });

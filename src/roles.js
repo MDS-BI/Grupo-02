@@ -61,8 +61,8 @@ export function roleLabel(role){
 
 export function allowedModules(state){
   const role = normalizeRoleState(state).rolActivo;
-  if(role === ROLES.SUPERVISOR) return ['documents', 'history', 'evolution'];
-  if(role === ROLES.BARISTA) return ['history', 'evolution'];
+  if(role === ROLES.SUPERVISOR) return ['dashboard', 'documents', 'history', 'evolution'];
+  if(role === ROLES.BARISTA) return ['dashboard', 'history', 'evolution'];
   return ['dashboard', 'entities', 'departments', 'assignments', 'documents', 'history', 'evolution', 'search'];
 }
 
@@ -134,6 +134,30 @@ export function filterDocuments(state, documents = [], resolveDepartmentName){
       : '';
     return isDocumentInScope(state, document_, departmentName);
   });
+}
+
+export function assertCanEditDocument(state, payload = {}, dependencies = {}){
+  const role = normalizeRoleState(state);
+  if(!canPerform(role, 'measurement:write')){
+    throw new Error('Tu rol no permite registrar ni corregir evaluaciones.');
+  }
+  if(role.rolActivo === ROLES.SUPERVISOR){
+    if(!isSupervisorContextComplete(role)){
+      throw new Error('Selecciona el área de trabajo y el turno antes de registrar una medición.');
+    }
+    const assignments = Array.isArray(dependencies.assignments) ? dependencies.assignments : [];
+    const departments = Array.isArray(dependencies.departments) ? dependencies.departments : [];
+    const assignment = assignments.find(item =>
+      item && (item.id_historial === payload.asignacionId || item.id === payload.asignacionId)
+    );
+    if(!isAssignmentInScope(role, assignment, departments)){
+      throw new Error('Solo puedes medir personal de tu área de trabajo.');
+    }
+    if(payload.turno !== role.supervisorTurno){
+      throw new Error('Solo puedes medir el turno seleccionado.');
+    }
+  }
+  return true;
 }
 
 export function scopeDescription(state, workerName = ''){

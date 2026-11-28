@@ -37,7 +37,7 @@ afterEach(() => {
 async function bootWith(configOverride){
   vi.resetModules();
   const { initApp } = await import('../../src/app.js');
-  await initApp(normalizeConfig(configOverride ?? configWithFields));
+  await initApp(normalizeConfig(configOverride ?? configWithFields), { skipDemoSeed: true });
 }
 
 describe('User Story 7 - declare custom fields for records', () => {

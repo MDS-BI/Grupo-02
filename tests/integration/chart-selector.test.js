@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { JSDOM } from 'jsdom';
 import { RRHH_CONFIG } from '../../src/module-config.js';
+import { HELP_TEXT } from '../../src/components/help-text.js';
 
 const html = fs.readFileSync(fileURLToPath(new URL('../../index.html', import.meta.url)), 'utf8');
 
@@ -49,7 +50,7 @@ beforeEach(async () => {
   departments = { cafe, jefatura, operaciones };
 
   const { boot } = await import('../../src/app.js');
-  await boot(RRHH_CONFIG);
+  await boot(RRHH_CONFIG, { skipDemoSeed: true });
 });
 
 afterEach(() => {
@@ -57,29 +58,37 @@ afterEach(() => {
 });
 
 describe('Panel line chart - selector y leyenda', () => {
-  it('A: sin selecci?n muestra todas las ?reas, filtro de per?odo y estado vac?o', () => {
+  it('A: sin selección muestra todas las áreas, filtro de período y estado vacío', () => {
     const select = chartSelect();
     expect(select).not.toBeNull();
     expect(select.value).toBe('');
-    expect(select.options[0].textContent).toBe('Todas las ?reas');
+    expect(select.options[0].textContent).toBe('Todas las áreas');
     expect(periodSelect()).not.toBeNull();
-    expect([...periodSelect().options].map(o => o.textContent)).toEqual(['?ltimos 3 meses', '?ltimos 6 meses', '?ltimos 12 meses']);
+    expect([...periodSelect().options].map(o => o.textContent)).toEqual(['Últimos 3 meses', 'Últimos 6 meses', 'Últimos 12 meses']);
     expect([...select.options].map(option => option.value)).toContain(departments.cafe.id_departamento);
-    expect(document.querySelector('#dashboard-chart .chart-empty-state')?.textContent).toContain('A?n no hay evaluaciones');
+    expect(document.querySelector('#dashboard-chart .chart-empty-state')?.textContent).toContain('Aún no hay evaluaciones');
   });
 
-  it('B: con selecci?n conserva el nombre y persiste el ?rea', () => {
+  it('B: con selección conserva el nombre y persiste el área', () => {
     selectDepartment(departments.cafe.id_departamento);
     expect(selectedLabel()).toBe('Team cafe');
     expect(localStorage.getItem('erp_dashboard_department')).toBe(departments.cafe.id_departamento);
   });
 
-  it('C: permite cambiar entre departamentos sin romper el gr?fico', () => {
+  it('C: permite cambiar entre departamentos sin romper el gráfico', () => {
     for(const department of [departments.cafe, departments.jefatura, departments.operaciones, departments.cafe]){
       selectDepartment(department.id_departamento);
       expect(selectedLabel()).toBe(department.nombre);
       expect(chartSelect()).not.toBeNull();
       expect(periodSelect()).not.toBeNull();
     }
+  });
+
+  it('D: explica el panel y las métricas dentro de la misma vista', () => {
+    const dashboard = document.getElementById('view-dashboard');
+    expect(dashboard.getAttribute('title')).toContain('panel');
+    expect(dashboard.nextElementSibling.classList.contains('help-text')).toBe(true);
+    expect(HELP_TEXT['metrics-help']).toContain('misma unidad');
+    expect(HELP_TEXT['metrics-help']).toContain('calificación automática');
   });
 });

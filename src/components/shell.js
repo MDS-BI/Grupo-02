@@ -1,4 +1,5 @@
 import { labelFor } from '../module-config.js';
+import { allowedModules } from '../roles.js';
 
 export function monogramFor(name){
   const words = String(name || '').trim().split(/\s+/).filter(Boolean);
@@ -35,6 +36,13 @@ export function applyShellLabels(){
   Object.entries(labels).forEach(([id, text]) => {
     const el = document.getElementById(id);
     if(el) el.textContent = text;
+  });
+}
+
+export function applyRoleShellPermissions(state){
+  const allowed = allowedModules(state);
+  document.querySelectorAll('.side-nav [data-module]').forEach(button => {
+    button.hidden = !allowed.includes(button.dataset.module);
   });
 }
 

@@ -1,3 +1,5 @@
+import { isDocumentInScope } from '../roles.js';
+
 function escapeHtml(s){ return String(s ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 
 export function createEvolutionRow(measurement){
@@ -13,9 +15,12 @@ export function createEvolutionRow(measurement){
   return tr;
 }
 
-export function renderEvolutionTable(bodyEl, messageEl, measurements){
+export function renderEvolutionTable(bodyEl, messageEl, measurements, roleState){
   bodyEl.innerHTML = '';
-  if(!measurements || measurements.length === 0){
+  const visible = roleState
+    ? (measurements || []).filter(measurement => isDocumentInScope(roleState, measurement, measurement.departamento || ''))
+    : (measurements || []);
+  if(visible.length === 0){
     if(messageEl){
       messageEl.hidden = false;
       messageEl.textContent = 'No hay datos suficientes para visualizar la evolución del desempeño de este indicador y unidad.';
@@ -23,11 +28,11 @@ export function renderEvolutionTable(bodyEl, messageEl, measurements){
     return false;
   }
   if(messageEl){
-    messageEl.hidden = measurements.length >= 2;
-    messageEl.textContent = measurements.length >= 2
+    messageEl.hidden = visible.length >= 2;
+    messageEl.textContent = visible.length >= 2
       ? ''
       : 'Solo existe una evaluación comparable; se requiere más de una para observar la evolución del desempeño.';
   }
-  for(const measurement of measurements) bodyEl.appendChild(createEvolutionRow(measurement));
+  for(const measurement of visible) bodyEl.appendChild(createEvolutionRow(measurement));
   return true;
 }

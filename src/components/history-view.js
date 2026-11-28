@@ -1,3 +1,5 @@
+import { isDocumentInScope } from '../roles.js';
+
 function escapeHtml(s){ return String(s ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 
 export function createHistoryRow(measurement){
@@ -20,9 +22,12 @@ export function createHistoryRow(measurement){
   return tr;
 }
 
-export function renderHistoryTable(bodyEl, emptyEl, measurements){
+export function renderHistoryTable(bodyEl, emptyEl, measurements, roleState){
   bodyEl.innerHTML = '';
-  if(!measurements || measurements.length === 0){
+  const visible = roleState
+    ? (measurements || []).filter(measurement => isDocumentInScope(roleState, measurement, measurement.departamento || ''))
+    : (measurements || []);
+  if(visible.length === 0){
     if(emptyEl){
       emptyEl.hidden = false;
       emptyEl.textContent = 'El personal seleccionado aún no tiene evaluaciones de desempeño.';
@@ -30,6 +35,6 @@ export function renderHistoryTable(bodyEl, emptyEl, measurements){
     return false;
   }
   if(emptyEl) emptyEl.hidden = true;
-  for(const measurement of measurements) bodyEl.appendChild(createHistoryRow(measurement));
+  for(const measurement of visible) bodyEl.appendChild(createHistoryRow(measurement));
   return true;
 }

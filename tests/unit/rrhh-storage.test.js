@@ -773,9 +773,14 @@ describe('datos de demostración', () => {
     expect(loadDepartmentHistory()).toHaveLength(6);
     expect(documents).toHaveLength(12);
     expect(periods).toHaveLength(2);
-    expect(areas).toHaveLength(5);
-    expect(nombres).not.toContain('Ana Perez');
-    expect(new Set(entities.map(e => e.cargo)).size).toBeGreaterThanOrEqual(4);
+    expect([...areas].sort((a, b) => a.localeCompare(b, 'es'))).toEqual(['Barra', 'Cocina', 'Salón']);
+    expect(areas).not.toContain('Caja');
+    expect(areas).not.toContain('Supervisión');
+    expect(nombres).toEqual([
+      'Camila Rojas', 'Ignacio Fuentes', 'Valentina Soto',
+      'Matías Herrera', 'Javiera Muñoz', 'Rodrigo Silva'
+    ]);
+    expect(new Set(entities.map(e => e.cargo))).toEqual(new Set(['Barista', 'Cajero', 'Mesero', 'Cocinero', 'Encargado']));
     expect(new Set(documents.map(d => d.indicador)).size).toBeGreaterThanOrEqual(6);
     expect(new Set(documents.map(d => d.asignacionId)).size).toBe(6);
     expect(consolidado.length).toBeGreaterThanOrEqual(areas.length);

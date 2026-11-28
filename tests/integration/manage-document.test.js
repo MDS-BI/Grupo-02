@@ -37,7 +37,7 @@ afterEach(() => {
 async function bootWith(configOverride){
   vi.resetModules();
   const { initApp } = await import('../../src/app.js');
-  await initApp(normalizeConfig(configOverride));
+  await initApp(normalizeConfig(configOverride), { skipDemoSeed: true });
 }
 
 describe('User Story 10 - manage documents (edit, delete, cascade)', () => {

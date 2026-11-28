@@ -56,7 +56,7 @@ beforeEach(async () => {
   w.localStorage.clear();
   vi.resetModules();
   const { boot } = await import('../../src/app.js');
-  await boot(RRHH_CONFIG);
+  await boot(RRHH_CONFIG, { skipDemoSeed: true });
 });
 
 afterEach(() => {
@@ -146,6 +146,15 @@ describe('Incremento 002 - RR. HH. y productividad', () => {
     fire('history-entity');
     expect(qs('history-body').textContent).toContain('2026-03');
     expect(qs('history-body').textContent).toContain('Pedidos procesados');
+  });
+
+  it('pide confirmación antes de reemplazar datos ya guardados con la recarga manual', () => {
+    seedWorker();
+    globalThis.confirm = vi.fn(() => false);
+    qs('action-load-demo').click();
+    expect(globalThis.confirm).toHaveBeenCalled();
+    expect(loadEntities()).toHaveLength(1);
+    expect(loadDocuments()).toHaveLength(0);
   });
 
   it('advierte sobre mediciones duplicadas y permite guardarlas si se confirma', () => {

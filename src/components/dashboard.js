@@ -15,6 +15,14 @@ const MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', '
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const PERIOD_OPTIONS = [3, 6, 12];
 
+function formatDate(value){
+  if(!value) return '—';
+  const parts = String(value).split('-').map(Number);
+  if(parts.length !== 3 || parts.some(number => !Number.isFinite(number))) return String(value);
+  const [year, month, day] = parts;
+  return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+}
+
 const ICONS = {
   users: [
     'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2',
@@ -87,6 +95,18 @@ function recordPeriod(document_){
   return typeof period === 'string' && /^\d{4}-\d{2}$/.test(period) ? period : null;
 }
 
+function renderPartialDataNotice(entities, departments, assignments, documents){
+  const node = document.getElementById('partial-data-notice');
+  if(!node) return;
+  const hasAny = entities.length || departments.length || assignments.length || documents.length;
+  const complete = entities.length === 6 && departments.length === 3 && assignments.length === 6 && documents.length === 12;
+  const partial = isRRHHMode() && Boolean(hasAny) && !complete;
+  node.hidden = !partial;
+  if(partial){
+    node.textContent = 'Hay datos guardados, por lo que no se completó el conjunto simulado. Puedes usar «Cargar datos de demostración» para reemplazarlos con datos ficticios.';
+  }
+}
+
 function monthlyCounts(documents){
   const keys = monthKeys();
   const totals = new Map(keys.map(key => [key, 0]));
@@ -114,9 +134,9 @@ function isEntityActive(entity){ return /^activo$/i.test(String(entity?.estadoLa
 function activeWorkerCount(entities){ return entities.filter(isEntityActive).length; }
 
 
-function currentAssignmentCount(){
+function currentAssignmentCount(assignments = loadDepartmentHistory()){
   const today = todayString();
-  return loadDepartmentHistory().filter(assignment =>
+  return assignments.filter(assignment =>
     Boolean(assignment.fecha_inicio)
     && assignment.fecha_inicio <= today
     && (!assignment.fecha_fin || assignment.fecha_fin >= today)
@@ -232,7 +252,7 @@ function ensureLayout(view){
   });
   statGrid.append(
     statCard('stat-active', 'stat-active-label', 'Personal activo', 'activity'),
-    statCard('stat-departments', 'stat-departments-label', '?reas de trabajo', 'layers'),
+    statCard('stat-departments', 'stat-departments-label', 'Áreas de trabajo', 'layers'),
     statCard('stat-assignments', 'stat-assignments-label', 'Asignaciones vigentes', 'calendar')
   );
   kpiSection.appendChild(statGrid);
@@ -240,13 +260,13 @@ function ensureLayout(view){
   const topPanels = element('div', 'dashboard-panels dashboard-panels-main');
   topPanels.append(
     createChartPanel(),
-    panel('dashboard-activity', 'Actividad reciente', '?ltimas 5 evaluaciones', 'file')
+    panel('dashboard-activity', 'Actividad reciente', 'Últimas 5 evaluaciones', 'file')
   );
 
   const bottomPanels = element('div', 'dashboard-panels dashboard-panels-secondary');
   bottomPanels.append(
-    panel('dashboard-distribution', 'Distribuci?n del personal', 'Por ?rea y estado', 'layers'),
-    panel('dashboard-actions-panel', 'Acciones r?pidas', 'Accesos frecuentes', 'activity')
+    panel('dashboard-distribution', 'Distribución del personal', 'Por área y estado', 'layers'),
+    panel('dashboard-actions-panel', 'Acciones rápidas', 'Accesos frecuentes', 'activity')
   );
   const actionPanel = bottomPanels.querySelectorAll('.panel')[1];
   if(actionPanel){
@@ -265,19 +285,19 @@ function ensureChartFilters(container){
   if(filters) return filters;
   filters = element('div', 'chart-filters');
   const deptWrap = element('label', 'chart-filter');
-  deptWrap.appendChild(element('span','chart-filter-label','?rea de trabajo'));
+  deptWrap.appendChild(element('span','chart-filter-label','Área de trabajo'));
   const deptSelect = element('select','chart-select');
   deptSelect.id = 'dashboard-chart-department';
   deptWrap.appendChild(deptSelect);
 
   const periodWrap = element('label', 'chart-filter');
-  periodWrap.appendChild(element('span','chart-filter-label','Per?odo'));
+  periodWrap.appendChild(element('span','chart-filter-label','Período'));
   const periodSelect = element('select','chart-select');
   periodSelect.id = 'dashboard-chart-period';
   PERIOD_OPTIONS.forEach(n => {
     const opt = document.createElement('option');
     opt.value = String(n);
-    opt.textContent = `?ltimos ${n} meses`; 
+    opt.textContent = `Últimos ${n} meses`; 
     if(n === selectedPeriodCount) opt.selected = true;
     periodSelect.appendChild(opt);
   });
@@ -304,7 +324,7 @@ function populateChartFilters(){
   const deptSelect = document.getElementById('dashboard-chart-department');
   if(deptSelect){
     const prev = selectedDepartmentId || '';
-    deptSelect.innerHTML = '<option value="">Todas las ?reas</option>'; 
+    deptSelect.innerHTML = '<option value="">Todas las áreas</option>'; 
     loadDepartments().slice().sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||'','es')).forEach(d => {
       const opt = document.createElement('option');
       opt.value = d.id_departamento;
@@ -347,7 +367,7 @@ function renderLineChart(months, resultSeries, metaSeries){
   svg.setAttribute('height', String(chartHeight));
   svg.setAttribute('class', 'line-chart');
   svg.setAttribute('role', 'img');
-  svg.setAttribute('aria-label', 'Evoluci?n del desempe?o por per?odo');
+  svg.setAttribute('aria-label', 'Evolución del desempeño por período');
 
   for(let i = 0; i <= 4; i++){
     const y = margin.top + (i/4)*height;
@@ -397,37 +417,37 @@ function renderLineChart(months, resultSeries, metaSeries){
     const msg = document.createElementNS(SVG_NS,'text');
     msg.setAttribute('x', margin.left + width/2); msg.setAttribute('y', margin.top + height/2);
     msg.setAttribute('text-anchor','middle'); msg.setAttribute('font-size','12'); msg.setAttribute('fill','var(--muted)');
-    msg.textContent = 'Sin evaluaciones registradas en el per?odo seleccionado';
+    msg.textContent = 'Sin evaluaciones registradas en el período seleccionado';
     svg.appendChild(msg);
   }
 
   container.appendChild(svg);
-  if(!hasAny){ container.appendChild(element('p','empty chart-empty-state','A?n no hay evaluaciones para mostrar la evoluci?n del desempe?o.')); }
+  if(!hasAny){ container.appendChild(element('p','empty chart-empty-state','Aún no hay evaluaciones para mostrar la evolución del desempeño.')); }
   const legend = element('div','chart-legend');
-  legend.innerHTML = '<div class="legend-item"><span class="legend-color" style="background:#84592B"></span><span class="legend-label">Resultado</span></div><div class="legend-item"><span class="legend-color legend-color-meta"></span><span class="legend-label">Meta de desempe?o</span></div>';
+  legend.innerHTML = '<div class="legend-item"><span class="legend-color" style="background:#84592B"></span><span class="legend-label">Resultado</span></div><div class="legend-item"><span class="legend-color legend-color-meta"></span><span class="legend-label">Meta de desempeño</span></div>';
   container.appendChild(legend);
 
   const summary = element('div','chart-summary');
-  if(!hasAny) summary.textContent = 'El gr?fico se mostrar? con datos reales cuando se registren evaluaciones en los per?odos seleccionados.';
+  if(!hasAny) summary.textContent = 'El gráfico se mostrará con datos reales cuando se registren evaluaciones en los períodos seleccionados.';
   else if(hasComparison){
     const first = comparable[0], last = comparable[comparable.length-1];
     const diff = Number(last.result) - Number(first.result);
     const trend = diff > 0 ? 'alza' : diff < 0 ? 'baja' : 'estable';
-    summary.textContent = `Comparaci?n: ${formatResult(first.result)} (${first.month}) ? ${formatResult(last.result)} (${last.month}) ? Tendencia ${trend}${diff !== 0 ? ` (${diff>0?'+':''}${formatResult(diff)})` : ''}.`;
+    summary.textContent = `Comparación: ${formatResult(first.result)} (${first.month}) → ${formatResult(last.result)} (${last.month}) → Tendencia ${trend}${diff !== 0 ? ` (${diff>0?'+':''}${formatResult(diff)})` : ''}.`;
   } else {
-    summary.textContent = 'Hay datos disponibles, pero se necesitan evaluaciones en al menos dos per?odos para comparar la evoluci?n.';
+    summary.textContent = 'Hay datos disponibles, pero se necesitan evaluaciones en al menos dos períodos para comparar la evolución.';
   }
   container.appendChild(summary);
 }
 
-function renderDistribution(){
+function renderDistribution(sourceEntities, sourceDepartments, sourceAssignments){
   const container = document.getElementById('dashboard-distribution');
   if(!container) return;
   container.replaceChildren();
 
-  const entities = loadEntities();
-  const departments = loadDepartments().slice().sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||'','es'));
-  const assignments = loadDepartmentHistory();
+  const entities = sourceEntities;
+  const departments = sourceDepartments.slice().sort((a,b)=>(a.nombre||'').localeCompare(b.nombre||'','es'));
+  const assignments = sourceAssignments;
   const today = todayString();
   const activeAssignments = assignments.filter(a => a.fecha_inicio && a.fecha_inicio <= today && (!a.fecha_fin || a.fecha_fin >= today));
 
@@ -435,7 +455,7 @@ function renderDistribution(){
   const inactiveCount = Math.max(0, entities.length - activeCount);
 
   if(entities.length === 0 && departments.length === 0){
-    container.appendChild(element('p', 'empty activity-empty', 'No hay informaci?n de personal disponible para mostrar la distribuci?n.')); 
+    container.appendChild(element('p', 'empty activity-empty', 'No hay información de personal disponible para mostrar la distribución.')); 
     return;
   }
 
@@ -456,11 +476,11 @@ function renderDistribution(){
     const active = depWorkers.filter(isEntityActive).length;
     const inactive = Math.max(0, depWorkers.length - active);
     const current = activeAssignments.filter(a => a.id_departamento === dep.id_departamento).length;
-    return { name: dep.nombre || '?rea', workers: depWorkers.length, active, inactive, current };
+    return { name: dep.nombre || 'área', workers: depWorkers.length, active, inactive, current };
   });
   const unassigned = entities.filter(e => !(e.departamentoId || e.departmentId));
-  if(unassigned.length){ const active=unassigned.filter(isEntityActive).length; rows.push({ name:'Sin ?rea asignada', workers:unassigned.length, active, inactive:unassigned.length-active, current:0 }); }
-  if(rows.length === 0){ container.appendChild(element('p','empty activity-empty','No hay ?reas de trabajo registradas.')); return; }
+  if(unassigned.length){ const active=unassigned.filter(isEntityActive).length; rows.push({ name:'Sin área asignada', workers:unassigned.length, active, inactive:unassigned.length-active, current:0 }); }
+  if(rows.length === 0){ container.appendChild(element('p','empty activity-empty','No hay áreas de trabajo registradas.')); return; }
   const max = Math.max(1, ...rows.map(r => r.workers));
   const legendD = element('div','distribution-legend');
   legendD.innerHTML = '<span class="legend-item"><span class="legend-color" style="background:#84592B"></span><span class="legend-label">Activos</span></span><span class="legend-item"><span class="legend-color" style="background:#C7A97A"></span><span class="legend-label">Inactivos</span></span>';
@@ -475,7 +495,7 @@ function renderDistribution(){
     const i = element('span','distribution-fill distribution-fill-inactive'); i.style.width = `${(row.inactive/max)*100}%`;
     bar.append(a,i);
     const meta = element('div', 'distribution-meta');
-    meta.textContent = `Activos: ${row.active} ? Inactivos: ${row.inactive} ? Asignaciones vigentes: ${row.current}`;
+    meta.textContent = `Activos: ${row.active} · Inactivos: ${row.inactive} · Asignaciones vigentes: ${row.current}`;
     item.append(head, bar, meta); list.appendChild(item);
   });
   container.appendChild(list);
@@ -495,7 +515,7 @@ function renderRecentActivity(records){
   const table = element('table', 'data-table activity-table');
   table.setAttribute('aria-label', 'Actividad reciente de evaluaciones');
   const thead = document.createElement('thead');
-  thead.innerHTML = '<tr><th>Trabajador</th><th>Fecha</th><th>Per?odo</th><th>Resultado / indicador</th></tr>'; 
+  thead.innerHTML = '<tr><th>Trabajador</th><th>Fecha</th><th>Período</th><th>Resultado / indicador</th></tr>'; 
   const tbody = document.createElement('tbody');
   records.forEach(record => {
     const tr = document.createElement('tr');
@@ -504,20 +524,20 @@ function renderRecentActivity(records){
       tr.dataset.documentId = record.id;
       tr.tabIndex = 0;
       tr.setAttribute('role', 'link');
-      tr.setAttribute('aria-label', `Abrir evaluaci?n de ${record.worker}`); 
+      tr.setAttribute('aria-label', `Abrir evaluación de ${record.worker}`); 
     }
     const worker = document.createElement('td');
     const avatar = document.createElement('span'); avatar.className='activity-avatar'; avatar.textContent=initials(record.worker);
     const name = document.createElement('span'); name.className='activity-worker-name'; name.textContent=record.worker;
     const wcell = document.createElement('div'); wcell.className='activity-worker-cell'; wcell.append(avatar,name); worker.appendChild(wcell);
-    const date = document.createElement('td'); date.textContent = formatDate(record.date);
-    const period = document.createElement('td'); period.textContent = record.period || '?';
+    const date = document.createElement('td'); date.textContent = formatDate(record.startDate);
+    const period = document.createElement('td'); period.textContent = record.period || '—';
     const result = document.createElement('td');
     const rcell = document.createElement('div'); rcell.className='activity-result-cell';
     const strong = document.createElement('strong');
     strong.textContent = record.result !== undefined && record.result !== null && record.result !== ''
       ? (record.unit ? `${formatResult(record.result)} ${record.unit}` : formatResult(record.result))
-      : '?';
+      : '—';
     rcell.appendChild(strong);
     if(record.indicator){ const ind=document.createElement('span'); ind.className='activity-indicator'; ind.textContent=record.indicator; rcell.appendChild(ind); }
     result.appendChild(rcell);
@@ -536,8 +556,13 @@ export function recordCounts(){
   };
 }
 
-export function renderDashboard(){
-  const counts = recordCounts();
+export function renderDashboard(options = {}){
+  const entities = Array.isArray(options.entities) ? options.entities : loadEntities();
+  const documents = Array.isArray(options.documents) ? options.documents : loadDocuments();
+  const departments = Array.isArray(options.departments) ? options.departments : loadDepartments();
+  const assignments = Array.isArray(options.assignments) ? options.assignments : loadDepartmentHistory();
+  const counts = { entities: entities.length, documents: documents.length };
+  renderPartialDataNotice(entities, departments, assignments, documents);
   const view = document.getElementById('view-dashboard');
   ensureLayout(view);
 
@@ -545,11 +570,11 @@ export function renderDashboard(){
   setText('stat-documents', String(counts.documents));
   setText('stat-entities-label', labelFor('entities'));
   setText('stat-documents-label', labelFor('documents'));
-  setText('stat-active', String(activeWorkerCount(loadEntities())));
+  setText('stat-active', String(activeWorkerCount(entities)));
   setText('stat-active-label', isRRHHMode() ? 'Personal activo' : 'Evaluaciones registradas');
-  setText('stat-departments', String(loadDepartments().length));
+  setText('stat-departments', String(departments.length));
   setText('stat-departments-label', 'Áreas de trabajo');
-  setText('stat-assignments', String(currentAssignmentCount()));
+  setText('stat-assignments', String(currentAssignmentCount(assignments)));
   setText('stat-assignments-label', 'Asignaciones de área vigentes');
 
   if(!selectedDepartmentId){
@@ -560,7 +585,7 @@ export function renderDashboard(){
 
   const months = monthKeys(selectedPeriodCount);
   const consolidations = loadMetasConsolidadas();
-  const docs = loadDocuments().filter(d => isRRHHMode() ? d && (d.indicador || d.resultado !== undefined) : true);
+  const docs = documents.filter(d => isRRHHMode() ? d && (d.indicador || d.resultado !== undefined) : true);
   const monthMap = new Map(months.map(m => [m, { resultSum:0, resultCount:0, metaSum:0, metaCount:0 }]));
   docs.forEach(doc => {
     const period = recordPeriod(doc);
@@ -587,6 +612,6 @@ export function renderDashboard(){
   const resultSeries = months.map(m => { const b = monthMap.get(m); return b.resultCount ? b.resultSum / b.resultCount : null; });
   const metaSeries = months.map(m => { const b = monthMap.get(m); return b.metaCount ? b.metaSum / b.metaCount : null; });
   renderLineChart(months, resultSeries, metaSeries);
-  renderRecentActivity(recentRecords(loadDocuments(), loadEntities()));
-  renderDistribution();
+  renderRecentActivity(recentRecords(documents, entities));
+  renderDistribution(entities, departments, assignments);
 }

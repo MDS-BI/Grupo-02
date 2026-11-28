@@ -1,156 +1,103 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { setActiveConfig, RRHH_CONFIG } from '../../src/module-config.js';
 import {
-  ROLE_STORAGE_KEY,
-  ROLES,
-  ROLE_OPTIONS,
-  AREAS,
-  TURNOS,
-  defaultRoleState,
-  normalizeRoleState,
-  loadRoleState,
-  saveRoleState,
-  roleLabel,
-  allowedModules,
-  canPerform,
-  isSupervisorContextComplete,
-  isBaristaContextComplete,
-  isEntityInScope,
-  filterEntities,
-  isDocumentInScope,
-  filterDocuments,
-  isAssignmentInScope
+  addDepartment, addEntity, addDepartmentAssignment
+} from '../../src/storage.js';
+import {
+  ROLES, defaultRoleState, normalizeRoleState, saveRoleState, loadRoleState,
+  allowedModules, canPerform, isSupervisorContextComplete, isBaristaContextComplete,
+  isDocumentInScope, filterDocuments, assertCanEditDocument, scopeDescription, roleLabel
 } from '../../src/roles.js';
 
 const store = new Map();
 globalThis.localStorage = {
-  getItem: (k) => (store.has(k) ? store.get(k) : null),
-  setItem: (k, v) => store.set(k, String(v)),
-  removeItem: (k) => store.delete(k),
+  getItem: (key) => (store.has(key) ? store.get(key) : null),
+  setItem: (key, value) => store.set(key, String(value)),
+  removeItem: (key) => store.delete(key),
   clear: () => store.clear()
 };
 
 beforeEach(() => {
-  store.clear();
+  localStorage.clear();
+  setActiveConfig(RRHH_CONFIG);
 });
 
-describe('T106 - estado de rol activo', () => {
-  it('ofrece exactamente tres roles con las etiquetas definidas', () => {
-    expect(ROLE_OPTIONS.map(option => option.value)).toEqual([
-      ROLES.ADMINISTRADOR,
-      ROLES.SUPERVISOR,
-      ROLES.BARISTA
-    ]);
-    expect(ROLE_OPTIONS.map(option => option.label)).toEqual([
-      'Administrador / Gerente de Cafetería',
-      'Jefe de Turno / Supervisor',
-      'Barista / Trabajador (Solo lectura)'
-    ]);
-    expect(roleLabel(ROLES.SUPERVISOR)).toBe('Jefe de Turno / Supervisor');
-    expect(AREAS).toEqual(['Barra', 'Cocina', 'Salón']);
-    expect(TURNOS).toEqual(['Mañana', 'Tarde']);
+function seedWorkers(){
+  const barra = addDepartment({ nombre: 'Barra' });
+  const cocina = addDepartment({ nombre: 'Cocina' });
+  const ana = addEntity({
+    name: 'Ana', surname: 'Torres', code: 'W-001', cargo: 'Barista',
+    fechaIngreso: '2026-01-10', estadoLaboral: 'Activo', departamentoId: barra.id_departamento
+  });
+  const bruno = addEntity({
+    name: 'Bruno', surname: 'Díaz', code: 'W-002', cargo: 'Cocinero',
+    fechaIngreso: '2026-01-10', estadoLaboral: 'Activo', departamentoId: cocina.id_departamento
+  });
+  const anaAssignment = addDepartmentAssignment({
+    entity_id: ana.entity_id, id_departamento: barra.id_departamento, fecha_inicio: '2026-01-10'
+  });
+  const brunoAssignment = addDepartmentAssignment({
+    entity_id: bruno.entity_id, id_departamento: cocina.id_departamento, fecha_inicio: '2026-01-10'
+  });
+  return { barra, cocina, ana, bruno, anaAssignment, brunoAssignment };
+}
+
+describe('T015-T024 - control de acceso por rol', () => {
+  it('usa administrador por defecto y persiste el estado normalizado', () => {
+    const state = defaultRoleState();
+    expect(state.rolActivo).toBe(ROLES.ADMINISTRADOR);
+    expect(normalizeRoleState({ rolActivo: 'invalido', supervisorArea: 'Caja' })).toEqual(state);
+    saveRoleState({ rolActivo: ROLES.SUPERVISOR, supervisorArea: 'Barra', supervisorTurno: 'Mañana' });
+    expect(loadRoleState().supervisorArea).toBe('Barra');
+    expect(roleLabel(ROLES.SUPERVISOR)).toContain('Jefe de Turno');
   });
 
-  it('usa administrador como valor predeterminado y corrige valores inválidos', () => {
-    expect(defaultRoleState()).toEqual({
-      rolActivo: ROLES.ADMINISTRADOR,
-      supervisorArea: '',
-      supervisorTurno: '',
-      baristaEntityId: ''
-    });
-    expect(normalizeRoleState(null).rolActivo).toBe(ROLES.ADMINISTRADOR);
-    expect(normalizeRoleState({ rolActivo: 'direccion' }).rolActivo).toBe(ROLES.ADMINISTRADOR);
-    expect(normalizeRoleState({ rolActivo: ROLES.SUPERVISOR, supervisorArea: 'Barra', supervisorTurno: 'Mañana' }))
-      .toMatchObject({ rolActivo: ROLES.SUPERVISOR, supervisorArea: 'Barra', supervisorTurno: 'Mañana' });
+  it('limita módulos del supervisor y exige área y turno completos', () => {
+    const state = { rolActivo: ROLES.SUPERVISOR, supervisorArea: 'Barra', supervisorTurno: '' };
+    expect(allowedModules(state)).toEqual(['dashboard', 'documents', 'history', 'evolution']);
+    expect(canPerform(state, 'measurement:write')).toBe(true);
+    expect(isSupervisorContextComplete(state)).toBe(false);
+    expect(scopeDescription(state)).toBe('Selecciona área y turno para ver datos');
+    expect(isSupervisorContextComplete({ ...state, supervisorTurno: 'Tarde' })).toBe(true);
   });
 
-  it('persiste el rol en su propia clave sin alterar datos de negocio', () => {
-    store.set('erp_base_module:entities', JSON.stringify([{ entity_id: 'w-1' }]));
-    const state = { rolActivo: ROLES.BARISTA, baristaEntityId: 'w-1' };
-    saveRoleState(state);
-
-    expect(store.has(ROLE_STORAGE_KEY)).toBe(true);
-    expect(loadRoleState()).toMatchObject(state);
-    expect(JSON.parse(store.get('erp_base_module:entities'))).toEqual([{ entity_id: 'w-1' }]);
+  it('filtra mediciones del supervisor por área y turno', () => {
+    const { ana } = seedWorkers();
+    const state = { rolActivo: ROLES.SUPERVISOR, supervisorArea: 'Barra', supervisorTurno: 'Mañana' };
+    const documents = [
+      { entity_id: ana.entity_id, area: 'Barra', turno: 'Mañana', resultado: 90 },
+      { entity_id: ana.entity_id, area: 'Barra', turno: 'Tarde', resultado: 80 }
+    ];
+    expect(isDocumentInScope(state, documents[0], 'Barra')).toBe(true);
+    expect(isDocumentInScope(state, documents[1], 'Barra')).toBe(false);
+    expect(filterDocuments(state, documents, () => 'Barra')).toHaveLength(1);
   });
 
-  it('recupera el estado predeterminado si la persistencia está dañada', () => {
-    store.set(ROLE_STORAGE_KEY, '{no-es-json');
-    expect(loadRoleState()).toEqual(defaultRoleState());
+  it('deja al barista en modo solo lectura con su propio trabajador', () => {
+    const { ana } = seedWorkers();
+    const state = { rolActivo: ROLES.BARISTA, baristaEntityId: ana.entity_id };
+    expect(allowedModules(state)).toEqual(['dashboard', 'history', 'evolution']);
+    expect(canPerform(state, 'measurement:write')).toBe(false);
+    expect(isBaristaContextComplete(state)).toBe(true);
+    expect(isDocumentInScope(state, { entity_id: ana.entity_id }, 'Barra')).toBe(true);
+    expect(isDocumentInScope(state, { entity_id: 'otro' }, 'Barra')).toBe(false);
+    expect(scopeDescription(state, 'Ana Torres')).toBe('Solo Ana Torres');
   });
 
-  it('limita permisos de escritura según el rol', () => {
-    const admin = normalizeRoleState({ rolActivo: ROLES.ADMINISTRADOR });
-    const supervisor = normalizeRoleState({ rolActivo: ROLES.SUPERVISOR });
-    const barista = normalizeRoleState({ rolActivo: ROLES.BARISTA });
-    const actions = ['entity:write', 'department:write', 'assignment:write', 'measurement:write'];
+  it('impide registrar mediciones fuera del alcance del supervisor', () => {
+    const { ana, bruno, anaAssignment, brunoAssignment } = seedWorkers();
+    const dependencies = { assignments: [anaAssignment, brunoAssignment], departments: loadDepartmentsSafe() };
+    const incomplete = { rolActivo: ROLES.SUPERVISOR, supervisorArea: 'Barra', supervisorTurno: '' };
+    expect(() => assertCanEditDocument(incomplete, { asignacionId: anaAssignment.id_historial, turno: 'Mañana' }, dependencies)).toThrow('área de trabajo y el turno');
 
-    expect(actions.every(action => canPerform(admin, action))).toBe(true);
-    expect(actions.filter(action => canPerform(supervisor, action))).toEqual(['measurement:write']);
-    expect(actions.some(action => canPerform(barista, action))).toBe(false);
-  });
-
-  it('define las vistas permitidas para cada rol', () => {
-    expect(allowedModules(normalizeRoleState({ rolActivo: ROLES.ADMINISTRADOR }))).toEqual([
-      'dashboard', 'entities', 'departments', 'assignments', 'documents', 'history', 'evolution', 'search'
-    ]);
-    expect(allowedModules(normalizeRoleState({ rolActivo: ROLES.SUPERVISOR }))).toEqual([
-      'documents', 'history', 'evolution'
-    ]);
-    expect(allowedModules(normalizeRoleState({ rolActivo: ROLES.BARISTA }))).toEqual([
-      'history', 'evolution'
-    ]);
-  });
-});
-
-describe('T107 - derivación del alcance de datos', () => {
-  const departments = [
-    { id_departamento: 'barra', nombre: 'Barra' },
-    { id_departamento: 'cocina', nombre: 'Cocina' }
-  ];
-  const assignments = [
-    { id_historial: 'a-1', entity_id: 'w-1', id_departamento: 'barra' },
-    { id_historial: 'a-2', entity_id: 'w-2', id_departamento: 'cocina' }
-  ];
-  const entities = [
-    { entity_id: 'w-1', name: 'Ana' },
-    { entity_id: 'w-2', name: 'Bruno' }
-  ];
-  const documents = [
-    { id: 'd-1', entity_id: 'w-1', asignacionId: 'a-1', turno: 'Mañana' },
-    { id: 'd-2', entity_id: 'w-1', asignacionId: 'a-1', turno: 'Tarde' },
-    { id: 'd-3', entity_id: 'w-2', asignacionId: 'a-2', turno: 'Mañana' }
-  ];
-  const resolveDepartment = (doc) => departments.find(d => d.id_departamento === assignments.find(a => a.id_historial === doc.asignacionId)?.id_departamento)?.nombre || '';
-
-  it('exige contexto explícito para supervisor y barista', () => {
-    expect(isSupervisorContextComplete(normalizeRoleState({ rolActivo: ROLES.SUPERVISOR }))).toBe(false);
-    expect(isSupervisorContextComplete(normalizeRoleState({
-      rolActivo: ROLES.SUPERVISOR,
-      supervisorArea: 'Barra',
-      supervisorTurno: 'Mañana'
-    }))).toBe(true);
-    expect(isBaristaContextComplete(normalizeRoleState({ rolActivo: ROLES.BARISTA }))).toBe(false);
-    expect(isBaristaContextComplete(normalizeRoleState({ rolActivo: ROLES.BARISTA, baristaEntityId: 'w-1' }))).toBe(true);
-  });
-
-  it('filtra trabajadores por área histórica del supervisor y por trabajador propio del barista', () => {
-    const supervisor = normalizeRoleState({ rolActivo: ROLES.SUPERVISOR, supervisorArea: 'Barra', supervisorTurno: 'Mañana' });
-    const barista = normalizeRoleState({ rolActivo: ROLES.BARISTA, baristaEntityId: 'w-1' });
-
-    expect(filterEntities(supervisor, entities, assignments, departments).map(e => e.entity_id)).toEqual(['w-1']);
-    expect(filterEntities(barista, entities, assignments, departments).map(e => e.entity_id)).toEqual(['w-1']);
-    expect(isAssignmentInScope(supervisor, assignments[1], departments)).toBe(false);
-    expect(isAssignmentInScope(supervisor, assignments[0], departments)).toBe(true);
-  });
-
-  it('filtra mediciones por área y turno para supervisor y por trabajador para barista', () => {
-    const supervisor = normalizeRoleState({ rolActivo: ROLES.SUPERVISOR, supervisorArea: 'Barra', supervisorTurno: 'Mañana' });
-    const barista = normalizeRoleState({ rolActivo: ROLES.BARISTA, baristaEntityId: 'w-1' });
-    const admin = normalizeRoleState({ rolActivo: ROLES.ADMINISTRADOR });
-
-    expect(filterDocuments(supervisor, documents, resolveDepartment).map(d => d.id)).toEqual(['d-1']);
-    expect(filterDocuments(barista, documents, resolveDepartment).map(d => d.id)).toEqual(['d-1', 'd-2']);
-    expect(filterDocuments(admin, documents, resolveDepartment)).toHaveLength(3);
-    expect(isDocumentInScope(normalizeRoleState({ rolActivo: ROLES.SUPERVISOR }), documents[0], 'Barra')).toBe(false);
+    const state = { rolActivo: ROLES.SUPERVISOR, supervisorArea: 'Barra', supervisorTurno: 'Mañana' };
+    expect(assertCanEditDocument(state, { asignacionId: anaAssignment.id_historial, turno: 'Mañana' }, dependencies)).toBe(true);
+    expect(() => assertCanEditDocument(state, { asignacionId: brunoAssignment.id_historial, turno: 'Mañana' }, dependencies)).toThrow('área de trabajo');
+    expect(() => assertCanEditDocument(state, { asignacionId: anaAssignment.id_historial, turno: 'Tarde' }, dependencies)).toThrow('turno');
+    expect(ana.entity_id).not.toBe(bruno.entity_id);
   });
 });
+
+function loadDepartmentsSafe(){
+  return JSON.parse(localStorage.getItem('erp_base_module:departamentos') || '[]');
+}

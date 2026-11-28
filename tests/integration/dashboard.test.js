@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { JSDOM } from 'jsdom';
-import { normalizeConfig } from '../../src/module-config.js';
+import { normalizeConfig, RRHH_CONFIG } from '../../src/module-config.js';
+import { saveRoleState, ROLES } from '../../src/roles.js';
 import { addEntity, addDocument, loadEntities } from '../../src/storage.js';
 
 const html = fs.readFileSync(fileURLToPath(new URL('../../index.html', import.meta.url)), 'utf8');
@@ -35,7 +36,7 @@ afterEach(() => {
 async function bootWith(configOverride){
   vi.resetModules();
   const { initApp } = await import('../../src/app.js');
-  await initApp(normalizeConfig(configOverride));
+  await initApp(normalizeConfig(configOverride), { skipDemoSeed: true });
 }
 
 describe('User Story 3 - home dashboard with quick actions and record stats', () => {
@@ -117,5 +118,17 @@ describe('User Story 3 - home dashboard with quick actions and record stats', ()
     qs('action-find').click();
     expect(qs('view-search').hidden).toBe(false);
     expect(document.activeElement).toBe(qs('search-input'));
+  });
+});
+
+describe('Metas globales en el panel', () => {
+  it('muestra la tarjeta de metas globales solo al administrador', async () => {
+    saveRoleState({ rolActivo: ROLES.SUPERVISOR });
+    await bootWith(RRHH_CONFIG);
+    expect(qs('global-goal-card').hidden).toBe(true);
+
+    saveRoleState({ rolActivo: ROLES.ADMINISTRADOR });
+    await bootWith(RRHH_CONFIG);
+    expect(qs('global-goal-card').hidden).toBe(false);
   });
 });

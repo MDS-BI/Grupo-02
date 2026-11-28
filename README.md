@@ -18,6 +18,9 @@ La documentación de planilla, remuneraciones y liquidaciones se conserva como r
 - **Evolución:** comparación exclusiva de mediciones con el mismo indicador y la misma unidad.
 - **Protecciones:** no se eliminan trabajadores con historial ni asignaciones con mediciones vinculadas; los trabajadores pueden marcarse como `Inactivo`.
 - **Roles activos:** selector demostrativo con tres perfiles —Administrador / Gerente de Cafetería, Jefe de Turno / Supervisor y Barista / Trabajador (Solo lectura)— que ajusta vistas, botones, acciones y datos visibles. No hay autenticación con credenciales ni verificación de identidad real.
+- **Áreas de trabajo:** solo `Barra`, `Cocina` y `Salón` (la etiqueta del campo es «Área de trabajo»). Los cargos son `Barista`, `Cajero`, `Mesero`, `Cocinero` y `Encargado`; no se usan `Caja` ni `Supervisión` como áreas.
+- **Metas:** la meta individual se registra en cada medición; el Administrador / Gerente de Cafetería puede configurar metas globales por área y período. No se muestran totales consolidados como meta para el personal.
+- **Ayuda contextual:** cada vista y formulario principal incluye un subtítulo y una explicación visible sobre su propósito, terminología, unidades, escalas y estados vacíos, parciales o no autorizados.
 - **Datos ficticios:** no debe utilizarse con datos reales de trabajadores.
 
 El MER original de nueve entidades se conserva sin modificaciones. El incremento 002 reutiliza `Entity` para trabajadores y `Document` para productividad, e implementa `Departamento` e `Historial_Departamento`.
@@ -63,7 +66,9 @@ npm install
 npm run dev
 ```
 
-Abre `http://localhost:5173`. Para el flujo principal, crea un departamento y un trabajador, registra su asignación, ingresa una medición mensual y consulta las vistas **Historial** y **Evolución**. Para probar rápidamente el MVP, usa **Cargar datos de demostración** en el panel: reemplaza el almacenamiento local con seis trabajadores ficticios, cinco áreas de trabajo, seis asignaciones y mediciones en dos períodos consecutivos.
+Abre `http://localhost:5173`. La primera vez que se abre con el almacenamiento vacío, la aplicación precarga automáticamente el conjunto ficticio oficial: **6 trabajadores**, **3 áreas de trabajo** (`Barra`, `Cocina`, `Salón`), **6 asignaciones** y **12 mediciones** en dos períodos. Si ya existen datos, no se sobrescriben; el panel explica la situación parcial y ofrece **Cargar datos de demostración** para reemplazarlos tras confirmación.
+
+Para el flujo principal, crea un trabajador, registra su asignación de área, ingresa una medición mensual y consulta **Historial** y **Evolución**. El panel y los formularios muestran ayudas contextuales con la misma terminología en todos los roles.
 
 La navegación anuncia el cambio de vista a lectores de pantalla, muestra transiciones suaves entre secciones y respeta `prefers-reduced-motion`.
 
@@ -91,7 +96,7 @@ El encabezado de la aplicación muestra el selector **Rol activo**. El rol prede
 
 | Rol activo | Cómo probarlo | Permisos |
 |---|---|---|
-| **Administrador / Gerente de Cafetería** | Seleccionarlo en **Rol activo**. | Accede al Panel, trabajadores, departamentos, asignaciones, medición, historial, evolución y búsqueda. Puede crear y editar trabajadores, departamentos, asignaciones y turnos, marcar trabajadores como Inactivos, configurar metas globales de ventas y registrar, corregir o eliminar mediciones de cualquier área o turno. |
+| **Administrador / Gerente de Cafetería** | Seleccionarlo en **Rol activo**. | Accede al Panel, trabajadores, áreas de trabajo, asignaciones, medición, historial, evolución, búsqueda y metas globales. Puede crear y editar trabajadores, áreas, asignaciones y turnos, marcar trabajadores como Inactivos, configurar metas globales por área y período, y registrar, corregir o eliminar mediciones de cualquier área o turno. |
 | **Jefe de Turno / Supervisor** | Seleccionarlo y elegir explícitamente un **Área** (`Barra`, `Cocina` o `Salón`) y un **Turno** (`Mañana` o `Tarde`). | Solo ve Medición, Historial por área/turno y Evolución por área/turno. Puede registrar y corregir mediciones del área y turno seleccionados, incluida la meta esperada individual. No puede crear ni editar trabajadores, departamentos, asignaciones, turnos ni metas globales; esas acciones se ocultan y se bloquean. |
 | **Barista / Trabajador (Solo lectura)** | Seleccionarlo y elegir explícitamente el **Trabajador propio** en el encabezado. | Solo ve Mi desempeño y Mi evolución del trabajador seleccionado. No puede registrar, corregir ni eliminar mediciones, ni acceder a gestión, metas globales o datos de otros trabajadores. |
 
@@ -109,10 +114,14 @@ Si se intenta ejecutar una acción no permitida, la aplicación la bloquea, mues
 - `specs/002-rrhh-productividad/contracts/storage.md`: contrato de persistencia local.
 - `specs/002-rrhh-productividad/tasks.md`: tareas y estado de implementación.
 - `specs/002-rrhh-productividad/mer.png`: MER de referencia con las 9 entidades originales.
+- `specs/003-cafe-shift-role-ui/spec.md`: especificación de datos ficticios de cafetería, rol de turno e interfaz auto-explicativa.
+- `specs/003-cafe-shift-role-ui/plan.md`, `research.md`, `data-model.md`, `quickstart.md`: decisiones técnicas y contratos del incremento 003.
+- `specs/003-cafe-shift-role-ui/contracts/ui-storage.md`: contrato de ayudas, roles y metas globales.
+- `specs/003-cafe-shift-role-ui/tasks.md`: tareas y estado de implementación del incremento 003.
 
 ---
 
-## 6. Escalabilidad
+## 7. Escalabilidad
 
 El MVP usa `localStorage`: los datos viven en un solo navegador, no hay servidor, autenticación ni sincronización. Esta decisión es deliberada para la demostración académica, pero limita el crecimiento del módulo. Una evolución futura, fuera del alcance de 002, podría realizarse en cuatro etapas:
 
@@ -125,7 +134,7 @@ Estas mejoras no están implementadas en el MVP y no deben presentarse como func
 
 ---
 
-## 7. Referencias bibliográficas
+## 8. Referencias bibliográficas
 
 - Vite — guía oficial: https://vite.dev/guide/
 - JavaScript — MDN Web Docs: https://developer.mozilla.org/en-US/docs/Web/JavaScript
@@ -135,7 +144,7 @@ Estas mejoras no están implementadas en el MVP y no deben presentarse como func
 
 ---
 
-## 8. Evidencia colaborativa
+## 9. Evidencia colaborativa
 
 **Nómina oficial:** la nómina del grupo para el MVP es de **6 integrantes**, la indicada en la sección 3. En versiones anteriores del README se registraban 5; ese desajuste quedó corregido y todas las historias de usuario tienen responsable asignado en `specs/002-rrhh-productividad/tasks.md`.
 

@@ -1,6 +1,7 @@
 import { renderCustomFields, collectCustomFields, showCustomFieldErrors, clearCustomFieldErrors } from './custom-fields.js';
 import { getConfig, isRRHHMode } from '../module-config.js';
 import { getDocumentPeriod } from '../storage.js';
+import { canPerform, isSupervisorContextComplete, ROLES } from '../roles.js';
 
 function qs(id){ return document.getElementById(id); }
 
@@ -209,6 +210,16 @@ export function startDocumentEdit(doc){
   }
   clearDocumentErrors();
   qs('document-cancel-edit').hidden = false;
+}
+
+export function assertDocumentFormEditable(state){
+  if(!canPerform(state, 'measurement:write')){
+    throw new Error('Tu rol solo permite consultar evaluaciones; no puedes registrar ni corregir mediciones.');
+  }
+  if(state?.rolActivo === ROLES.SUPERVISOR && !isSupervisorContextComplete(state)){
+    throw new Error('Selecciona área de trabajo y turno antes de registrar o corregir mediciones.');
+  }
+  return true;
 }
 
 function setStatusValue(value){

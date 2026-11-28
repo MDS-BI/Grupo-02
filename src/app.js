@@ -8,6 +8,7 @@ import {
   loadDepartmentHistory, addDepartmentAssignment, updateDepartmentAssignment, deleteDepartmentAssignment,
   validateDepartmentAssignment, changeDepartment, getAssignmentsForEntity, getAssignmentsOverlapping,
   getCurrentAssignment, monthBounds, saveEntities, loadDemoData,
+  needsDemoSeed, seedDemoDataIfEmpty,
   getStorageError, clearStorageError, inspectDocumentsForRRHH,
   loadGlobalGoals, upsertGlobalGoal
 } from './storage.js';
@@ -22,14 +23,16 @@ import {
   filterEntities,
   filterDocuments,
   isAssignmentInScope,
+  isSupervisorContextComplete,
+  assertCanEditDocument,
   scopeDescription,
   roleLabel
 } from './roles.js';
 import { clearEntityForm, startEntityEdit, collectEntityPayload, showEntityErrors, refreshEntityCustomFields, nextEmployeeCode, rememberEmployeeCode } from './components/entity-form.js';
 import { createEntityItem } from './components/entity-list.js';
-import { clearDocumentForm, startDocumentEdit, collectDocumentPayload, showDocumentErrors } from './components/document-form.js';
+import { clearDocumentForm, startDocumentEdit, collectDocumentPayload, showDocumentErrors, assertDocumentFormEditable } from './components/document-form.js';
 import { folioLabel } from './components/document-list.js';
-import { renderLogo, setupSidebarToggle, applyShellLabels, setActiveModule } from './components/shell.js';
+import { renderLogo, setupSidebarToggle, applyShellLabels, applyRoleShellPermissions, setActiveModule } from './components/shell.js';
 import { renderDashboard } from './components/dashboard.js';
 import { setupSearchBar, renderSearchResults } from './components/search-bar.js';
 import { clearDepartmentForm, startDepartmentEdit, collectDepartmentPayload, showDepartmentErrors } from './components/department-form.js';
@@ -38,6 +41,7 @@ import { clearAssignmentForm, startAssignmentEdit, collectAssignmentPayload, sho
 import { renderAssignmentList } from './components/assignment-list.js';
 import { renderHistoryTable } from './components/history-view.js';
 import { renderEvolutionTable } from './components/evolution-view.js';
+import { applyHelpText } from './components/help-text.js';
 
 function qs(id){ return document.getElementById(id); }
 function normalizeKey(value){ return String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
@@ -151,6 +155,21 @@ function visibleDocuments(){
   return filterDocuments(roleState, documents, document_ => getDepartmentForDocument(document_)?.nombre || '');
 }
 
+function visibleDepartments(){
+  const departments = loadDepartments();
+  if(!isRRHHMode()) return departments;
+  if(roleState.rolActivo === ROLES.SUPERVISOR){
+    if(!isSupervisorContextComplete(roleState)) return [];
+    return departments.filter(department => department.nombre === roleState.supervisorArea);
+  }
+  if(roleState.rolActivo === ROLES.BARISTA){
+    const assignment = loadDepartmentHistory().find(item => item.entity_id === roleState.baristaEntityId);
+    const departmentId = assignment?.id_departamento;
+    return departments.filter(department => department.id_departamento === departmentId);
+  }
+  return departments;
+}
+
 function visibleAssignments(){
   const assignments = loadDepartmentHistory();
   if(!isRRHHMode()) return assignments;
@@ -177,7 +196,12 @@ function showModule(name, opts = {}){
   setActiveModule(name);
   setSidebarSubNav(name === 'entities');
   if(name === 'dashboard'){
-    renderDashboard();
+    renderDashboard({
+      entities: visibleEntities(),
+      documents: visibleDocuments(),
+      departments: visibleDepartments(),
+      assignments: visibleAssignments()
+    });
   }
   if(name === 'entities'){
     setEntitySubTab(opts.entityTab || 'add');
@@ -218,6 +242,7 @@ function showModule(name, opts = {}){
     if(opts.focusSearch) qs('search-input').focus();
   }
   showPendingStorageError();
+  applyHelpText(qs(VIEWS[name]));
   const announcer = qs('route-announcer');
   if(announcer){
     const activeNav = document.querySelector(`.nav-module[data-module="${name}"]`);
@@ -265,7 +290,7 @@ function renderDocumentHistoryTable(){
   body.innerHTML = '';
   if(empty){
     empty.hidden = filtered.length > 0;
-    empty.textContent = docs.length === 0 ? 'No hay evaluaciones registradas.' : 'No se encontraron evaluaciones para la b?squeda.';
+    empty.textContent = docs.length === 0 ? 'No hay evaluaciones registradas.' : 'No se encontraron evaluaciones para la búsqueda.';
   }
   for(const d of filtered){
     const entity = entities.find(e => e.entity_id === d.entity_id);
@@ -299,8 +324,8 @@ function populateEditDocumentSelect(){
   const options = visibleDocuments().map(d => {
     const entity = entities.find(e => e.entity_id === d.entity_id);
     const label = isRRHHMode()
-      ? `${entity ? entityDisplayName(entity) : 'Personal no identificado'} ? ${getDocumentPeriod(d) || ''} ? ${d.indicador || ''}`
-      : `${entity ? entityDisplayName(entity) : 'Personal no identificado'} ? ${folioLabel(d)} ? ${d.startDate} ? ${d.endDate}`;
+      ? `${entity ? entityDisplayName(entity) : 'Personal no identificado'} · ${getDocumentPeriod(d) || ''} · ${d.indicador || ''}`
+      : `${entity ? entityDisplayName(entity) : 'Personal no identificado'} · ${folioLabel(d)} · ${d.startDate} · ${d.endDate}`;
     return { value: d.id, label };
   });
   setOptions(select, options, prev, `-- Selecciona ${articulo(labelFor('document'))} ${labelFor('document').toLowerCase()} --`);
@@ -538,17 +563,24 @@ function showDuplicateWarning(payload, id){
 
 function handleDocumentSubmit(ev){
   ev.preventDefault();
-  if(!canPerform(roleState, 'measurement:write')){ showRoleDenied('registrar o corregir mediciones'); return; }
+  try{
+    assertDocumentFormEditable(roleState);
+  }catch(e){
+    showRoleDenied(e.message);
+    return;
+  }
   const id = qs('document-id').value;
   const payload = collectDocumentPayload();
 
   if(isRRHHMode()){
-    if(roleState.rolActivo === ROLES.SUPERVISOR){
-      const assignment = loadDepartmentHistory().find(item => item.id_historial === payload.asignacionId);
-      if(!isAssignmentInScope(roleState, assignment, loadDepartments()) || payload.turno !== roleState.supervisorTurno){
-        showRoleDenied('registrar una medición fuera del área o turno seleccionados');
-        return;
-      }
+    try{
+      assertCanEditDocument(roleState, payload, {
+        assignments: loadDepartmentHistory(),
+        departments: loadDepartments()
+      });
+    }catch(e){
+      showRoleDenied(e.message);
+      return;
     }
     const hasDuplicate = showDuplicateWarning(payload, id);
     const { valid, errors } = validateDocument(payload);
@@ -596,7 +628,7 @@ function populateProductivityAreas(preferredDepartmentId){
   if(!select) return;
   const prev = preferredDepartmentId || select.value;
   const departments = loadDepartments().slice().sort((a,b) => (a.nombre || '').localeCompare(b.nombre || '', 'es'));
-  setOptions(select, departments.map(d => ({ value: d.id_departamento, label: d.nombre })), prev, '-- Selecciona un ?rea de trabajo --');
+  setOptions(select, departments.map(d => ({ value: d.id_departamento, label: d.nombre })), prev, '-- Selecciona un área de trabajo --');
 }
 
 function syncProductivityAreaFromAssignment(){
@@ -622,7 +654,7 @@ function populateProductivityAssignments(preferredAssignmentId){
   select.innerHTML = '';
   const blank = document.createElement('option');
   blank.value = '';
-    blank.textContent = '-- Selecciona una asignaci?n de ?rea --';
+    blank.textContent = '-- Selecciona una asignación de área --';
   select.appendChild(blank);
   if(!entityId || !bounds) {
     const err = qs('error-cf-asignacionId');
@@ -635,7 +667,7 @@ function populateProductivityAssignments(preferredAssignmentId){
     const department = loadDepartments().find(d => d.id_departamento === assignment.id_departamento);
     const opt = document.createElement('option');
     opt.value = assignment.id_historial;
-      opt.textContent = `${department ? department.nombre : '?rea de trabajo'} ? ${assignment.fecha_inicio} ? ${assignmentEndLabel(assignment)}`;
+      opt.textContent = `${department ? department.nombre : 'Área de trabajo'} · ${assignment.fecha_inicio} · ${assignmentEndLabel(assignment)}`;
     select.appendChild(opt);
   }
   if(assignments.length === 1){
@@ -648,8 +680,8 @@ function populateProductivityAssignments(preferredAssignmentId){
   if(error){
     if(assignments.length === 0){
       error.textContent = selectedArea
-        ? 'El personal no tiene una asignaci?n en el ?rea seleccionada para este per?odo.'
-        : 'El personal no tiene una asignaci?n de ?rea para este per?odo.';
+        ? 'El personal no tiene una asignación en el área seleccionada para este período.'
+        : 'El personal no tiene una asignación de área para este período.';
     } else {
       error.textContent = '';
     }
@@ -795,19 +827,21 @@ function handleDeleteSelectedAssignment(){
 
 function handleGlobalGoalSubmit(ev){
   ev.preventDefault();
-  if(!canPerform(roleState, 'global-goal:write')){ showRoleDenied('configurar metas globales de ventas'); return; }
+  if(!canPerform(roleState, 'global-goal:write')){ showRoleDenied('configurar metas globales por área'); return; }
   const error = qs('global-goal-error');
-  if(error) error.textContent = '';
+  if(error){ error.textContent = ''; error.hidden = true; }
   try{
     upsertGlobalGoal({
-      area: qs('global-goal-area').value,
-      periodo: qs('global-goal-period').value,
-      metaGlobal: qs('global-goal-value').value
+      area: (qs('gg-area') || qs('global-goal-area')).value,
+      periodo: (qs('gg-period') || qs('global-goal-period')).value,
+      metaGlobal: (qs('gg-meta') || qs('global-goal-value')).value
     });
+    if(error){ error.textContent = 'Meta global guardada correctamente.'; error.hidden = false; }
   }catch(e){
-    if(error) error.textContent = e.message;
+    if(error){ error.textContent = e.message; error.hidden = false; }
     showStorageFailure(e);
   }
+  applyHelpText(document);
 }
 
 function populateHistoryEntitySelect(){
@@ -824,7 +858,7 @@ function renderHistory(){
   const measurements = entityId
     ? filterDocuments(roleState, getProductivityHistory(entityId), document_ => document_.departamento || getDepartmentForDocument(document_)?.nombre || '')
     : [];
-  renderHistoryTable(qs('history-body'), qs('history-empty'), measurements);
+  renderHistoryTable(qs('history-body'), qs('history-empty'), measurements, roleState);
   if(!entityId && qs('history-empty')){
     qs('history-empty').hidden = false;
     qs('history-empty').textContent = 'Selecciona personal para consultar su historial de evaluaciones.';
@@ -870,7 +904,7 @@ function renderEvolution(){
     ? getComparableMeasurements(entityId, indicator, unit)
     : [];
   const measurements = filterDocuments(roleState, comparable, document_ => document_.departamento || getDepartmentForDocument(document_)?.nombre || '');
-  renderEvolutionTable(qs('evolution-body'), qs('evolution-message'), measurements);
+  renderEvolutionTable(qs('evolution-body'), qs('evolution-message'), measurements, roleState);
   if(!entityId && qs('evolution-message')){
     qs('evolution-message').hidden = false;
     qs('evolution-message').textContent = 'Selecciona personal para visualizar la evolución del desempeño.';
@@ -913,6 +947,7 @@ function applyRoleControls(){
   const selectedWorker = loadEntities().find(entity => entity.entity_id === roleState.baristaEntityId);
   const workerName = selectedWorker ? entityDisplayName(selectedWorker) : '';
   const scope=qs('role-scope'); if(scope) scope.textContent = `Rol activo: ${roleLabel(roleState.rolActivo)} · ${scopeDescription(roleState, workerName)}`;
+  applyHelpText(document);
 }
 
 function applyRolePermissions(){
@@ -921,11 +956,13 @@ function applyRolePermissions(){
   document.querySelectorAll('.side-nav [data-module]').forEach(button => {
     button.hidden = !allowed.includes(button.dataset.module);
   });
+  applyRoleShellPermissions(roleState);
 
   const canManageEntities = canPerform(roleState, 'entity:write');
   const canManageDepartments = canPerform(roleState, 'department:write');
   const canManageAssignments = canPerform(roleState, 'assignment:write');
-  const canWriteMeasurement = canPerform(roleState, 'measurement:write');
+  const supervisorReady = roleState.rolActivo !== ROLES.SUPERVISOR || isSupervisorContextComplete(roleState);
+  const canWriteMeasurement = canPerform(roleState, 'measurement:write') && supervisorReady;
   const canManageGoals = canPerform(roleState, 'global-goal:write');
 
   qs('action-new-entity').hidden = !canManageEntities;
@@ -944,6 +981,8 @@ function applyRolePermissions(){
   qs('assignment-form').closest('section').hidden = !canManageAssignments;
   qs('edit-assignment').closest('section').hidden = !canManageAssignments;
   const goalCard = qs('global-goal-card'); if(goalCard) goalCard.hidden = !canManageGoals;
+  const incompleteNotice = qs('incomplete-context-notice');
+  if(incompleteNotice) incompleteNotice.hidden = supervisorReady;
 
   const navDocumentsLabel = qs('nav-documents-label');
   const navHistoryLabel = qs('nav-history-label');
@@ -1141,7 +1180,9 @@ function showStorageFailure(error){
 
 function handleLoadDemoData(){
   try{
-    loadDemoData();
+    if(!needsDemoSeed() && typeof confirm === 'function'
+      && !confirm('Ya existen datos guardados. ¿Reemplazarlos por los datos de demostración ficticios?')) return;
+    loadDemoData({ force: true });
     clearEntityForm();
     clearDocumentForm();
     clearDepartmentForm();
@@ -1259,10 +1300,11 @@ function wireEvents(){
   qs('evolution-unit').addEventListener('change', renderEvolution);
 }
 
-export function initApp(resolved){
+export function initApp(resolved, options = {}){
   clearStorageError();
   showConfigErrors(resolved.errors);
   setActiveConfig(resolved.config);
+  if(!options.skipDemoSeed && isRRHHMode()) seedDemoDataIfEmpty();
   roleState = loadRoleState();
   applyTheme(resolved.config);
   renderLogo(qs('logo-mark'));
@@ -1279,7 +1321,7 @@ export function initApp(resolved){
   showPendingStorageError();
 }
 
-export async function boot(overrideConfig){
+export async function boot(overrideConfig, options = {}){
   const resolved = overrideConfig !== undefined ? normalizeConfig(overrideConfig) : await loadModuleConfig();
-  initApp(resolved);
+  initApp(resolved, options);
 }

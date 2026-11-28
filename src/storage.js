@@ -1,5 +1,5 @@
 import { getConfig, isRRHHMode, labelFor, indicadoresParaCargo } from './module-config.js';
-import { AREAS, ROLE_STORAGE_KEY } from './roles.js';
+import { AREAS, ROLE_STORAGE_KEY, ROLES, loadRoleState } from './roles.js';
 
 export { ROLE_STORAGE_KEY };
 
@@ -1005,6 +1005,9 @@ export function saveGlobalGoals(goals){
 }
 
 export function upsertGlobalGoal(payload = {}){
+  if(loadRoleState().rolActivo !== ROLES.ADMINISTRADOR){
+    throw new Error('Solo el Administrador / Gerente de Cafetería puede configurar metas globales.');
+  }
   const area = normalizeText(payload.area);
   const periodo = normalizeText(payload.periodo || payload.period);
   const metaGlobal = Number(payload.metaGlobal ?? payload.meta);
@@ -1130,10 +1133,28 @@ export function getUnitsForEntity(entityId, indicador, documents = loadDocuments
     .sort((a, b) => a.localeCompare(b, 'es'));
 }
 
-export function loadDemoData(){
+export function needsDemoSeed(){
+  return [
+    ENTITIES_KEY,
+    DOCUMENTS_KEY,
+    DEPARTMENTS_KEY,
+    HISTORY_KEY,
+    METAS_CONSOLIDADAS_KEY,
+    GLOBAL_GOALS_KEY
+  ].every(key => readCollection(key, 'los datos de demostración').length === 0);
+}
+
+export function seedDemoDataIfEmpty(){
+  if(!needsDemoSeed()) return null;
+  return loadDemoData({ force: true });
+}
+
+export function loadDemoData(options = {}){
   if(!isRRHHMode()){
     throw new Error('Los datos de demostración solo están disponibles en el módulo de RR. HH.');
   }
+  const force = Boolean(options && options.force);
+  if(!force && !needsDemoSeed()) return calcularMetasConsolidadas();
 
   clearAll();
 
@@ -1141,10 +1162,10 @@ export function loadDemoData(){
   const firstPeriodBounds = monthBounds(periods[0]);
   const workers = [
     { name: 'Camila', surname: 'Rojas', taxId: '12.345.671-9', cargo: 'Barista', area: 'Barra', description: 'Preparación y control de calidad del café.' },
-    { name: 'Ignacio', surname: 'Fuentes', taxId: '13.456.782-0', cargo: 'Cajero', area: 'Caja', description: 'Atención en caja y cierre de operaciones.' },
+    { name: 'Ignacio', surname: 'Fuentes', taxId: '13.456.782-0', cargo: 'Cajero', area: 'Salón', description: 'Atención en caja del salón y cierre de operaciones.' },
     { name: 'Valentina', surname: 'Soto', taxId: '14.567.893-1', cargo: 'Mesero', area: 'Salón', description: 'Atención a mesas y experiencia del cliente.' },
     { name: 'Matías', surname: 'Herrera', taxId: '15.678.904-2', cargo: 'Cocinero', area: 'Cocina', description: 'Preparación de platos y control de inventario.' },
-    { name: 'Javiera', surname: 'Muñoz', taxId: '16.789.015-3', cargo: 'Encargado', area: 'Supervisión', description: 'Supervisión de turnos y cierre del local.' },
+    { name: 'Javiera', surname: 'Muñoz', taxId: '16.789.015-3', cargo: 'Encargado', area: 'Barra', description: 'Coordinación de la barra y cierre del local.' },
     { name: 'Rodrigo', surname: 'Silva', taxId: '17.890.126-4', cargo: 'Barista', area: 'Barra', description: 'Apoyo en barra y preparación de bebidas.' }
   ];
 

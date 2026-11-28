@@ -100,7 +100,7 @@ beforeEach(async () => {
   setActiveConfig(RRHH_CONFIG);
   vi.resetModules();
   const { boot } = await import('../../src/app.js');
-  await boot(RRHH_CONFIG);
+  await boot(RRHH_CONFIG, { skipDemoSeed: true });
 });
 
 afterEach(() => {
@@ -116,7 +116,7 @@ describe('T112 - integración del control de acceso por rol', () => {
     expect(qs('role-select').value).toBe('administrador');
     expect(qs('nav-entities').hidden).toBe(false);
     expect(qs('nav-documents').hidden).toBe(false);
-    expect(document.getElementById('global-goal-card')).toBeNull();
+    expect(qs('global-goal-card').hidden).toBe(false);
   });
 
   it('limita navegación y formularios del supervisor y exige área y turno', () => {
@@ -133,7 +133,7 @@ describe('T112 - integración del control de acceso por rol', () => {
     expect(qs('nav-assignments').hidden).toBe(true);
     expect(qs('nav-search').hidden).toBe(true);
     expect(qs('entity-form').closest('section').hidden).toBe(true);
-    expect(document.getElementById('global-goal-card')).toBeNull();
+    expect(qs('global-goal-card').hidden).toBe(true);
     expect(qs('delete-document').hidden).toBe(true);
   });
 
@@ -179,7 +179,7 @@ describe('T112 - integración del control de acceso por rol', () => {
     expect(qs('nav-documents').hidden).toBe(true);
     expect(qs('nav-entities').hidden).toBe(true);
     expect(qs('document-form').closest('section').hidden).toBe(true);
-    expect(document.getElementById('global-goal-card')).toBeNull();
+    expect(qs('global-goal-card').hidden).toBe(true);
 
     const ownOption = [...qs('role-worker').options].some(option => option.value === ana.entity_id && option.textContent === 'Ana Torres');
     expect(ownOption).toBe(true);
